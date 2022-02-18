@@ -25,34 +25,38 @@ def main():
         os.mkdir(output_dir)
 
     if os.path.isfile(season_data_file):
-        season_df = pd.read_csv(season_data_file)
+        season_df = pd.read_csv(season_data_file, index_col=[0])
+        current_season_data = api.get_current_season()
+        # Determine if new data needs to be pulled?
+        if season_df.season.max() != current_season_data['id']-1:
+            # continue pull x season data
+            balance_history_dec_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="DEC"))
+            balance_history_voucher_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="VOUCHER"))
+            balance_history_credits_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="CREDITS"))
+            balance_history_sps_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="SPS"))
+
+            next_season = season_df.season.max() + 1
+            for season_id in range(next_season, current_season_data['id']):
+                season_data = api.get_leaderboard_with_player_season(ACCOUNT_NAME, season_id)
+                season_df = season_df.append(season_data, ignore_index=True)
+                add_data_to_season_df(season_df, balance_history_credits_df, balance_history_dec_df, balance_history_sps_df,
+                                  balance_history_voucher_df, single_season_id=season_id)
+        else:
+            print("All season data is already pulled and processed continue with the current data")
     else:
-        season_df = pd.DataFrame(season.get_season_data(ACCOUNT_NAME))
-
-    current_season_data = api.get_current_season()
-
-
-    # # Determine if new data needs to be pulled?
-    # if season_df.season.max() != current_season_data['id']-1:
-    #     # continue pull x season data
-    #
-    # else:
-    #     print("No new data found. continue creating blog with old data")
-
-
-    balance_history_dec_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="DEC"))
-    balance_history_voucher_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="VOUCHER"))
-    balance_history_credits_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="CREDITS"))
-    balance_history_sps_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="SPS"))
-
-    add_data_to_season_df(season_df, balance_history_credits_df, balance_history_dec_df, balance_history_sps_df,
-                                             balance_history_voucher_df)
+        season_array = season.get_all_season_data(ACCOUNT_NAME)
+        season_df = pd.DataFrame(season_array)
+        balance_history_dec_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="DEC"))
+        balance_history_voucher_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="VOUCHER"))
+        balance_history_credits_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="CREDITS"))
+        balance_history_sps_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="SPS"))
+        add_data_to_season_df(season_df, balance_history_credits_df, balance_history_dec_df, balance_history_sps_df,
+                              balance_history_voucher_df)
 
     plots.plot_season_stats_rating(season_df)
     plots.plot_season_stats_battles(season_df)
     plots.plot_season_stats_league(season_df)
     plots.plot_season_stats_earnings(season_df)
-
 
     # get last season market purchases
     season_end_times = season.get_season_end_times()
@@ -65,10 +69,10 @@ def main():
 
     # Write and store
     season_df.to_csv(season_data_file)
-    balance_history_dec_df.to_csv(balance_history_dec_data_file)
-    balance_history_voucher_df.to_csv(balance_history_voucher_data_file)
-    balance_history_credits_df.to_csv(balance_history_credits_data_file)
-    balance_history_sps_df.to_csv(balance_history_sps_data_file)
+    # balance_history_dec_df.to_csv(balance_history_dec_data_file)
+    # balance_history_voucher_df.to_csv(balance_history_voucher_data_file)
+    # balance_history_credits_df.to_csv(balance_history_credits_data_file)
+    # balance_history_sps_df.to_csv(balance_history_sps_data_file)
 
     print("")
 
@@ -90,7 +94,7 @@ def get_last_season_market_history(end_date, start_date):
 
 
 def add_data_to_season_df(season_df, balance_history_credits_df, balance_history_dec_df, balance_history_sps_df,
-                          balance_history_voucher_df):
+                          balance_history_voucher_df, single_season_id=None):
     season_end_times = season.get_season_end_times()
 
     season_df['league_name'] = season_df.apply(lambda row: Leagues(row.league).name, axis=1)
@@ -102,7 +106,13 @@ def add_data_to_season_df(season_df, balance_history_credits_df, balance_history
     season_df['season_name'] = season_df.apply(lambda row: 'Splinterlands Season ' + str(curr_season_id - row.name),
                                                axis=1)
     season_df['season_id'] = season_df.apply(lambda row: curr_season_id - row.name, axis=1)
-    for season_id in season_df.season.values:
+
+    if single_season_id:
+        season_arr = [single_season_id]
+    else:
+        season_arr = season_df.season.values
+
+    for season_id in season_arr:
         end_date = \
         [season_end_time['date'] for season_end_time in season_end_times if season_end_time["id"] == season_id][0]
         start_date = [season_end_time['date'] for season_end_time in season_end_times if

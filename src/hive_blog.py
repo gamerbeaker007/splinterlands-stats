@@ -2,7 +2,12 @@
 
 def print_season_post(username, season_df, last_season_cards_purchase):
     last_season = season_df.iloc[season_df.season.idxmax()]
+
     print_blog = """
+########################################## BLOG STARTS HERE ##########################
+
+
+
 # """ + str(last_season.season_name) + """ of (""" + str(username) + """): 
 
 # Introduction:
@@ -47,13 +52,13 @@ TODO
 ## Closing notes 
 This report is generated with the splinterstats tool from @beaker007 [git-repo](https://github.com/gamerbeaker007/splinterlands-stats). 
 Any comment/remarks/errors pop me a message on peakd.   
-If you like the content consider adding @beaker007 as beneficiaries of you post created with this tool. 
-(images/benficiaries.png)
+If you like the content, consider adding @beaker007 as beneficiaries of you post created with the help of this tool. 
+(https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23tkhySrnBbRV3iV2aD2jH7uuYJuCsFJF5j8P8EVG1aarjqSR7cRLRmuTDhji5MnTVKSM.png)
 
 
 If you are not already playing splinterlands consider using my referral link [beaker007](https://splinterlands.com?ref=beaker007).
 
-Thx all for readin
+Thx all for reading
 
 """ + str(get_splinterlands_logo_centered())
 

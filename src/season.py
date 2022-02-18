@@ -2,11 +2,10 @@ import calendar
 import datetime
 from datetime import timezone
 
-
 from src import api
 
 
-def get_season_data(username):
+def get_all_season_data(username):
     print("Pulling season data (done per season so this can take a while)")
     season = api.get_current_season()
     current_season_id = season['id']
