@@ -82,7 +82,7 @@ def plot_season_stats_league(season_df):
         paper_bgcolor=PAPER_BGCOLOR,
         plot_bgcolor=PLOT_BGCOLOR,
         font=TEXT_FONT,
-        yaxis4=dict(
+        yaxis=dict(
             showgrid=False,
             title="league",
             tickvals=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
