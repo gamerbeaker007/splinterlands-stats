@@ -1,7 +1,11 @@
+import pandas as pd
 
 
-def print_season_post(username, season_df, last_season_cards_purchase):
+
+
+def print_season_post(username, season_df, last_season_cards_purchase, last_season_rewards):
     last_season = season_df.iloc[season_df.season.idxmax()]
+
 
     print_blog = """
 ########################################## BLOG STARTS HERE ##########################
@@ -38,14 +42,17 @@ Season overall stats
 
 """ + str(get_splinterlands_divider()) + """ 
 
-## Cards Bought
+## Cards Purchased
 """ + str(get_card_table(last_season_cards_purchase)) + """ 
 
 ## Cards Sold
 TODO
 
 ## Cards Earned
-TODO
+""" + str(get_card_table(last_season_rewards[(last_season_rewards['type'] == 'reward_card')])) + """
+
+## Potions earned
+""" + str(get_rewards_potion_table(last_season_rewards)) + """
 
 """ + str(get_splinterlands_divider()) + """ 
 
@@ -53,7 +60,7 @@ TODO
 This report is generated with the splinterstats tool from @beaker007 [git-repo](https://github.com/gamerbeaker007/splinterlands-stats). 
 Any comment/remarks/errors pop me a message on peakd.   
 If you like the content, consider adding @beaker007 as beneficiaries of you post created with the help of this tool. 
-(https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23tkhySrnBbRV3iV2aD2jH7uuYJuCsFJF5j8P8EVG1aarjqSR7cRLRmuTDhji5MnTVKSM.png)
+https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23tkhySrnBbRV3iV2aD2jH7uuYJuCsFJF5j8P8EVG1aarjqSR7cRLRmuTDhji5MnTVKSM.png
 
 
 If you are not already playing splinterlands consider using my referral link [beaker007](https://splinterlands.com?ref=beaker007).
@@ -101,26 +108,54 @@ def get_last_season_earnings_table(last_season):
     return result
 
 
-def get_card_table(last_season_cards_purchase):
+def get_card_table(cards_df):
     base_card_url = "https://d36mxiodymuqjm.cloudfront.net/cards_by_level/"
-    if len(last_season_cards_purchase.index) > 5:
+
+    temp = pd.DataFrame()
+    unique_card_list = cards_df.card_name.unique()
+    for card_name in unique_card_list:
+        temp = temp.append( {
+            'card_name': card_name,
+            'quantity_regular': len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == False)]),
+            'quantity_gold':  len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == True)]),
+            'edition_name': str(cards_df[(cards_df['card_name'] == card_name)].edition_name.values[0]),
+        }, ignore_index=True)
+
+
+    if len(temp.index) > 5:
         result = "| | | | | |\n"
         result += "|-|-|-|-|-|\n"
     else:
-        # print in one row
+        # print all in one row
         table_row = "|"
-        for i in range(0, len(last_season_cards_purchase.index)):
+        for i in range(0, len(temp.index)):
             table_row += " |"
         result = table_row + "\n" + table_row.replace(" ", "-") + "\n"
 
     result += "|"
-    for index, card in last_season_cards_purchase.iterrows():
+    for index, card in temp.iterrows():
         if index > 0 and index % 5 == 0:
             result += "\n"
-        gold_str = ""
-        gold_str = "_gold" if gold_str else ""
-        card_image_url = str(base_card_url) + str(card.edition_name) + "/" + str(card.card_name).replace(" ", "%20") + "_lv1" + gold_str +".png"
-        result += "" + str(card_image_url) + " |"
+
+        if card.quantity_regular > 0:
+            card_image_url = str(base_card_url) + str(card.edition_name) + "/" + str(card.card_name).replace(" ","%20") + "_lv1.png"
+            result += "" + str(card_image_url) + "<br> " + str(card.quantity_regular) + "x"
+        if card.quantity_gold > 0:
+            card_image_url = str(base_card_url) + str(card.edition_name) + "/" + str(card.card_name).replace(" ","%20") + "_lv1_gold.png"
+            result += "" + str(card_image_url) + "<br> " + str(card.quantity_regular) + "x"
+        result += " |"
+    return result
+
+
+def get_rewards_potion_table(last_season_rewards):
+    gold_potion = "https://static.wikia.nocookie.net/splinterlands/images/3/38/Alchemy_Potion.png/revision/latest/scale-to-width-down/100?cb=20210211201231"
+    legendary_potion = "https://static.wikia.nocookie.net/splinterlands/images/d/d6/Legendary_Potion.png/revision/latest/scale-to-width-down/100?cb=20210211201157"
+    potions = last_season_rewards[(last_season_rewards['type'] == 'potion')].groupby(['potion_type']).sum()
+    result = "| Legendary | Gold |\n"
+    result += "|-|-|\n"
+    result += "| " + str(legendary_potion) + "<br> " + str(potions.loc['legendary'].quantity)
+    result += "| " + str(gold_potion) + "<br> " + str(potions.loc['gold'].quantity)
+    result += "|\n"
     return result
 
 

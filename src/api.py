@@ -1,41 +1,45 @@
 import requests
 
-base_url = "https://api2.splinterlands.com/"
+base_url_api2 = "https://api2.splinterlands.com/"
+base_url_api = "https://api.splinterlands.com/"
 cached_url = "https://cache-api.splinterlands.com/"
 LIMIT = 500
 
 
 def get_current_season():
-    address = base_url + "settings"
+    address = base_url_api2 + "settings"
     return requests.get(address).json()['season']
 
 
 def get_combine_rates():
-    address = base_url + "settings"
+    address = base_url_api2 + "settings"
     return requests.get(address).json()['combine_rates'], requests.get(address).json()['combine_rates_gold'], requests.get(address).json()['core_editions']
 
 
 def get_specific_season_end_date(season):
-    address = base_url + ""
+    address = base_url_api2 + ""
     return requests.get(address).json()
 
 
 def get_leaderboard_with_player_season(username, season):
-    address = base_url + "players/leaderboard_with_player?season=" + str(season) + "&username=" + str(username)
+    address = base_url_api2 + "players/leaderboard_with_player?season=" + str(season) + "&username=" + str(username)
     return requests.get(address).json()['player']
 
 
 def get_market_history(username):
-    address = base_url + "market/history?player=" + str(username)
+    address = base_url_api2 + "market/history?player=" + str(username)
     return requests.get(address).json()
 
+def get_player_history_rewards(username):
+    address = base_url_api + "players/history?username=" + str(username) + "&from_block=-1&limit=250&types=card_award,claim_reward"
+    return requests.get(address).json()
 
 def get_balance_history_for_token(username, token="DEC", offset=0, result=None):
     token_types = ["SPS", "DEC", "VOUCHER", "CREDITS"]
     if token not in token_types:
         raise ValueError("Invalid token type. Expected one of: %s" % token_types)
 
-    address = base_url + "players/balance_history?token_type=" + str(token) + "&username=" + str(username) + "&offset=" + str(offset) + "&limit=" + str(LIMIT)
+    address = base_url_api2 + "players/balance_history?token_type=" + str(token) + "&username=" + str(username) + "&offset=" + str(offset) + "&limit=" + str(LIMIT)
     # if token == "DEC":
         # all found :
         # dec_reward
@@ -64,10 +68,10 @@ def get_balance_history_for_token(username, token="DEC", offset=0, result=None):
 
 
 def get_market_transaction(trx_id):
-    address = base_url + "market/status?id=" + str(trx_id)
+    address = base_url_api2 + "market/status?id=" + str(trx_id)
     return requests.get(address).json()
 
 
 def get_card_details():
-    address = base_url + "cards/get_details"
+    address = base_url_api2 + "cards/get_details"
     return requests.get(address).json()

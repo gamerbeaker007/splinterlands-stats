@@ -1,3 +1,4 @@
+import json
 import os
 
 from src import api, season, plots, hive_blog
@@ -8,25 +9,16 @@ from src.static_values_enum import Leagues, Edition
 ACCOUNT_NAME = "beaker007"
 # ACCOUNT_NAME = "bulldog1205"
 
-USE_LOCAL_FILES = True
-WRITE_TO_LOCAL_FILES = False
-
-
 output_dir = os.path.join('output', ACCOUNT_NAME)
 season_data_file = os.path.join(output_dir, 'season_data.csv')
-balance_history_dec_data_file = os.path.join(output_dir, 'balance_history_dec_df.csv')
-balance_history_voucher_data_file = os.path.join(output_dir, 'balance_history_voucher_df.csv')
-balance_history_credits_data_file = os.path.join(output_dir, 'balance_history_credits_df.csv')
-balance_history_sps_data_file = os.path.join(output_dir, 'balance_history_sps_df.csv')
-
 
 def main():
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
+    current_season_data = api.get_current_season()
     if os.path.isfile(season_data_file):
         season_df = pd.read_csv(season_data_file, index_col=[0])
-        current_season_data = api.get_current_season()
         # Determine if new data needs to be pulled?
         if season_df.season.max() != current_season_data['id']-1:
             # continue pull x season data
@@ -64,15 +56,13 @@ def main():
     start_date = [season_end_time['date'] for season_end_time in season_end_times if season_end_time["id"] == season_df.season.max() - 1][0]
 
     last_season_market_history = get_last_season_market_history(end_date, start_date)
+    last_season_player_history_rewards = get_last_season_player_history_rewards(end_date, start_date, current_season_data['id']-1)
 
-    hive_blog.print_season_post(ACCOUNT_NAME, season_df, last_season_market_history)
+
+    hive_blog.print_season_post(ACCOUNT_NAME, season_df, last_season_market_history, last_season_player_history_rewards)
 
     # Write and store
     season_df.to_csv(season_data_file)
-    # balance_history_dec_df.to_csv(balance_history_dec_data_file)
-    # balance_history_voucher_df.to_csv(balance_history_voucher_data_file)
-    # balance_history_credits_df.to_csv(balance_history_credits_data_file)
-    # balance_history_sps_df.to_csv(balance_history_sps_data_file)
 
     print("")
 
@@ -91,6 +81,43 @@ def get_last_season_market_history(end_date, start_date):
     # combine_rates, combine_rates_gold, core_editions = api.get_combine_rates()
     # determine_card_level(combine_rates, core_editions, 3, 14)
     return last_season_market_history
+
+
+def get_last_season_player_history_rewards(end_date, start_date, season_id):
+    player_history_df = pd.DataFrame(api.get_player_history_rewards(ACCOUNT_NAME))
+    reward_data = pd.DataFrame()
+
+    # Find season reward
+    for index, row in player_history_df.iterrows():
+        data = json.loads(row.data)
+        if data['type'] == 'league_season' and data['season'] == season_id:
+            reward_data = reward_data.append(pd.DataFrame(json.loads(row.result)['rewards']))
+            break
+
+    player_history_df['created_date'] = pd.to_datetime(player_history_df['created_date'])
+    mask = (player_history_df['created_date'] > start_date) & (player_history_df['created_date'] <= end_date)
+    last_season_player_history_rewards = player_history_df.loc[mask].copy()
+
+    # Find all quest rewards
+    for index, row in last_season_player_history_rewards.iterrows():
+        data = json.loads(row.data)
+        if data['type'] == 'quest':
+            reward_data = reward_data.append(pd.DataFrame(json.loads(row.result)['rewards']))
+
+    reward_data['card_detail_id'] = reward_data.apply(lambda row: row.card['card_detail_id'] if row['type'] == 'reward_card' else "", axis=1)
+    reward_data['xp'] = reward_data.apply(lambda row: row.card['xp'] if row['type'] == 'reward_card' else "", axis=1)
+    reward_data['gold'] = reward_data.apply(lambda row: row.card['gold'] if row['type'] == 'reward_card' else "", axis=1)
+    reward_data['edition'] = reward_data.apply(lambda row: row.card['edition'] if row['type'] == 'reward_card' else "", axis=1)
+
+    # Todo create card image name based on id/gold/xp/edition for each row
+    card_details_list = api.get_card_details()
+    reward_data['edition_name'] = reward_data.apply(lambda row: (Edition(row.edition)).name if row['type'] == 'reward_card' else "", axis=1)
+    reward_data['card_name'] = reward_data.apply(lambda row: find_card_name(card_details_list, row.card_detail_id) if row['type'] == 'reward_card' else "", axis=1)
+
+    # combine_rates, combine_rates_gold, core_editions = api.get_combine_rates()
+    # determine_card_level(combine_rates, core_editions, 3, 14)
+    return reward_data
+
 
 
 def add_data_to_season_df(season_df, balance_history_credits_df, balance_history_dec_df, balance_history_sps_df,
