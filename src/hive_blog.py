@@ -59,7 +59,7 @@ TODO
 ## Closing notes 
 This report is generated with the splinterstats tool from @beaker007 [git-repo](https://github.com/gamerbeaker007/splinterlands-stats). 
 Any comment/remarks/errors pop me a message on peakd.   
-If you like the content, consider adding @beaker007 as beneficiaries of you post created with the help of this tool. 
+If you like the content, consider adding @beaker007 as beneficiaries of your post created with the help of this tool. 
 https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23tkhySrnBbRV3iV2aD2jH7uuYJuCsFJF5j8P8EVG1aarjqSR7cRLRmuTDhji5MnTVKSM.png
 
 
