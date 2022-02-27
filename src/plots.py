@@ -124,7 +124,7 @@ def plot_season_stats_earnings(season_df):
     trace4 = go.Scatter(x=season_df.season_id, y=dec_rental_earned, mode='lines',  name='dec rental (payment-fees)')
     trace5 = go.Scatter(x=season_df.season_id, y=dec_rental_payed, mode='lines',  name='dec rental (cost-refund)')
     trace6 = go.Scatter(x=season_df.season_id, y=dec_tournament, mode='lines',  name='dec tournament (prize-entry)')
-    trace7 = go.Scatter(x=season_df.season_id, y=dec_total, mode='lines',  name='total dec balance (earnings-rental)')
+    trace7 = go.Scatter(x=season_df.season_id, y=dec_total, mode='lines',  name='dec balance (earnings-payments)')
 
     fig.add_trace(trace1)
     fig.add_trace(trace2)

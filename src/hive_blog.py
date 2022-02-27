@@ -3,9 +3,10 @@ import pandas as pd
 
 
 
-def print_season_post(username, season_df, last_season_cards_purchase, last_season_rewards):
+def print_season_post(username, season_df, last_season_market_history, last_season_rewards):
     last_season = season_df.iloc[season_df.season.idxmax()]
-
+    last_season_market_history_purchases = last_season_market_history[(last_season_market_history.purchaser == username)]
+    last_season_market_history_sales = last_season_market_history[(last_season_market_history.seller == username)]
 
     print_blog = """
 ########################################## BLOG STARTS HERE ##########################
@@ -43,10 +44,10 @@ Season overall stats
 """ + str(get_splinterlands_divider()) + """ 
 
 ## Cards Purchased
-""" + str(get_card_table(last_season_cards_purchase)) + """ 
+""" + str(get_card_table(last_season_market_history_purchases)) + """ 
 
 ## Cards Sold
-TODO
+""" + str(get_card_table(last_season_market_history_sales)) + """ 
 
 ## Cards Earned
 """ + str(get_card_table(last_season_rewards[(last_season_rewards['type'] == 'reward_card')])) + """
@@ -111,39 +112,42 @@ def get_last_season_earnings_table(last_season):
 def get_card_table(cards_df):
     base_card_url = "https://d36mxiodymuqjm.cloudfront.net/cards_by_level/"
 
-    temp = pd.DataFrame()
-    unique_card_list = cards_df.card_name.unique()
-    for card_name in unique_card_list:
-        temp = temp.append( {
-            'card_name': card_name,
-            'quantity_regular': len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == False)]),
-            'quantity_gold':  len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == True)]),
-            'edition_name': str(cards_df[(cards_df['card_name'] == card_name)].edition_name.values[0]),
-        }, ignore_index=True)
+    if len(cards_df) > 0:
+        unique_card_list = cards_df.card_name.unique()
+        temp = pd.DataFrame()
+        for card_name in unique_card_list:
+            temp = temp.append( {
+                'card_name': card_name,
+                'quantity_regular': len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == False)]),
+                'quantity_gold':  len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == True)]),
+                'edition_name': str(cards_df[(cards_df['card_name'] == card_name)].edition_name.values[0]),
+            }, ignore_index=True)
 
 
-    if len(temp.index) > 5:
-        result = "| | | | | |\n"
-        result += "|-|-|-|-|-|\n"
+        if len(temp.index) > 5:
+            result = "| | | | | |\n"
+            result += "|-|-|-|-|-|\n"
+        else:
+            # print all in one row
+            table_row = "|"
+            for i in range(0, len(temp.index)):
+                table_row += " |"
+            result = table_row + "\n" + table_row.replace(" ", "-") + "\n"
+
+        result += "|"
+        for index, card in temp.iterrows():
+            if index > 0 and index % 5 == 0:
+                result += "\n"
+
+            if card.quantity_regular > 0:
+                card_image_url = str(base_card_url) + str(card.edition_name) + "/" + str(card.card_name).replace(" ","%20") + "_lv1.png"
+                result += "" + str(card_image_url) + "<br> " + str(card.quantity_regular) + "x"
+            if card.quantity_gold > 0:
+                card_image_url = str(base_card_url) + str(card.edition_name) + "/" + str(card.card_name).replace(" ","%20") + "_lv1_gold.png"
+                result += "" + str(card_image_url) + "<br> " + str(card.quantity_gold) + "x"
+            result += " |"
     else:
-        # print all in one row
-        table_row = "|"
-        for i in range(0, len(temp.index)):
-            table_row += " |"
-        result = table_row + "\n" + table_row.replace(" ", "-") + "\n"
-
-    result += "|"
-    for index, card in temp.iterrows():
-        if index > 0 and index % 5 == 0:
-            result += "\n"
-
-        if card.quantity_regular > 0:
-            card_image_url = str(base_card_url) + str(card.edition_name) + "/" + str(card.card_name).replace(" ","%20") + "_lv1.png"
-            result += "" + str(card_image_url) + "<br> " + str(card.quantity_regular) + "x"
-        if card.quantity_gold > 0:
-            card_image_url = str(base_card_url) + str(card.edition_name) + "/" + str(card.card_name).replace(" ","%20") + "_lv1_gold.png"
-            result += "" + str(card_image_url) + "<br> " + str(card.quantity_regular) + "x"
-        result += " |"
+        result = "None"
     return result
 
 
