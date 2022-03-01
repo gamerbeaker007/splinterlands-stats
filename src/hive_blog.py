@@ -4,7 +4,7 @@ import pandas as pd
 
 
 def print_season_post(username, season_df, last_season_market_history, last_season_rewards):
-    last_season = season_df.iloc[season_df.season.idxmax()]
+    last_season = season_df.loc[(season_df.season_id == season_df.season_id.max())].iloc[0]
     last_season_market_history_purchases = last_season_market_history[(last_season_market_history.purchaser == username)]
     last_season_market_history_sales = last_season_market_history[(last_season_market_history.seller == username)]
 
@@ -15,8 +15,8 @@ def print_season_post(username, season_df, last_season_market_history, last_seas
 
 # """ + str(last_season.season_name) + """ of (""" + str(username) + """): 
 
-# Introduction:
-This is an first implementation of my status reporting tool
+# Season Summery:
+
 
 """ + str(get_splinterlands_divider()) + """ 
 
@@ -157,8 +157,8 @@ def get_rewards_potion_table(last_season_rewards):
     potions = last_season_rewards[(last_season_rewards['type'] == 'potion')].groupby(['potion_type']).sum()
     result = "| Legendary | Gold |\n"
     result += "|-|-|\n"
-    result += "| " + str(legendary_potion) + "<br> " + str(potions.loc['legendary'].quantity)
-    result += "| " + str(gold_potion) + "<br> " + str(potions.loc['gold'].quantity)
+    result += "| " + str(legendary_potion) + "<br> " + str(potions.loc['legendary'].quantity) + "x"
+    result += "| " + str(gold_potion) + "<br> " + str(potions.loc['gold'].quantity) + "x"
     result += "|\n"
     return result
 
