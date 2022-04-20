@@ -5,9 +5,11 @@ import pandas as pd
 
 def print_season_post(username, season_df, last_season_market_history, last_season_rewards):
     last_season = season_df.loc[(season_df.season_id == season_df.season_id.max())].iloc[0]
-    last_season_market_history_purchases = last_season_market_history[(last_season_market_history.purchaser == username)]
-    last_season_market_history_sales = last_season_market_history[(last_season_market_history.seller == username)]
-
+    last_season_market_history_purchases = None
+    last_season_market_history_sales = None
+    if not last_season_market_history.empty:
+        last_season_market_history_purchases = last_season_market_history[(last_season_market_history.purchaser == username)]
+        last_season_market_history_sales = last_season_market_history[(last_season_market_history.seller == username)]
     print_blog = """
 ########################################## BLOG STARTS HERE ##########################
 
@@ -112,7 +114,7 @@ def get_last_season_earnings_table(last_season):
 def get_card_table(cards_df):
     base_card_url = "https://d36mxiodymuqjm.cloudfront.net/cards_by_level/"
 
-    if len(cards_df) > 0:
+    if cards_df is not None and len(cards_df) > 0:
         unique_card_list = cards_df.card_name.unique()
         temp = pd.DataFrame()
         for card_name in unique_card_list:

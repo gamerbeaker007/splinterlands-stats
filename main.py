@@ -78,18 +78,21 @@ def main():
 
 def get_last_season_market_history(end_date, start_date):
     market_history_df = pd.DataFrame(api.get_market_history(ACCOUNT_NAME))
-    market_history_df['created_date'] = pd.to_datetime(market_history_df['created_date'])
-    mask = (market_history_df['created_date'] > start_date) & (market_history_df['created_date'] <= end_date)
-    last_season_market_history = market_history_df.loc[mask].copy()
-    # Todo create card image name based on id/gold/xp/edition for each row
-    card_details_list = api.get_card_details()
-    last_season_market_history['edition_name'] = last_season_market_history.apply(
-        lambda row: (Edition(row.edition)).name, axis=1)
-    last_season_market_history['card_name'] = last_season_market_history.apply(
-        lambda row: find_card_name(card_details_list, row.card_detail_id), axis=1)
-    # combine_rates, combine_rates_gold, core_editions = api.get_combine_rates()
-    # determine_card_level(combine_rates, core_editions, 3, 14)
-    return last_season_market_history
+    if not market_history_df.empty:
+        market_history_df['created_date'] = pd.to_datetime(market_history_df['created_date'])
+        mask = (market_history_df['created_date'] > start_date) & (market_history_df['created_date'] <= end_date)
+        last_season_market_history = market_history_df.loc[mask].copy()
+        # Todo create card image name based on id/gold/xp/edition for each row
+        card_details_list = api.get_card_details()
+        last_season_market_history['edition_name'] = last_season_market_history.apply(
+            lambda row: (Edition(row.edition)).name, axis=1)
+        last_season_market_history['card_name'] = last_season_market_history.apply(
+            lambda row: find_card_name(card_details_list, row.card_detail_id), axis=1)
+        # combine_rates, combine_rates_gold, core_editions = api.get_combine_rates()
+        # determine_card_level(combine_rates, core_editions, 3, 14)
+        return last_season_market_history
+    else:
+        return market_history_df
 
 
 def get_last_season_player_history_rewards(end_date, start_date, season_id):
@@ -99,7 +102,7 @@ def get_last_season_player_history_rewards(end_date, start_date, season_id):
     # Find season reward
     for index, row in player_history_df.iterrows():
         data = json.loads(row.data)
-        if data['type'] == 'league_season' and data['season'] == season_id:
+        if row.success and data['type'] == 'league_season' and data['season'] == season_id:
             reward_data = reward_data.append(pd.DataFrame(json.loads(row.result)['rewards']))
             break
 
@@ -222,14 +225,17 @@ def find_card_name(card_details_list, id):
 
 def cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, input_df, search_type, column_prefix=""):
     # make sure it is a datetime field
-    input_df.created_date = pd.to_datetime(input_df.created_date)
-    input_df.amount = pd.to_numeric(input_df.amount)
+    if not input_df.empty:
+        input_df.created_date = pd.to_datetime(input_df.created_date)
+        input_df.amount = pd.to_numeric(input_df.amount)
 
-    # greater than the start date and smaller than the end date and type is search_type
-    mask = (input_df['created_date'] > start_date) & (input_df['created_date'] <= end_date) & (input_df['type'] == search_type)
+        # greater than the start date and smaller than the end date and type is search_type
+        mask = (input_df['created_date'] > start_date) & (input_df['created_date'] <= end_date) & (input_df['type'] == search_type)
 
-    # print("Amount " + str(search_type) + ": " + str(input_df.loc[mask].amount.sum()))
-    season_df.loc[season_df.season == season_id, str(column_prefix + search_type)] = input_df.loc[mask].amount.sum()
+        # print("Amount " + str(search_type) + ": " + str(input_df.loc[mask].amount.sum()))
+        season_df.loc[season_df.season == season_id, str(column_prefix + search_type)] = input_df.loc[mask].amount.sum()
+    else:
+        season_df.loc[season_df.season == season_id, str(column_prefix + search_type)] = 0
     return season_df
 
 if __name__ == '__main__':
