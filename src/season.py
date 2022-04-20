@@ -11,9 +11,10 @@ def get_all_season_data(username):
     current_season_id = season['id']
     season_array = []
     for i in range(1, current_season_id):
+        print("Pulling season data: " + str(current_season_id - i))
         player_result_season_x = api.get_leaderboard_with_player_season(username, current_season_id - i)
         if 'season' in player_result_season_x:
-            print("Get season data: " + str(current_season_id - i))
+            print("Get season data done: " + str(current_season_id - i))
             season_array.append(player_result_season_x)
         else:
             print("STOP no more seasons found for  '" + str(username) + "'  last season: " + str(current_season_id - (i-1)))

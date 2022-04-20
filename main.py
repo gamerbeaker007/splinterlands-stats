@@ -113,7 +113,7 @@ def get_last_season_player_history_rewards(end_date, start_date, season_id):
     # Find all quest rewards
     for index, row in last_season_player_history_rewards.iterrows():
         data = json.loads(row.data)
-        if data['type'] == 'quest':
+        if row.success and data['type'] == 'quest':
             reward_data = reward_data.append(pd.DataFrame(json.loads(row.result)['rewards']))
 
     reward_data['card_detail_id'] = reward_data.apply(lambda row: row.card['card_detail_id'] if row['type'] == 'reward_card' else "", axis=1)

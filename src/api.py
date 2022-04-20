@@ -1,4 +1,6 @@
 import requests
+from urllib3 import Retry
+from requests.adapters import HTTPAdapter
 
 base_url_api2 = "https://api2.splinterlands.com/"
 base_url_api = "https://api.splinterlands.com/"
@@ -13,7 +15,8 @@ def get_current_season():
 
 def get_combine_rates():
     address = base_url_api2 + "settings"
-    return requests.get(address).json()['combine_rates'], requests.get(address).json()['combine_rates_gold'], requests.get(address).json()['core_editions']
+    return requests.get(address).json()['combine_rates'], requests.get(address).json()['combine_rates_gold'], \
+           requests.get(address).json()['core_editions']
 
 
 def get_specific_season_end_date(season):
@@ -21,49 +24,65 @@ def get_specific_season_end_date(season):
     return requests.get(address).json()
 
 
-def get_leaderboard_with_player_season(username, season):
+def get_leaderboard_with_player_season(username, season, attempt=None):
     address = base_url_api2 + "players/leaderboard_with_player?season=" + str(season) + "&username=" + str(username)
-    return requests.get(address).json()['player']
+    retry_strategy = Retry(
+        total=5,
+        status_forcelist=[429, 500, 502, 503, 504],
+        method_whitelist=["HEAD", "GET", "OPTIONS"]
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    http = requests.Session()
+    http.mount("https://", adapter)
+    result = http.get(address)
+    if result.status_code == 200:
+        return result.json()['player']
+    else:
+        return None
 
 
 def get_market_history(username):
     address = base_url_api2 + "market/history?player=" + str(username)
     return requests.get(address).json()
 
+
 def get_player_history_rewards(username):
-    address = base_url_api + "players/history?username=" + str(username) + "&from_block=-1&limit=250&types=card_award,claim_reward"
+    address = base_url_api + "players/history?username=" + str(
+        username) + "&from_block=-1&limit=250&types=card_award,claim_reward"
     return requests.get(address).json()
+
 
 def get_balance_history_for_token(username, token="DEC", offset=0, result=None):
     token_types = ["SPS", "DEC", "VOUCHER", "CREDITS"]
     if token not in token_types:
         raise ValueError("Invalid token type. Expected one of: %s" % token_types)
 
-    address = base_url_api2 + "players/balance_history?token_type=" + str(token) + "&username=" + str(username) + "&offset=" + str(offset) + "&limit=" + str(LIMIT)
+    address = base_url_api2 + "players/balance_history?token_type=" + str(token) + "&username=" + str(
+        username) + "&offset=" + str(offset) + "&limit=" + str(LIMIT)
     # if token == "DEC":
-        # all found :
-        # dec_reward
-        # rental_payment_fee
-        # rental_payment
-        # season_rewards
-        # tournament_prize
-        # quest_rewards
-        # withdraw
-        # token_transfer
-        # market_purchase
-        # enter_tournament
-        # market_rental
-        # rental_refund
-        # address = str(address) + "&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward,season_rewards"
+    # all found :
+    # dec_reward
+    # rental_payment_fee
+    # rental_payment
+    # season_rewards
+    # tournament_prize
+    # quest_rewards
+    # withdraw
+    # token_transfer
+    # market_purchase
+    # enter_tournament
+    # market_rental
+    # rental_refund
+    # address = str(address) + "&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward,season_rewards"
 
     if result is None:  # create a new result if no intermediate was given
         result = requests.get(address).json()
     else:
         result += requests.get(address).json()
 
-    if len(result) == offset+LIMIT:
-        print("More then '" + str(offset+LIMIT) + "' returned, continue for another balance pull...")
-        get_balance_history_for_token(username, token=token, offset=offset+LIMIT, result=result)
+    if len(result) == offset + LIMIT:
+        print("More then '" + str(offset + LIMIT) + "' returned, continue for another balance pull...")
+        get_balance_history_for_token(username, token=token, offset=offset + LIMIT, result=result)
     return result
 
 
