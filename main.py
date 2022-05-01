@@ -56,7 +56,6 @@ def main():
 
     plots.plot_season_stats_rating(season_df)
     plots.plot_season_stats_battles(season_df)
-    plots.plot_season_stats_league(season_df)
     plots.plot_season_stats_earnings(season_df)
 
     # get last season market purchases

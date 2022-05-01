@@ -3,6 +3,9 @@ from plotly.subplots import make_subplots
 
 from src.static_values_enum import Leagues
 
+IMAGES_HEIGHT = 720
+IMAGES_WIDTH = 1280
+
 TEXT_FONT = dict(
     family="sans serif",
     size=14,
@@ -11,7 +14,7 @@ TEXT_FONT = dict(
 
 PAPER_BGCOLOR = 'rgba(100,100,100,255)'
 PLOT_BGCOLOR = 'rgba(0,0,0,0)'
-GIRD_COLOR = 'rgba(255,255,255,255)'
+GRID_COLOR = 'rgba(255,255,255,255)'
 
 
 def plot_season_stats_rating(season_df):
@@ -21,16 +24,12 @@ def plot_season_stats_rating(season_df):
                         y=season_df.rating,
                         mode='lines+markers',
                         name='end rating',
-                        line=dict(color='firebrick', width=3),
+                        line=dict(color='firebrick', width=2),
                         )
     trace2 = go.Bar(x=season_df.season_id,
                     y=season_df.rating,
                     showlegend=False,
                     name='not displayed ony to create secondary axis',
-                    marker=dict(
-                        color='rgb(158,202,225)',
-                        line_color='rgb(8,48,107)',
-                        line_width=3),
                     opacity=0,
                     )
 
@@ -58,21 +57,19 @@ def plot_season_stats_rating(season_df):
         xaxis=dict(
             tickvals=season_df.season_id,
         ),
+
         yaxis2=dict(
             showgrid=True,
             title="rating",
             gridcolor="gray",
-            gridwidth=2,
+            gridwidth=1,
             nticks=50,
             range=[0, season_df.rating.max()*1.05]
         ),
         yaxis=dict(
-            showgrid=True,
-            gridcolor='rgb(8,48,107)',
-            gridwidth=1,
+            showgrid=False,
             title="league",
             range=[0, season_df.rating.max()*1.05],
-            # tickvals=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
             tickvals=[0, 400, 700, 1000, 1300, 1600, 1900, 2200, 2500, 2800, 3100, 3400, 3700, 4200, 4700, 9999],
             ticktext=[Leagues(0).name,
                       Leagues(1).name,
@@ -93,8 +90,8 @@ def plot_season_stats_rating(season_df):
         ),
     )
 
-    fig.show()
-    fig.write_image("output\\1_season_stats_rating.png", width=800, height=600)
+    # fig.show()
+    fig.write_image("output\\1_season_stats_rating.png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
 
 
 def plot_season_stats_battles(season_df):
@@ -105,14 +102,17 @@ def plot_season_stats_battles(season_df):
     fig.add_trace(trace3, secondary_y=True)
     fig.add_trace(trace4)
     fig.add_trace(trace5)
-    fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor=GIRD_COLOR)
-    fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor=GIRD_COLOR)
+    fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor=GRID_COLOR)
+    fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor=GRID_COLOR)
 
     fig.update_layout(
         paper_bgcolor=PAPER_BGCOLOR,
         plot_bgcolor=PLOT_BGCOLOR,
         font=TEXT_FONT,
 
+        xaxis=dict(
+            tickvals=season_df.season_id,
+        ),
         yaxis1=dict(
             showgrid=False,
             title="battles",
@@ -126,47 +126,7 @@ def plot_season_stats_battles(season_df):
             title='win (%)'),
     )
     # fig.show()
-    fig.write_image("output\\2_season_stats_battles.png", width=800, height=600)
-
-
-def plot_season_stats_league(season_df):
-    fig = go.Figure()
-    trace6 = go.Bar(x=season_df.season_id, y=season_df.league, name='end league')
-    trace7 = go.Bar(x=season_df.season_id, y=season_df.max_league, name='max_league')
-    fig.add_trace(trace6)
-    fig.add_trace(trace7)
-    fig.update_xaxes(showgrid=False)
-    fig.update_yaxes(showgrid=False)
-
-    fig.update_layout(
-        paper_bgcolor=PAPER_BGCOLOR,
-        plot_bgcolor=PLOT_BGCOLOR,
-        font=TEXT_FONT,
-        yaxis=dict(
-            showgrid=False,
-            title="league",
-            tickvals=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-            ticktext=[Leagues(0).name,
-                      Leagues(1).name,
-                      Leagues(2).name,
-                      Leagues(3).name,
-                      Leagues(4).name,
-                      Leagues(5).name,
-                      Leagues(6).name,
-                      Leagues(7).name,
-                      Leagues(8).name,
-                      Leagues(9).name,
-                      Leagues(10).name,
-                      Leagues(11).name,
-                      Leagues(12).name,
-                      Leagues(13).name,
-                      Leagues(14).name,
-                      Leagues(15).name],
-        ),
-    )
-
-    # fig.show()
-    fig.write_image("output\\3_season_stats_league.png", width=1920, height=1080)
+    fig.write_image("output\\2_season_stats_battles.png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
 
 
 def plot_season_stats_earnings(season_df):
@@ -178,13 +138,13 @@ def plot_season_stats_earnings(season_df):
     dec_rental_payed = season_df.dec_market_rental + season_df.dec_rental_refund
     dec_tournament = season_df.dec_tournament_prize + season_df.dec_enter_tournament
     dec_total = dec_earned + dec_rental_earned + dec_rental_payed + dec_tournament
-    trace1 = go.Scatter(x=season_df.season_id, y=credits_earned, mode='lines',  name='credits (quest + season reward)')
-    trace2 = go.Scatter(x=season_df.season_id, y=sps_earned, mode='lines',  name='sps (staking + token award)')
-    trace3 = go.Scatter(x=season_df.season_id, y=dec_earned, mode='lines',  name='dec (ranked + quest + season)')
-    trace4 = go.Scatter(x=season_df.season_id, y=dec_rental_earned, mode='lines',  name='dec rental (payment-fees)')
-    trace5 = go.Scatter(x=season_df.season_id, y=dec_rental_payed, mode='lines',  name='dec rental (cost-refund)')
-    trace6 = go.Scatter(x=season_df.season_id, y=dec_tournament, mode='lines',  name='dec tournament (prize-entry)')
-    trace7 = go.Scatter(x=season_df.season_id, y=dec_total, mode='lines',  name='dec balance (earnings-payments)')
+    trace1 = go.Scatter(x=season_df.season_id, y=credits_earned, mode='lines+markers',  name='credits (quest + season reward)')
+    trace2 = go.Scatter(x=season_df.season_id, y=sps_earned, mode='lines+markers',  name='sps (staking + token award)')
+    trace3 = go.Scatter(x=season_df.season_id, y=dec_earned, mode='lines+markers',  name='dec (ranked + quest + season)')
+    trace4 = go.Scatter(x=season_df.season_id, y=dec_rental_earned, mode='lines+markers',  name='dec rental (payment-fees)')
+    trace5 = go.Scatter(x=season_df.season_id, y=dec_rental_payed, mode='lines+markers',  name='dec rental (cost-refund)')
+    trace6 = go.Scatter(x=season_df.season_id, y=dec_tournament, mode='lines+markers',  name='dec tournament (prize-entry)')
+    trace7 = go.Scatter(x=season_df.season_id, y=dec_total, mode='lines+markers',  name='dec total (earnings-payments)')
 
     fig.add_trace(trace1)
     fig.add_trace(trace2)
@@ -193,18 +153,39 @@ def plot_season_stats_earnings(season_df):
     fig.add_trace(trace5)
     fig.add_trace(trace6)
     fig.add_trace(trace7)
-    fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor=GIRD_COLOR)
-    fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor=GIRD_COLOR)
 
     fig.update_layout(
         paper_bgcolor=PAPER_BGCOLOR,
         plot_bgcolor=PLOT_BGCOLOR,
         font=TEXT_FONT,
 
-        yaxis1=dict(
+        legend=dict(
+            x=0,
+            y=1,
+            font=dict(
+                family="Courier",
+                size=12,
+                color="black"
+            ),
+            bgcolor="LightSteelBlue",
+            bordercolor="Black",
+            borderwidth=2
+        ),
+        xaxis=dict(
+            showgrid=True,
+            gridwidth=1,
+            gridcolor=GRID_COLOR,
+            tickvals=season_df.season_id,
+        ),
+
+        yaxis=dict(
             title="earnings",
+            gridcolor="gray",
+            gridwidth=1,
+            nticks=50,
+            side="right"
         ),
     )
 
     # fig.show()
-    fig.write_image("output\\4_season_stats_earnings.png", width=800, height=600)
+    fig.write_image("output\\3_season_stats_earnings.png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)

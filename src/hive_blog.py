@@ -24,10 +24,7 @@ def print_season_post(username, season_df, last_season_market_history, last_seas
 
 
 Season overall stats
-|||
-|-|-|
-|_1_|_2_|
-|_3_|_4_|
+<Place overall images here> 
 
 """ + str(get_splinterlands_divider()) + """ 
 
