@@ -15,25 +15,85 @@ GIRD_COLOR = 'rgba(255,255,255,255)'
 
 
 def plot_season_stats_rating(season_df):
-    fig = go.Figure()
-    trace1 = go.Scatter(x=season_df.season_id, y=season_df.max_rating, mode='lines',  name='max_rating')
-    trace2 = go.Scatter(x=season_df.season_id, y=season_df.rating, mode='lines', name='end rating')
-    fig.add_trace(trace1)
+
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    trace1 = go.Scatter(x=season_df.season_id,
+                        y=season_df.rating,
+                        mode='lines+markers',
+                        name='end rating',
+                        line=dict(color='firebrick', width=3),
+                        )
+    trace2 = go.Bar(x=season_df.season_id,
+                    y=season_df.rating,
+                    showlegend=False,
+                    name='not displayed ony to create secondary axis',
+                    marker=dict(
+                        color='rgb(158,202,225)',
+                        line_color='rgb(8,48,107)',
+                        line_width=3),
+                    opacity=0,
+                    )
+
+    trace3 = go.Bar(x=season_df.season_id,
+                    y=season_df.end_league_rating,
+                    name='end league',
+                    offset=-0.3,
+                    width=0.6,
+                    marker=dict(
+                        color='rgb(8,48,107)',
+                        line_color='rgb(8,48,107)',
+                        line_width=1),
+                    opacity=1,
+                    )
+
+    fig.add_trace(trace1, secondary_y=True)
     fig.add_trace(trace2)
-    fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor=GIRD_COLOR)
-    fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor=GIRD_COLOR)
+    fig.add_trace(trace3)
 
     fig.update_layout(
         paper_bgcolor=PAPER_BGCOLOR,
         plot_bgcolor=PLOT_BGCOLOR,
         font=TEXT_FONT,
 
-        yaxis1=dict(
+        xaxis=dict(
+            tickvals=season_df.season_id,
+        ),
+        yaxis2=dict(
+            showgrid=True,
             title="rating",
+            gridcolor="gray",
+            gridwidth=2,
+            nticks=50,
+            range=[0, season_df.rating.max()*1.05]
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor='rgb(8,48,107)',
+            gridwidth=1,
+            title="league",
+            range=[0, season_df.rating.max()*1.05],
+            # tickvals=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+            tickvals=[0, 400, 700, 1000, 1300, 1600, 1900, 2200, 2500, 2800, 3100, 3400, 3700, 4200, 4700, 9999],
+            ticktext=[Leagues(0).name,
+                      Leagues(1).name,
+                      Leagues(2).name,
+                      Leagues(3).name,
+                      Leagues(4).name,
+                      Leagues(5).name,
+                      Leagues(6).name,
+                      Leagues(7).name,
+                      Leagues(8).name,
+                      Leagues(9).name,
+                      Leagues(10).name,
+                      Leagues(11).name,
+                      Leagues(12).name,
+                      Leagues(13).name,
+                      Leagues(14).name,
+                      Leagues(15).name],
         ),
     )
 
-    # fig.show()
+    fig.show()
     fig.write_image("output\\1_season_stats_rating.png", width=800, height=600)
 
 

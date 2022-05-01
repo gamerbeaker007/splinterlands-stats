@@ -139,6 +139,10 @@ def add_data_to_season_df(season_df,
                           single_season_id=None):
     season_end_times = season.get_season_end_times()
 
+    season_ratings = [0, 400, 700, 1000, 1300, 1600, 1900, 2200, 2500, 2800, 3100, 3400, 3700, 4200, 4700, 5100]
+    # translate end rating to max (for graph)
+    season_df['end_league_rating'] = season_df.apply(lambda row: season_ratings[row.league], axis=1)
+
     season_df['league_name'] = season_df.apply(lambda row: Leagues(row.league).name, axis=1)
     season_df['max_league_name'] = season_df.apply(lambda row: Leagues(row.max_league).name, axis=1)
     season_df['win_pct'] = season_df.apply(lambda row: (row.wins / row.battles * 100), axis=1)

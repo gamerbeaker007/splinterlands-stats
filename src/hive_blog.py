@@ -112,7 +112,7 @@ def get_last_season_earnings_table(last_season):
 
 
 def get_card_table(cards_df):
-    base_card_url = "https://d36mxiodymuqjm.cloudfront.net/cards_by_level/"
+    base_card_url = "https://images.hive.blog/150x0/https://d36mxiodymuqjm.cloudfront.net/cards_by_level/"
 
     if cards_df is not None and len(cards_df) > 0:
         unique_card_list = cards_df.card_name.unique()
