@@ -20,6 +20,15 @@ class Leagues(Enum):
     CHAMPION_I = 15
 
 
+class RatingLevel(Enum):
+  Novice = 0
+  Bronze = 1
+  Silver =2
+  Gold = 3
+  Diamond = 4
+  Champion = 5
+
+
 class Edition(Enum):
     alpha = 0
     beta = 1

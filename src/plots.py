@@ -17,7 +17,7 @@ PLOT_BGCOLOR = 'rgba(0,0,0,0)'
 GRID_COLOR = 'rgba(255,255,255,255)'
 
 
-def plot_season_stats_rating(season_df):
+def plot_season_stats_rating(season_df, output_dir=""):
 
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     trace1 = go.Scatter(x=season_df.season_id,
@@ -91,10 +91,10 @@ def plot_season_stats_rating(season_df):
     )
 
     # fig.show()
-    fig.write_image("output\\1_season_stats_rating.png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
+    fig.write_image(output_dir + "\\1_season_stats_rating.png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
 
 
-def plot_season_stats_battles(season_df):
+def plot_season_stats_battles(season_df, output_dir=""):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     trace3 = go.Scatter(x=season_df.season_id, y=season_df.win_pct, mode='lines+markers', name='win percentage')
     trace4 = go.Scatter(x=season_df.season_id, y=season_df.battles, mode='lines', name='battles')
@@ -126,10 +126,10 @@ def plot_season_stats_battles(season_df):
             title='win (%)'),
     )
     # fig.show()
-    fig.write_image("output\\2_season_stats_battles.png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
+    fig.write_image(output_dir + "\\2_season_stats_battles.png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
 
 
-def plot_season_stats_earnings(season_df):
+def plot_season_stats_earnings(season_df, output_dir=""):
     fig = go.Figure()
     credits_earned = season_df.credits_quest_rewards + season_df.credits_season_rewards
     sps_earned = season_df.sps_claim_staking_rewards + season_df.sps_token_award
@@ -188,4 +188,4 @@ def plot_season_stats_earnings(season_df):
     )
 
     # fig.show()
-    fig.write_image("output\\3_season_stats_earnings.png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
+    fig.write_image(output_dir + "\\3_season_stats_earnings.png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)

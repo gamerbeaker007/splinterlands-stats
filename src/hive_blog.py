@@ -1,9 +1,12 @@
 import pandas as pd
 
 
-
-
-def print_season_post(username, season_df, last_season_market_history, last_season_rewards):
+def print_season_post(username,
+                      season_df,
+                      last_season_market_history,
+                      last_season_rewards,
+                      tournaments_info,
+                      output_dir=""):
     last_season = season_df.loc[(season_df.season_id == season_df.season_id.max())].iloc[0]
     last_season_market_history_purchases = None
     last_season_market_history_sales = None
@@ -16,6 +19,8 @@ def print_season_post(username, season_df, last_season_market_history, last_seas
 
 
 # """ + str(last_season.season_name) + """ of (""" + str(username) + """): 
+
+https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23xL2wuMjBE9nsXndxmCoPcGJARoydfwp52UTXVez31FnNbXKtkBqVx3eUBmybtD6L8J6.gif
 
 # Season Summery:
 
@@ -32,6 +37,10 @@ Season overall stats
 """ + str(get_last_season_statistics_table(last_season)) + """
 
 """ + str(get_splinterlands_divider()) + """ 
+
+
+## Tournaments
+""" + str(get_tournament_info(tournaments_info)) + """
 
 ## Earnings and costs:
 ### Earnings 
@@ -69,6 +78,9 @@ Thx all for reading
 
 """ + str(get_splinterlands_logo_centered())
 
+    text_file = open(output_dir + "\\post.txt", "w")
+    text_file.write(print_blog)
+    text_file.close()
     print(print_blog)
 
 
@@ -105,6 +117,21 @@ def get_last_season_earnings_table(last_season):
     result += "| DEC tournament rewards | " + str(round(last_season.dec_tournament_prize, 3)) + " |\n"
     result += "| DEC rental rewards | " + str(round(last_season.dec_rental_payment, 3)) + " |\n"
     result += "| DEC market sell | " + str(round(last_season.dec_sell_market_purchase, 3)) + " |\n"
+    return result
+
+
+def get_tournament_info(tournaments_info):
+    result = "|Tournament name | League | finish / entrants | wins/losses/draws | entry fee | prize |  \n"
+    result += "|-|-|-|-|-|-| \n"
+
+    for index, tournament in tournaments_info.iterrows():
+        result += "| " + tournament['name']
+        result += "| " + tournament.league
+        result += "| " + str(int(tournament.finish)) + " / " + str(int(tournament.num_players))
+        result += "| " + str(int(tournament.wins)) + " / " + str(int(tournament.losses)) + " / " + str(int(tournament.draws))
+        result += "| " + tournament.entry_fee
+        result += "| " + tournament.prize
+        result += "| \n"
     return result
 
 

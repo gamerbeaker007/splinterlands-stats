@@ -1,3 +1,5 @@
+import json
+
 import requests
 from urllib3 import Retry
 from requests.adapters import HTTPAdapter
@@ -48,7 +50,7 @@ def get_market_history(username):
 
 def get_player_history_rewards(username):
     address = base_url_api + "players/history?username=" + str(
-        username) + "&from_block=-1&limit=250&types=card_award,claim_reward"
+        username) + "&from_block=-1&limit=500&types=card_award,claim_reward"
     return requests.get(address).json()
 
 
@@ -94,3 +96,19 @@ def get_market_transaction(trx_id):
 def get_card_details():
     address = base_url_api2 + "cards/get_details"
     return requests.get(address).json()
+
+
+def get_tournament(tournament_id):
+    address = base_url_api2 + "tournaments/find?id=" + str(tournament_id)
+    return requests.get(address).json()
+
+
+def get_player_tournaments_ids(username):
+    address = base_url_api2 + "players/history?username=" + str(
+        username) + "&from_block=-1&limit=500&types=token_transfer"
+    result = requests.get(address).json()
+    tournaments_transfers = list(filter(lambda item: "enter_tournament" in item['data'], result))
+    tournaments_ids = []
+    for tournament in tournaments_transfers:
+        tournaments_ids.append(json.loads(tournament['data'])['tournament_id'])
+    return tournaments_ids

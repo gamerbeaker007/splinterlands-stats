@@ -1,10 +1,13 @@
 import json
 import os
+from datetime import datetime
+
+import pytz
 
 from src import api, season, plots, hive_blog
 import pandas as pd
 
-from src.static_values_enum import Leagues, Edition
+from src.static_values_enum import Leagues, Edition, RatingLevel
 
 ACCOUNT_NAME = "beaker007"
 # ACCOUNT_NAME = "bulldog1205"
@@ -21,7 +24,7 @@ def main():
     if os.path.isfile(season_data_file):
         season_df = pd.read_csv(season_data_file, index_col=[0])
         # Determine if new data needs to be pulled?
-        if season_df.season.max() != current_season_data['id']-1:
+        if season_df.season.max() != current_season_data['id'] - 1:
             # continue pull x season data
             balance_history_dec_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="DEC"))
             balance_history_voucher_df = pd.DataFrame(api.get_balance_history_for_token(ACCOUNT_NAME, token="VOUCHER"))
@@ -34,11 +37,11 @@ def main():
                 season_data = api.get_leaderboard_with_player_season(ACCOUNT_NAME, season_id)
                 season_df = season_df.append(season_data, ignore_index=True)
                 season_df = add_data_to_season_df(season_df,
-                                      balance_history_credits_df,
-                                      balance_history_dec_df,
-                                      balance_history_sps_df,
-                                      balance_history_voucher_df,
-                                      single_season_id=season_id)
+                                                  balance_history_credits_df,
+                                                  balance_history_dec_df,
+                                                  balance_history_sps_df,
+                                                  balance_history_voucher_df,
+                                                  single_season_id=season_id)
         else:
             print("All season data is already pulled and processed continue with the current data")
     else:
@@ -54,28 +57,35 @@ def main():
                                           balance_history_sps_df,
                                           balance_history_voucher_df)
 
-    plots.plot_season_stats_rating(season_df)
-    plots.plot_season_stats_battles(season_df)
-    plots.plot_season_stats_earnings(season_df)
+    plots.plot_season_stats_rating(season_df, output_dir)
+    plots.plot_season_stats_battles(season_df, output_dir)
+    plots.plot_season_stats_earnings(season_df, output_dir)
 
     # get last season market purchases
     season_end_times = season.get_season_end_times()
-    end_date = [season_end_time['date'] for season_end_time in season_end_times if season_end_time["id"] == season_df.season.max()][0]
-    start_date = [season_end_time['date'] for season_end_time in season_end_times if season_end_time["id"] == season_df.season.max() - 1][0]
+    end_date = [season_end_time['date'] for season_end_time in season_end_times if
+                season_end_time["id"] == season_df.season.max()][0]
+    start_date = [season_end_time['date'] for season_end_time in season_end_times if
+                  season_end_time["id"] == season_df.season.max() - 1][0]
 
-    last_season_market_history = get_last_season_market_history(end_date, start_date)
-    last_season_player_history_rewards = get_last_season_player_history_rewards(end_date, start_date, current_season_data['id']-1)
+    tournaments_info_df = get_tournaments_info(ACCOUNT_NAME, start_date, end_date)
+
+    last_season_market_history = get_last_season_market_history(start_date, end_date)
+    last_season_player_history_rewards = get_last_season_player_history_rewards(start_date, end_date,
+                                                                                current_season_data['id'] - 1)
 
     hive_blog.print_season_post(ACCOUNT_NAME,
                                 season_df,
                                 last_season_market_history,
-                                last_season_player_history_rewards)
+                                last_season_player_history_rewards,
+                                tournaments_info_df,
+                                output_dir)
 
     # Write and store
     season_df.to_csv(season_data_file)
 
 
-def get_last_season_market_history(end_date, start_date):
+def get_last_season_market_history(start_date, end_date):
     market_history_df = pd.DataFrame(api.get_market_history(ACCOUNT_NAME))
     if not market_history_df.empty:
         market_history_df['created_date'] = pd.to_datetime(market_history_df['created_date'])
@@ -94,7 +104,7 @@ def get_last_season_market_history(end_date, start_date):
         return market_history_df
 
 
-def get_last_season_player_history_rewards(end_date, start_date, season_id):
+def get_last_season_player_history_rewards(start_date, end_date, season_id):
     player_history_df = pd.DataFrame(api.get_player_history_rewards(ACCOUNT_NAME))
     reward_data = pd.DataFrame()
 
@@ -115,15 +125,21 @@ def get_last_season_player_history_rewards(end_date, start_date, season_id):
         if row.success and data['type'] == 'quest':
             reward_data = reward_data.append(pd.DataFrame(json.loads(row.result)['rewards']))
 
-    reward_data['card_detail_id'] = reward_data.apply(lambda row: row.card['card_detail_id'] if row['type'] == 'reward_card' else "", axis=1)
+    reward_data['card_detail_id'] = reward_data.apply(
+        lambda row: row.card['card_detail_id'] if row['type'] == 'reward_card' else "", axis=1)
     reward_data['xp'] = reward_data.apply(lambda row: row.card['xp'] if row['type'] == 'reward_card' else "", axis=1)
-    reward_data['gold'] = reward_data.apply(lambda row: row.card['gold'] if row['type'] == 'reward_card' else "", axis=1)
-    reward_data['edition'] = reward_data.apply(lambda row: row.card['edition'] if row['type'] == 'reward_card' else "", axis=1)
+    reward_data['gold'] = reward_data.apply(lambda row: row.card['gold'] if row['type'] == 'reward_card' else "",
+                                            axis=1)
+    reward_data['edition'] = reward_data.apply(lambda row: row.card['edition'] if row['type'] == 'reward_card' else "",
+                                               axis=1)
 
     # Todo create card image name based on id/gold/xp/edition for each row
     card_details_list = api.get_card_details()
-    reward_data['edition_name'] = reward_data.apply(lambda row: (Edition(row.edition)).name if row['type'] == 'reward_card' else "", axis=1)
-    reward_data['card_name'] = reward_data.apply(lambda row: find_card_name(card_details_list, row.card_detail_id) if row['type'] == 'reward_card' else "", axis=1)
+    reward_data['edition_name'] = reward_data.apply(
+        lambda row: (Edition(row.edition)).name if row['type'] == 'reward_card' else "", axis=1)
+    reward_data['card_name'] = reward_data.apply(
+        lambda row: find_card_name(card_details_list, row.card_detail_id) if row['type'] == 'reward_card' else "",
+        axis=1)
 
     # combine_rates, combine_rates_gold, core_editions = api.get_combine_rates()
     # determine_card_level(combine_rates, core_editions, 3, 14)
@@ -150,7 +166,8 @@ def add_data_to_season_df(season_df,
     last_season_name_id = int(curr_season['name'].split(' ')[-1]) - 1
     last_season_id = int(curr_season['id']) - 1
     season_df = season_df.sort_values(ascending=False, by=['season'])
-    season_df['season_name'] = season_df.apply(lambda row: 'Splinterlands Season ' + str(last_season_name_id - (last_season_id - row['season'])), axis=1)
+    season_df['season_name'] = season_df.apply(
+        lambda row: 'Splinterlands Season ' + str(last_season_name_id - (last_season_id - row['season'])), axis=1)
     season_df['season_id'] = season_df.apply(lambda row: last_season_name_id - (last_season_id - row['season']), axis=1)
 
     if single_season_id:
@@ -164,48 +181,73 @@ def add_data_to_season_df(season_df,
         start_date = [season_end_time['date'] for season_end_time in season_end_times if
                       season_end_time["id"] == season_id - 1][0]
 
+        new_end_date = [season_end_time['date'] for season_end_time in season_end_times if
+                        season_end_time["id"] == season_id + 1][0]
+        new_start_date = [season_end_time['date'] for season_end_time in season_end_times if
+                          season_end_time["id"] == season_id][0]
+
         # Voucher add
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_voucher_df,
-                                             'voucher_drop')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_voucher_df,
+                                                         'voucher_drop')
 
         # SPS add
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_sps_df,
-                                             'claim_staking_rewards', column_prefix='sps_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_sps_df,
-                                             'token_award', column_prefix='sps_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_sps_df,
+                                                         'claim_staking_rewards', column_prefix='sps_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_sps_df,
+                                                         'token_award', column_prefix='sps_')
 
         # Credits add
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_credits_df,
-                                             'quest_rewards', column_prefix='credits_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_credits_df,
-                                             'season_rewards', column_prefix='credits_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_credits_df,
+                                                         'quest_rewards', column_prefix='credits_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_credits_df,
+                                                         'season_rewards', column_prefix='credits_')
 
         # DEC add
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_dec_df,
-                                             'dec_reward')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_dec_df,
-                                             'quest_rewards', column_prefix='dec_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_dec_df,
-                                             'season_rewards', column_prefix='dec_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_dec_df,
-                                             'tournament_prize', column_prefix='dec_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_dec_df,
-                                             'enter_tournament', column_prefix='dec_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_dec_df,
-                                             'rental_payment_fees', column_prefix='dec_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_dec_df,
-                                             'rental_payment', column_prefix='dec_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_dec_df,
-                                             'market_rental', column_prefix='dec_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, balance_history_dec_df,
-                                             'rental_refund', column_prefix='dec_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_dec_df,
+                                                         'dec_reward')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_dec_df,
+                                                         'quest_rewards', column_prefix='dec_')
 
-        buy_df = balance_history_dec_df[(balance_history_dec_df.type == 'market_purchase') & (pd.to_numeric(balance_history_dec_df.amount) < 0)].copy()
-        sell_df = balance_history_dec_df[(balance_history_dec_df.type == 'market_purchase') & (pd.to_numeric(balance_history_dec_df.amount) > 0)].copy()
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, buy_df, 'market_purchase',
-                                             column_prefix='dec_buy_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, sell_df, 'market_purchase',
-                                             column_prefix='dec_sell_')
+        # NOTE SEASONREWARDS are always in the time frame of the next season
+        season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
+                                                         balance_history_dec_df,
+                                                         'season_rewards', column_prefix='dec_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_dec_df,
+                                                         'tournament_prize', column_prefix='dec_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_dec_df,
+                                                         'enter_tournament', column_prefix='dec_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_dec_df,
+                                                         'rental_payment_fees', column_prefix='dec_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_dec_df,
+                                                         'rental_payment', column_prefix='dec_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_dec_df,
+                                                         'market_rental', column_prefix='dec_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_dec_df,
+                                                         'rental_refund', column_prefix='dec_')
+
+        buy_df = balance_history_dec_df[(balance_history_dec_df.type == 'market_purchase') & (
+                    pd.to_numeric(balance_history_dec_df.amount) < 0)].copy()
+        sell_df = balance_history_dec_df[(balance_history_dec_df.type == 'market_purchase') & (
+                    pd.to_numeric(balance_history_dec_df.amount) > 0)].copy()
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, buy_df,
+                                                         'market_purchase',
+                                                         column_prefix='dec_buy_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, sell_df,
+                                                         'market_purchase',
+                                                         column_prefix='dec_sell_')
     return season_df
 
 
@@ -226,20 +268,60 @@ def find_card_name(card_details_list, id):
     return list(filter(lambda card_details_dict: card_details_dict['id'] == id, card_details_list))[0]['name']
 
 
-def cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, input_df, search_type, column_prefix=""):
+def cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, input_df, search_type,
+                                         column_prefix=""):
     # make sure it is a datetime field
     if not input_df.empty:
         input_df.created_date = pd.to_datetime(input_df.created_date)
         input_df.amount = pd.to_numeric(input_df.amount)
 
         # greater than the start date and smaller than the end date and type is search_type
-        mask = (input_df['created_date'] > start_date) & (input_df['created_date'] <= end_date) & (input_df['type'] == search_type)
+        mask = (input_df['created_date'] > start_date) & (input_df['created_date'] <= end_date) & (
+                    input_df['type'] == search_type)
 
         # print("Amount " + str(search_type) + ": " + str(input_df.loc[mask].amount.sum()))
         season_df.loc[season_df.season == season_id, str(column_prefix + search_type)] = input_df.loc[mask].amount.sum()
     else:
         season_df.loc[season_df.season == season_id, str(column_prefix + search_type)] = 0
     return season_df
+
+
+def get_tournaments_info(username, start_date, end_date):
+    collect = pd.DataFrame()
+    tournaments_ids = api.get_player_tournaments_ids(username)
+    for tournament_id in tournaments_ids:
+        tournament = api.get_tournament(tournament_id)
+        utc = pytz.UTC
+
+        if tournament['status'] == 2 and tournament['rounds'][-1]['status'] == 2:
+            date_time = utc.localize(datetime.strptime(tournament['rounds'][-1]['start_date'], "%Y-%m-%dT%H:%M:%S.000Z"))
+
+            if start_date <= date_time <= end_date:
+                player_data = list(filter(lambda item: item['player'] == username, tournament['players']))[0]
+
+                prize = "0"
+                if player_data['prize']:
+                    prize = player_data['prize']
+                else:
+                    if player_data['ext_prize_info']:
+                        prize_info = json.loads(player_data['ext_prize_info'])
+                        prize = prize_info[0]['qty'] + " " + prize_info[0]['type']
+
+                tournament_record = {
+                    'name': tournament['name'],
+                    'league': RatingLevel(tournament['data']['rating_level']).name,
+                    'num_players': tournament['num_players'],
+                    'finish': player_data['finish'],
+                    'wins': player_data['wins'],
+                    'losses': player_data['losses'],
+                    'draws': player_data['draws'],
+                    'entry_fee': player_data['fee_amount'],
+                    'prize': prize
+                }
+
+                collect = collect.append(tournament_record, ignore_index=True)
+    return collect
+
 
 if __name__ == '__main__':
     main()
