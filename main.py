@@ -9,6 +9,8 @@ import pandas as pd
 
 from src.static_values_enum import Leagues, Edition, RatingLevel
 
+time_zone = 'Europe/Amsterdam'
+
 ACCOUNT_NAME = "beaker007"
 # ACCOUNT_NAME = "bulldog1205"
 
@@ -62,7 +64,7 @@ def main():
     plots.plot_season_stats_earnings(season_df, output_dir)
 
     # get last season market purchases
-    season_end_times = season.get_season_end_times()
+    season_end_times = season.get_season_end_times(time_zone)
     end_date = [season_end_time['date'] for season_end_time in season_end_times if
                 season_end_time["id"] == season_df.season.max()][0]
     start_date = [season_end_time['date'] for season_end_time in season_end_times if
@@ -87,9 +89,10 @@ def main():
 
 def get_last_season_market_history(start_date, end_date):
     market_history_df = pd.DataFrame(api.get_market_history(ACCOUNT_NAME))
+    date_field = 'created_date'
     if not market_history_df.empty:
-        market_history_df['created_date'] = pd.to_datetime(market_history_df['created_date'])
-        mask = (market_history_df['created_date'] > start_date) & (market_history_df['created_date'] <= end_date)
+        market_history_df[date_field] = pd.to_datetime(market_history_df[date_field])
+        mask = (market_history_df[date_field] > start_date) & (market_history_df[date_field] <= end_date)
         last_season_market_history = market_history_df.loc[mask].copy()
         # Todo create card image name based on id/gold/xp/edition for each row
         card_details_list = api.get_card_details()
@@ -115,8 +118,9 @@ def get_last_season_player_history_rewards(start_date, end_date, season_id):
             reward_data = reward_data.append(pd.DataFrame(json.loads(row.result)['rewards']))
             break
 
-    player_history_df['created_date'] = pd.to_datetime(player_history_df['created_date'])
-    mask = (player_history_df['created_date'] > start_date) & (player_history_df['created_date'] <= end_date)
+    date_field = 'created_date'
+    player_history_df[date_field] = pd.to_datetime(player_history_df[date_field])
+    mask = (player_history_df[date_field] > start_date) & (player_history_df[date_field] <= end_date)
     last_season_player_history_rewards = player_history_df.loc[mask].copy()
 
     # Find all quest rewards
@@ -152,7 +156,7 @@ def add_data_to_season_df(season_df,
                           balance_history_sps_df,
                           balance_history_voucher_df,
                           single_season_id=None):
-    season_end_times = season.get_season_end_times()
+    season_end_times = season.get_season_end_times(time_zone)
 
     season_ratings = [0, 400, 700, 1000, 1300, 1600, 1900, 2200, 2500, 2800, 3100, 3400, 3700, 4200, 4700, 5100]
     # translate end rating to max (for graph)

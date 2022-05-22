@@ -1,6 +1,8 @@
 import calendar
 import datetime
-from datetime import timezone
+
+import pytz
+from pytz import timezone
 
 from src import api
 
@@ -22,7 +24,7 @@ def get_all_season_data(username):
     return season_array
 
 
-def get_season_end_times():
+def get_season_end_times(time_zone_str):
     # season origin
     x = {
         "id": 55,
@@ -35,7 +37,9 @@ def get_season_end_times():
     hours = [2, 8, 14, 20]
     season_end_dates_array = []
     for i in range(0, 240):
-        date = datetime.datetime(x['YYYY'], month=x['MM'], day=x['DD'], hour=x['HH'], tzinfo=timezone.utc)
+        date = datetime.datetime(x['YYYY'], month=x['MM'], day=x['DD'], hour=x['HH'], tzinfo=pytz.utc)
+        date = date.astimezone(timezone(time_zone_str))
+
         season_dict = {
             "id": x['id'] + i,
             "date": date #date.strftime('%Y-%m-%dT%H:%M:%S') + str(".000Z")

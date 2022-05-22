@@ -18,11 +18,8 @@ def print_season_post(username,
     if not last_season_market_history.empty:
         last_season_market_history_purchases = last_season_market_history[(last_season_market_history.purchaser == username)]
         last_season_market_history_sales = last_season_market_history[(last_season_market_history.seller == username)]
+    print("########################################## BLOG STARTS HERE ##########################")
     print_blog = """
-########################################## BLOG STARTS HERE ##########################
-
-
-
 # """ + str(last_season.season_name) + """ of (""" + str(username) + """): 
 
 https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23xL2wuMjBE9nsXndxmCoPcGJARoydfwp52UTXVez31FnNbXKtkBqVx3eUBmybtD6L8J6.gif
