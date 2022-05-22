@@ -22,26 +22,34 @@ def print_season_post(username,
 
 https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23xL2wuMjBE9nsXndxmCoPcGJARoydfwp52UTXVez31FnNbXKtkBqVx3eUBmybtD6L8J6.gif
 
+
+<br><br><br>
+![Season summary divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tSKXK2kCpyZXosK34FeU6MPbw4RGCrrs7TY1tgy4k5Lgndj2JNPEbpjr8JAgQ7kW8v1.png)
+
 # Season Summery:
 
 
 """ + str(get_splinterlands_divider()) + """ 
 
 
-Season overall stats
+## Season overall stats and history
 <Place overall images here> 
 
-""" + str(get_splinterlands_divider()) + """ 
 
+<br><br>
+![Season result divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGwQHB4Z1zXu1MnXFvSF7REdndP7Gu67aQgWuwp9VoWurqjvGq81w2M6WkfCtovhXo4.png)
 # Last Season
 """ + str(get_last_season_statistics_table(last_season)) + """
 
-""" + str(get_splinterlands_divider()) + """ 
 
+<br><br>
+![tournament divider1.png](https://files.peakd.com/file/peakd-hive/beaker007/23u5vZxRCDsEy53q1Rd2sXkXvnAg94fBPj2kCVNoPnjVDiyQfiPecgCJMvoSdqwe4vjQp.png)
 
 ## Tournaments
 """ + str(get_tournament_info(tournaments_info)) + """
 
+<br><br>
+![Earnings divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23u5tAfbYKhy3zti8o5cVxxgE2LfnjkAV4xZtm1CLAqpJL9zzEF67C7Ec8Tx6b7odFvvK.png)
 ## Earnings and costs:
 ### Earnings 
 """ + str(get_last_season_earnings_table(last_season)) + """
@@ -50,6 +58,9 @@ Season overall stats
 """ + str(get_last_season_costs_table(last_season)) + """
 
 """ + str(get_splinterlands_divider()) + """ 
+
+<br><br>
+![Card Market divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGyBstuQdzC1Pjv1CiAvt9S3W6sfo5qzCTa6Uv2mQTpfHkwkQ89YxncGYmqsrpynjEv.png)
 
 ## Cards Purchased
 """ + str(get_card_table(last_season_market_history_purchases)) + """ 
@@ -100,7 +111,7 @@ def get_last_season_costs_table(last_season):
     result = "| Costs |  # |\n"
     result += "| - | - |\n"
     result += "| DEC rental fees | " + str(round(last_season.dec_rental_payment_fees, 3)) + " |\n"
-    result += "| DEC tournament entry prize | " + str(round(last_season.dec_enter_tournament, 3)) + " |\n"
+    result += "| DEC tournament entry fees | " + str(round(last_season.dec_enter_tournament, 3)) + " |\n"
     result += "| DEC rental payment | " + str(round(last_season.dec_market_rental, 3)) + " |\n"
     result += "| DEC market buy | " + str(round(last_season.dec_buy_market_purchase, 3)) + " |\n"
     return result
