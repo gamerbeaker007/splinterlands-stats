@@ -1,5 +1,10 @@
 import pandas as pd
 
+credit_icon = "![credit.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/AK3iY7Tb28oEV8oALeHvUbBpKjWxvADTHcaqtPSL4C2YzcJ4oZLp36MAiX3qGNw.png)"
+dec_icon = "![dec.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/AJoDPJLp3GXfJPTZijeTGTaHE5K7vzdhCXUedhPRnp6kKhanQnpfwzfnemFdz2x.png)"
+sps_icon = "![sps.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/AKNLw1pd6ryatb2Rg9VHbWEWWUMupgMEtxYsJyxckcGH1Hb7YoxC1cFdNv37tW3.png)"
+voucher_icon = "![voucher.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/Eo8RPwT4kQnGyvkNp9Vx1kLpFYYVhKSy88Fsy7YrAStKwrHCRX6GNvhywGxPbQpW2bu.png)"
+
 
 def print_season_post(username,
                       season_df,
@@ -29,9 +34,6 @@ https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/2
 # Season Summery:
 
 
-""" + str(get_splinterlands_divider()) + """ 
-
-
 ## Season overall stats and history
 <Place overall images here> 
 
@@ -57,8 +59,6 @@ https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/2
 ### Costs
 """ + str(get_last_season_costs_table(last_season)) + """
 
-""" + str(get_splinterlands_divider()) + """ 
-
 <br><br>
 ![Card Market divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGyBstuQdzC1Pjv1CiAvt9S3W6sfo5qzCTa6Uv2mQTpfHkwkQ89YxncGYmqsrpynjEv.png)
 
@@ -74,7 +74,9 @@ https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/2
 ## Potions earned
 """ + str(get_rewards_potion_table(last_season_rewards)) + """
 
-""" + str(get_splinterlands_divider()) + """ 
+
+<br><br>
+![Closing notes divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tSMhwJoyukZ42QAed1tFdaMc2XGwQZXAoTga9AByndMur5RT4oj5rMFeNJXwBeXr4tP.png)
 
 ## Closing notes 
 This report is generated with the splinterstats tool from @beaker007 [git-repo](https://github.com/gamerbeaker007/splinterlands-stats). 
@@ -110,24 +112,30 @@ def get_last_season_statistics_table(last_season):
 def get_last_season_costs_table(last_season):
     result = "| Costs |  # |\n"
     result += "| - | - |\n"
-    result += "| DEC rental fees | " + str(round(last_season.dec_rental_payment_fees, 3)) + " |\n"
-    result += "| DEC tournament entry fees | " + str(round(last_season.dec_enter_tournament, 3)) + " |\n"
-    result += "| DEC rental payment | " + str(round(last_season.dec_market_rental, 3)) + " |\n"
-    result += "| DEC market buy | " + str(round(last_season.dec_buy_market_purchase, 3)) + " |\n"
+    result += "| DEC rental fees | " + dec_icon + " " + str(round(last_season.dec_rental_payment_fees, 3)) + " |\n"
+    result += "| DEC tournament entry fees | " + dec_icon + " " + str(round(last_season.dec_enter_tournament, 3)) + " |\n"
+    result += "| SPS tournament entry fees | " + sps_icon + " " + str(round(last_season.sps_enter_tournament, 3)) + " |\n"
+    result += "| DEC rental payment | " + dec_icon + " " + str(round(last_season.dec_market_rental, 3)) + " |\n"
+    result += "| DEC market buy | " + dec_icon + " " + str(round(last_season.dec_buy_market_purchase, 3)) + " |\n"
     return result
 
 
 def get_last_season_earnings_table(last_season):
     result = "| Earnings |  # | \n"
     result += "| - | - |\n"
-    result += "| Credits quest rewards | " + str(round(last_season.credits_quest_rewards, 3)) + " |\n"
-    result += "| Credits season_rewards | " + str(round(last_season.credits_season_rewards, 3)) + " |\n"
-    result += "| DEC battle rewards | " + str(round(last_season.dec_reward, 3)) + " |\n"
-    result += "| DEC quest rewards | " + str(round(last_season.dec_quest_rewards, 3)) + " |\n"
-    result += "| DEC season_rewards | " + str(round(last_season.dec_season_rewards, 3)) + " |\n"
-    result += "| DEC tournament rewards | " + str(round(last_season.dec_tournament_prize, 3)) + " |\n"
-    result += "| DEC rental rewards | " + str(round(last_season.dec_rental_payment, 3)) + " |\n"
-    result += "| DEC market sell | " + str(round(last_season.dec_sell_market_purchase, 3)) + " |\n"
+    result += "| Credits quest rewards | " + credit_icon + " " + str(round(last_season.credits_quest_rewards, 3)) + " |\n"
+    result += "| Credits season rewards | " + credit_icon + " " + str(round(last_season.credits_season_rewards, 3)) + " |\n"
+    result += "| DEC battle rewards | " + dec_icon + " " + str(round(last_season.dec_reward, 3)) + " |\n"
+    result += "| DEC quest rewards | " + dec_icon + " " + str(round(last_season.dec_quest_rewards, 3)) + " |\n"
+    result += "| DEC season rewards | " + dec_icon + " " + str(round(last_season.dec_season_rewards, 3)) + " |\n"
+    result += "| DEC tournament rewards | " + dec_icon + " " + str(round(last_season.dec_tournament_prize, 3)) + " |\n"
+    result += "| SPS tournament rewards | " + sps_icon + " " + str(round(last_season.sps_tournament_prize, 3)) + " |\n"
+    result += "| DEC rental rewards | " + dec_icon + " " + str(round(last_season.dec_rental_payment, 3)) + " |\n"
+    result += "| DEC market sell | " + dec_icon + " " + str(round(last_season.dec_sell_market_purchase, 3)) + " |\n"
+    result += "| SPS staking reward | " + sps_icon + " " + str(round(last_season.sps_claim_staking_rewards, 3)) + " |\n"
+    result += "| SPS airdrop reward | " + sps_icon + " " + str(round(last_season.sps_token_award, 3)) + " |\n"
+    result += "| VOUCHER earned | " + voucher_icon + " " + str(round(last_season.voucher_drop, 3)) + " |\n"
+
     return result
 
 
@@ -189,8 +197,8 @@ def get_card_table(cards_df):
 
 
 def get_rewards_potion_table(last_season_rewards):
-    gold_potion = "https://static.wikia.nocookie.net/splinterlands/images/3/38/Alchemy_Potion.png/revision/latest/scale-to-width-down/100?cb=20210211201231"
-    legendary_potion = "https://static.wikia.nocookie.net/splinterlands/images/d/d6/Legendary_Potion.png/revision/latest/scale-to-width-down/100?cb=20210211201157"
+    gold_potion = "![alchemy.png](https://images.hive.blog/120x0/https://files.peakd.com/file/peakd-hive/beaker007/AK6ZKi4NWxuWbnhNc1V3k9DeqiqhTvmcenpsX5xhHUFdBGEYTMfMpsnC9aHL7R2.png)"
+    legendary_potion = "![legendary.png](https://images.hive.blog/120x0/https://files.peakd.com/file/peakd-hive/beaker007/AK3gbhdHjfaQxKVM39VfeHCw25haYejvUT17E8WBgveTKY5rucpRY7AbjgsAhdu.png)"
     potions = last_season_rewards[(last_season_rewards['type'] == 'potion')].groupby(['potion_type']).sum()
     result = "| Legendary | Gold |\n"
     result += "|-|-|\n"
@@ -203,6 +211,3 @@ def get_rewards_potion_table(last_season_rewards):
 def get_splinterlands_logo_centered():
     return "<center>https://d36mxiodymuqjm.cloudfront.net/website/splinterlands_logo.png</center>\n"
 
-
-def get_splinterlands_divider():
-    return "https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/mvl2304/EoARyG6neMCRDGfUcgEf6LMGhAAqKXL2Ty8fWffLs6p3FWfLLQeBs9oT6MJ6HUPuq4M.png"

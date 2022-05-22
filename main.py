@@ -198,6 +198,13 @@ def add_data_to_season_df(season_df,
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                          balance_history_sps_df,
                                                          'token_award', column_prefix='sps_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_sps_df,
+                                                         'tournament_prize', column_prefix='sps_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_sps_df,
+                                                         'enter_tournament', column_prefix='sps_')
+
 
         # Credits add
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
@@ -206,6 +213,7 @@ def add_data_to_season_df(season_df,
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                          balance_history_credits_df,
                                                          'season_rewards', column_prefix='credits_')
+
 
         # DEC add
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
