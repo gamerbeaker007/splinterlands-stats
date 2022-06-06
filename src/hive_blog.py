@@ -68,8 +68,8 @@ https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/2
 ## Cards Earned
 """ + str(get_card_table(last_season_rewards[(last_season_rewards['type'] == 'reward_card')])) + """
 
-## Potions earned
-""" + str(get_rewards_potion_table(last_season_rewards)) + """
+## Potions/Packs earned
+""" + str(get_rewards_potion_packs_table(last_season_rewards)) + """
 
 
 <br><br>
@@ -193,14 +193,18 @@ def get_card_table(cards_df):
     return result
 
 
-def get_rewards_potion_table(last_season_rewards):
+def get_rewards_potion_packs_table(last_season_rewards):
     gold_potion = "![alchemy.png](https://images.hive.blog/120x0/https://files.peakd.com/file/peakd-hive/beaker007/AK6ZKi4NWxuWbnhNc1V3k9DeqiqhTvmcenpsX5xhHUFdBGEYTMfMpsnC9aHL7R2.png)"
     legendary_potion = "![legendary.png](https://images.hive.blog/120x0/https://files.peakd.com/file/peakd-hive/beaker007/AK3gbhdHjfaQxKVM39VfeHCw25haYejvUT17E8WBgveTKY5rucpRY7AbjgsAhdu.png)"
+    packs_img = "![chaosPack.png](https://images.hive.blog/120x0/https://files.peakd.com/file/peakd-hive/beaker007/Eo8M4f1Zieju9ibwbs6Tnp3KvN9Kb93HkqwMi3FqanTmV2XoNw7pmV4MbjDSxbgiSdo.png)"
+
     potions = last_season_rewards[(last_season_rewards['type'] == 'potion')].groupby(['potion_type']).sum()
-    result = "| Legendary | Gold |\n"
-    result += "|-|-|\n"
+    packs = last_season_rewards[(last_season_rewards['type'] == 'pack')].groupby(['edition']).sum()
+    result = "| Legendary | Gold | Packs |\n"
+    result += "|-|-|-|\n"
     result += "| " + str(legendary_potion) + "<br> " + str(potions.loc['legendary'].quantity) + "x"
     result += "| " + str(gold_potion) + "<br> " + str(potions.loc['gold'].quantity) + "x"
+    result += "| " + str(packs_img) + "<br> " + str(packs.loc[7.0].quantity) + "x"
     result += "|\n"
     return result
 
