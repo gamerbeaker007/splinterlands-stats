@@ -92,13 +92,20 @@ def main():
     season_df.to_csv(season_data_file)
 
 
+def filterDataFrameLastSeason(start_date, end_date, data_frame):
+    # make sure created_date is of type time date
+    date_field = 'created_date'
+    data_frame[date_field] = pd.to_datetime(data_frame[date_field])
+
+    # create mask, filter all date between season start and season end date
+    mask = (data_frame[date_field] > start_date) & (data_frame[date_field] <= end_date)
+    return data_frame.loc[mask].copy()
+
+
 def get_last_season_market_history(start_date, end_date):
     market_history_df = pd.DataFrame(api.get_market_history(ACCOUNT_NAME))
-    date_field = 'created_date'
     if not market_history_df.empty:
-        market_history_df[date_field] = pd.to_datetime(market_history_df[date_field])
-        mask = (market_history_df[date_field] > start_date) & (market_history_df[date_field] <= end_date)
-        last_season_market_history = market_history_df.loc[mask].copy()
+        last_season_market_history = filterDataFrameLastSeason(start_date, end_date, market_history_df)
         if not last_season_market_history.empty:
             # Todo create card image name based on id/gold/xp/edition for each row
             card_details_list = api.get_card_details()
@@ -124,10 +131,7 @@ def get_last_season_player_history_rewards(start_date, end_date, season_id):
             reward_data = reward_data.append(pd.DataFrame(json.loads(row.result)['rewards']))
             break
 
-    date_field = 'created_date'
-    player_history_df[date_field] = pd.to_datetime(player_history_df[date_field])
-    mask = (player_history_df[date_field] > start_date) & (player_history_df[date_field] <= end_date)
-    last_season_player_history_rewards = player_history_df.loc[mask].copy()
+    last_season_player_history_rewards = filterDataFrameLastSeason(start_date, end_date, player_history_df)
 
     # Find all quest rewards
     for index, row in last_season_player_history_rewards.iterrows():
@@ -135,6 +139,7 @@ def get_last_season_player_history_rewards(start_date, end_date, season_id):
         if row.success and data['type'] == 'quest':
             reward_data = reward_data.append(pd.DataFrame(json.loads(row.result)['rewards']))
 
+    # For all reward card subtract addition information
     reward_data['card_detail_id'] = reward_data.apply(
         lambda row: row.card['card_detail_id'] if row['type'] == 'reward_card' else "", axis=1)
     reward_data['xp'] = reward_data.apply(lambda row: row.card['xp'] if row['type'] == 'reward_card' else "", axis=1)
@@ -146,10 +151,8 @@ def get_last_season_player_history_rewards(start_date, end_date, season_id):
         reward_data['edition'] = np.nan
 
     reward_data['edition'] = reward_data.apply(
-        lambda row: row.card['edition'] if row['type'] == 'reward_card' else row['edition'],
-        axis=1)
+        lambda row: row.card['edition'] if row['type'] == 'reward_card' else row['edition'], axis=1)
 
-    # Todo create card image name based on id/gold/xp/edition for each row
     card_details_list = api.get_card_details()
     reward_data['edition_name'] = reward_data.apply(
         lambda row: (Edition(row.edition)).name if row['type'] == 'reward_card' else "", axis=1)
@@ -237,7 +240,7 @@ def add_data_to_season_df(season_df,
                                                          balance_history_dec_df,
                                                          'quest_rewards', column_prefix='dec_')
 
-        # NOTE SEASONREWARDS are always in the time frame of the next season
+        # NOTE SEASON REWARDS are always in the time frame of the next season
         season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
                                                          balance_history_dec_df,
                                                          'season_rewards', column_prefix='dec_')
