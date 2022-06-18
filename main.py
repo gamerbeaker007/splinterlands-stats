@@ -323,29 +323,32 @@ def get_tournaments_info(username, start_date, end_date):
                 datetime.strptime(tournament['rounds'][-1]['start_date'], "%Y-%m-%dT%H:%M:%S.000Z"))
 
             if start_date <= date_time <= end_date:
-                player_data = list(filter(lambda item: item['player'] == username, tournament['players']))[0]
+                player_data = list(filter(lambda item: item['player'] == username, tournament['players']))
+                # If player did not leave and is found continue
+                if player_data:
+                    player_data = player_data[0]
 
-                prize = "0"
-                if player_data['prize']:
-                    prize = player_data['prize']
-                else:
-                    if player_data['ext_prize_info']:
-                        prize_info = json.loads(player_data['ext_prize_info'])
-                        prize = prize_info[0]['qty'] + " " + prize_info[0]['type']
+                    prize = "0"
+                    if player_data['prize']:
+                        prize = player_data['prize']
+                    else:
+                        if player_data['ext_prize_info']:
+                            prize_info = json.loads(player_data['ext_prize_info'])
+                            prize = prize_info[0]['qty'] + " " + prize_info[0]['type']
 
-                tournament_record = {
-                    'name': tournament['name'],
-                    'league': RatingLevel(tournament['data']['rating_level']).name,
-                    'num_players': tournament['num_players'],
-                    'finish': player_data['finish'],
-                    'wins': player_data['wins'],
-                    'losses': player_data['losses'],
-                    'draws': player_data['draws'],
-                    'entry_fee': player_data['fee_amount'],
-                    'prize': prize
-                }
+                    tournament_record = {
+                        'name': tournament['name'],
+                        'league': RatingLevel(tournament['data']['rating_level']).name,
+                        'num_players': tournament['num_players'],
+                        'finish': player_data['finish'],
+                        'wins': player_data['wins'],
+                        'losses': player_data['losses'],
+                        'draws': player_data['draws'],
+                        'entry_fee': player_data['fee_amount'],
+                        'prize': prize
+                    }
 
-                collect = collect.append(tournament_record, ignore_index=True)
+                    collect = collect.append(tournament_record, ignore_index=True)
     return collect
 
 

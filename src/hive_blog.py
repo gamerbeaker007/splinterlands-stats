@@ -204,7 +204,11 @@ def get_rewards_potion_packs_table(last_season_rewards):
     result += "|-|-|-|\n"
     result += "| " + str(legendary_potion) + "<br> " + str(potions.loc['legendary'].quantity) + "x"
     result += "| " + str(gold_potion) + "<br> " + str(potions.loc['gold'].quantity) + "x"
-    result += "| " + str(packs_img) + "<br> " + str(packs.loc[7.0].quantity) + "x"
+    if packs.empty:
+        result += "| " + str(packs_img) + "<br> 0x"
+    else:
+        result += "| " + str(packs_img) + "<br> " + str(packs.loc[7.0].quantity) + "x"
+
     result += "|\n"
     return result
 
