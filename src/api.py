@@ -83,7 +83,7 @@ def get_balance_history_for_token(username, token="DEC", offset=0, result=None):
         result += requests.get(address).json()
 
     if len(result) == offset + LIMIT:
-        print("More then '" + str(offset + LIMIT) + "' returned, continue for another balance pull...")
+        print(token + ": More then '" + str(offset + LIMIT) + "' returned, continue for another balance pull...")
         get_balance_history_for_token(username, token=token, offset=offset + LIMIT, result=result)
     return result
 

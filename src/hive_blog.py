@@ -141,13 +141,14 @@ def get_tournament_info(tournaments_info):
     result += "|-|-|-|-|-|-| \n"
 
     for index, tournament in tournaments_info.iterrows():
-        result += "| " + tournament['name']
-        result += "| " + tournament.league
-        result += "| " + str(int(tournament.finish)) + " / " + str(int(tournament.num_players))
-        result += "| " + str(int(tournament.wins)) + " / " + str(int(tournament.losses)) + " / " + str(int(tournament.draws))
-        result += "| " + tournament.entry_fee
-        result += "| " + tournament.prize
-        result += "| \n"
+        if tournament.finish:
+            result += "| " + tournament['name']
+            result += "| " + tournament.league
+            result += "| " + str(int(tournament.finish)) + " / " + str(int(tournament.num_players))
+            result += "| " + str(int(tournament.wins)) + " / " + str(int(tournament.losses)) + " / " + str(int(tournament.draws))
+            result += "| " + tournament.entry_fee
+            result += "| " + tournament.prize
+            result += "| \n"
     return result
 
 
@@ -158,12 +159,12 @@ def get_card_table(cards_df):
         unique_card_list = cards_df.card_name.unique()
         temp = pd.DataFrame()
         for card_name in unique_card_list:
-            temp = temp.append( {
+            temp = pd.concat([temp, pd.DataFrame({
                 'card_name': card_name,
                 'quantity_regular': len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == False)]),
                 'quantity_gold':  len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == True)]),
                 'edition_name': str(cards_df[(cards_df['card_name'] == card_name)].edition_name.values[0]),
-            }, ignore_index=True)
+            }, index=[0])], ignore_index=True)
 
 
         if len(temp.index) > 5:

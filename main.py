@@ -41,7 +41,7 @@ def main():
             for season_id in range(next_season, current_season_data['id']):
                 print("Get season data: " + str(season_id))
                 season_data = api.get_leaderboard_with_player_season(ACCOUNT_NAME, season_id)
-                season_df = season_df.append(season_data, ignore_index=True)
+                season_df = pd.concat([season_df, pd.DataFrame(season_data, index=[0])])
                 season_df = add_data_to_season_df(season_df,
                                                   balance_history_credits_df,
                                                   balance_history_dec_df,
@@ -131,7 +131,7 @@ def get_last_season_player_history_rewards(start_date, end_date, season_id):
     for index, row in player_history_df.iterrows():
         data = json.loads(row.data)
         if row.success and data['type'] == 'league_season' and data['season'] == season_id:
-            reward_data = reward_data.append(pd.DataFrame(json.loads(row.result)['rewards']))
+            reward_data = pd.concat([reward_data, pd.DataFrame(json.loads(row.result)['rewards'])])
             break
 
     last_season_player_history_rewards = filterDataFrameLastSeason(start_date, end_date, player_history_df)
@@ -140,7 +140,7 @@ def get_last_season_player_history_rewards(start_date, end_date, season_id):
     for index, row in last_season_player_history_rewards.iterrows():
         data = json.loads(row.data)
         if row.success and data['type'] == 'quest':
-            reward_data = reward_data.append(pd.DataFrame(json.loads(row.result)['rewards']))
+            reward_data = pd.concat([reward_data, pd.DataFrame(json.loads(row.result)['rewards'])])
 
     # For all reward card subtract addition information
     reward_data['card_detail_id'] = reward_data.apply(
@@ -350,8 +350,7 @@ def get_tournaments_info(username, start_date, end_date):
                         'entry_fee': player_data['fee_amount'],
                         'prize': prize
                     }
-
-                    collect = collect.append(tournament_record, ignore_index=True)
+                    collect = pd.concat([collect, pd.DataFrame(tournament_record, index=[0])])
     return collect
 
 
