@@ -1,3 +1,4 @@
+import configparser
 import json
 import os
 from datetime import datetime
@@ -10,10 +11,12 @@ import pandas as pd
 
 from src.static_values_enum import Leagues, Edition, RatingLevel
 
-time_zone = 'Europe/Amsterdam'
 
-ACCOUNT_NAME = "beaker007"
-# ACCOUNT_NAME = "shinoumonk"
+config = configparser.RawConfigParser()
+config.read('config.properties')
+
+time_zone = config.get('settings', 'time_zone')
+ACCOUNT_NAME = config.get('settings', 'account_name')
 
 output_dir = os.path.join('output', ACCOUNT_NAME)
 season_data_file = os.path.join(output_dir, 'season_data.csv')

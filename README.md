@@ -4,6 +4,7 @@
 * Create manual
 * Add sold cards
 * create own dividers and thumbnail
+* Reference to PeakD post on how to use it?
 
 
 
