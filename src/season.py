@@ -7,19 +7,19 @@ from pytz import timezone
 from src import api
 
 
-def get_all_season_data(username):
+def get_all_season_data(username, mode):
     print("Pulling season data (done per season so this can take a while)")
     season = api.get_current_season()
     current_season_id = season['id']
     season_array = []
     for i in range(1, current_season_id):
         print("Pulling season data: " + str(current_season_id - i))
-        player_result_season_x = api.get_leaderboard_with_player_season(username, current_season_id - i)
+        player_result_season_x = api.get_leaderboard_with_player_season(username, current_season_id - i, mode)
         if 'season' in player_result_season_x:
-            print("Get season data done: " + str(current_season_id - i))
+            print("Get season data done (mode: " + str(mode.value) + "): " + str(current_season_id - i))
             season_array.append(player_result_season_x)
         else:
-            print("STOP no more seasons found for  '" + str(username) + "'  last season: " + str(current_season_id - (i-1)))
+            print("STOP no more (" + str(mode.value) + ") seasons found for  '" + str(username) + "'  last season: " + str(current_season_id - (i-1)))
             break
     return season_array
 

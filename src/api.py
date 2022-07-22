@@ -26,8 +26,12 @@ def get_specific_season_end_date(season):
     return requests.get(address).json()
 
 
-def get_leaderboard_with_player_season(username, season, attempt=None):
-    address = base_url_api2 + "players/leaderboard_with_player?season=" + str(season) + "&username=" + str(username)
+def get_leaderboard_with_player_season(username, season, mode):
+    address = base_url_api2 + \
+              "players/leaderboard_with_player?season=" + str(season) + \
+              "&format=" + str(mode.value) + \
+              "&username=" + str(username)
+
     retry_strategy = Retry(
         total=5,
         status_forcelist=[429, 500, 502, 503, 504],
@@ -55,7 +59,7 @@ def get_player_history_rewards(username):
 
 
 def get_balance_history_for_token(username, token="DEC", offset=0, result=None):
-    token_types = ["SPS", "DEC", "VOUCHER", "CREDITS"]
+    token_types = ["SPS", "DEC", "VOUCHER", "CREDITS", "MERITS"]
     if token not in token_types:
         raise ValueError("Invalid token type. Expected one of: %s" % token_types)
 
@@ -112,3 +116,11 @@ def get_player_tournaments_ids(username):
     for tournament in tournaments_transfers:
         tournaments_ids.append(json.loads(tournament['data'])['tournament_id'])
     return tournaments_ids
+
+
+def get_battle_history(username, number_of_battles, mode):
+    address = base_url_api2 + "battle/history2?player=" + username + \
+             "&leaderboard=0&limit=" + str(number_of_battles) + \
+             "&format=" + str(mode.value)
+    result = requests.get(address).json()
+    return result['battles']

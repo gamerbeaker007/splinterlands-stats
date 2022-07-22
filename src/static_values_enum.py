@@ -1,6 +1,11 @@
 from enum import Enum
 
 
+class Format(Enum):
+    MODERN = "modern"
+    WILD = "wild"
+
+
 class Leagues(Enum):
     NOVICE = 0
     BRONZE_III = 1

@@ -7,12 +7,17 @@ voucher_icon = "![voucher.png](https://images.hive.blog/20x0/https://files.peakd
 
 
 def print_season_post(username,
-                      season_df,
+                      season_balances,
+                      season_battles_wild,
+                      season_battles_modern,
                       last_season_market_history,
                       last_season_rewards,
                       tournaments_info,
                       output_dir=""):
-    last_season = season_df.loc[(season_df.season_id == season_df.season_id.max())].iloc[0]
+    last_season = season_balances.loc[(season_balances.season_id == season_balances.season_id.max())].iloc[0]
+    last_season_wild_battles = season_battles_wild.loc[(season_battles_wild.season_id == season_battles_wild.season_id.max())].iloc[0]
+    last_season_modern_battles = season_battles_modern.loc[(season_battles_modern.season_id == season_battles_modern.season_id.max())].iloc[0]
+
     last_season_market_history_purchases = None
     last_season_market_history_sales = None
     if not last_season_market_history.empty:
@@ -38,7 +43,7 @@ https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/2
 <br><br>
 ![Season result divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGwQHB4Z1zXu1MnXFvSF7REdndP7Gu67aQgWuwp9VoWurqjvGq81w2M6WkfCtovhXo4.png)
 # Last Season
-""" + str(get_last_season_statistics_table(last_season)) + """
+""" + str(get_last_season_statistics_table(last_season_wild_battles, last_season_modern_battles)) + """
 
 
 <br><br>
@@ -94,15 +99,27 @@ Thx all for reading
     print(print_blog)
 
 
-def get_last_season_statistics_table(last_season):
-    result = "| Statistic |  # | \n"
-    result += "| - | - | \n"
-    result += "| Rank | " + str(last_season['rank']) + " | \n"
-    result += "| Rating | " + str(last_season.rating) + " - " + str(last_season.league_name) + " | \n"
-    result += "| Rating High | " + str(last_season.max_rating) + " | \n"
-    result += "| Ratio (Win/Loss) | " + str(round(last_season.wins/(last_season.battles-last_season.wins), 2)) + " (" + str(last_season.wins) + "/" + str(last_season.battles-last_season.wins) + ") |\n"
-    result += "| Win PCT (Wins/battles * 100) | " + str(round(last_season.win_pct, 2)) + " (" + str(last_season.wins) + "/" + str(last_season.battles) + ") |\n"
-    result += "| Longest Streak | " + str(last_season.longest_streak) + " |\n"
+def get_last_season_statistics_table(last_season_wild_battles, last_season_modern_battles):
+    wild_league_logo = "https://images.hive.blog/75x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/leagues/wild_150/league_" + str(last_season_wild_battles.league) + ".png"
+    modern_league_logo = "https://images.hive.blog/75x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/leagues/modern_150/league_" + str(last_season_modern_battles.league) + ".png"
+    extra_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+    result = "| Statistic |  " + wild_league_logo + "<br>" + extra_space + "Wild| " + modern_league_logo + "<br>" + extra_space + "Modern | \n"
+    result += "| - | - | - |\n"
+    result += "| Battles | " + str(last_season_wild_battles.battles) + " | "
+    result += str(last_season_modern_battles.battles) + " | \n"
+    result += "| Rank | " + str(last_season_wild_battles['rank']) + " | "
+    result += str(last_season_modern_battles['rank']) + " | \n"
+    result += "| Rating | " + str(last_season_wild_battles.rating) + " - " + str(last_season_wild_battles.league_name) + " | "
+    result += str(last_season_modern_battles.rating) + " - " + str(last_season_modern_battles.league_name) + " | \n"
+    result += "| Rating High | " + str(last_season_wild_battles.max_rating) + " | "
+    result += str(last_season_modern_battles.max_rating) + " | \n"
+    result += "| Ratio (Win/Loss) | " + str(round(last_season_wild_battles.wins/(last_season_wild_battles.battles-last_season_wild_battles.wins), 2)) + " (" + str(last_season_wild_battles.wins) + "/" + str(last_season_wild_battles.battles-last_season_wild_battles.wins) + ") |"
+    result += str(round(last_season_modern_battles.wins/(last_season_modern_battles.battles-last_season_modern_battles.wins), 2)) + " (" + str(last_season_modern_battles.wins) + "/" + str(last_season_modern_battles.battles-last_season_modern_battles.wins) + ") |\n"
+    result += "| Win PCT (Wins/battles * 100) | " + str(round(last_season_wild_battles.win_pct, 2)) + " (" + str(last_season_wild_battles.wins) + "/" + str(last_season_wild_battles.battles) + ") |"
+    result += str(round(last_season_modern_battles.win_pct, 2)) + " (" + str(last_season_modern_battles.wins) + "/" + str(last_season_modern_battles.battles) + ") |\n"
+    result += "| Longest Streak | " + str(last_season_wild_battles.longest_streak) + " |"
+    result += str(last_season_modern_battles.longest_streak) + " |\n"
+
     return result
 
 
