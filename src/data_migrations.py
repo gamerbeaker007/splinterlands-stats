@@ -28,5 +28,5 @@ def data_migration_modern_wild(season_balances_df, output_file):
                                                       'max_league_name',
                                                       'win_pct'], axis=1)
         season_balances_df.to_csv(output_file)
-        print("Data migration for modern and wild perfformed")
+        print("Data migration for modern and wild performed")
     return season_balances_df

@@ -4,7 +4,7 @@ credit_icon = "![credit.png](https://images.hive.blog/20x0/https://files.peakd.c
 dec_icon = "![dec.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/AJoDPJLp3GXfJPTZijeTGTaHE5K7vzdhCXUedhPRnp6kKhanQnpfwzfnemFdz2x.png)"
 sps_icon = "![sps.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/AKNLw1pd6ryatb2Rg9VHbWEWWUMupgMEtxYsJyxckcGH1Hb7YoxC1cFdNv37tW3.png)"
 voucher_icon = "![voucher.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/Eo8RPwT4kQnGyvkNp9Vx1kLpFYYVhKSy88Fsy7YrAStKwrHCRX6GNvhywGxPbQpW2bu.png)"
-
+merits_icon = "![merits.png](https://images.hive.blog/20x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png)"
 
 def print_season_post(username,
                       season_balances,
@@ -137,18 +137,19 @@ def get_last_season_costs_table(last_season):
 def get_last_season_earnings_table(last_season):
     result = "| Earnings |  # | \n"
     result += "| - | - |\n"
-    result += "| Credits quest rewards | " + credit_icon + " " + str(round(last_season.credits_quest_rewards, 3)) + " |\n"
-    result += "| Credits season rewards | " + credit_icon + " " + str(round(last_season.credits_season_rewards, 3)) + " |\n"
     result += "| DEC battle rewards | " + dec_icon + " " + str(round(last_season.dec_reward, 3)) + " |\n"
     result += "| DEC quest rewards | " + dec_icon + " " + str(round(last_season.dec_quest_rewards, 3)) + " |\n"
     result += "| DEC season rewards | " + dec_icon + " " + str(round(last_season.dec_season_rewards, 3)) + " |\n"
+    result += "| MERITS quest reward | " + merits_icon + " " + str(round(last_season.merits_quest_rewards, 3)) + " |\n"
+    result += "| MERITS season rewards | " + merits_icon + " " + str(round(last_season.merits_season_rewards, 3)) + " |\n"
+    result += "| MERITS brawl prizes | " + merits_icon + " " + str(round(last_season.merits_brawl_prize, 3)) + " |\n"
     result += "| DEC tournament rewards | " + dec_icon + " " + str(round(last_season.dec_tournament_prize, 3)) + " |\n"
     result += "| SPS tournament rewards | " + sps_icon + " " + str(round(last_season.sps_tournament_prize, 3)) + " |\n"
     result += "| DEC rental rewards | " + dec_icon + " " + str(round(last_season.dec_rental_payment, 3)) + " |\n"
     result += "| DEC market sell | " + dec_icon + " " + str(round(last_season.dec_sell_market_purchase, 3)) + " |\n"
     result += "| SPS staking reward | " + sps_icon + " " + str(round(last_season.sps_claim_staking_rewards, 3)) + " |\n"
     result += "| SPS airdrop reward | " + sps_icon + " " + str(round(last_season.sps_token_award, 3)) + " |\n"
-    result += "| VOUCHER earned | " + voucher_icon + " " + str(round(last_season.voucher_drop, 3)) + " |\n"
+    result += "| VOUCHER earned | " + voucher_icon + " " + str(round(last_season.voucher_claim_staking_rewards, 3)) + " |\n"
 
     return result
 

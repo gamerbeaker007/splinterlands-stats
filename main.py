@@ -40,19 +40,24 @@ def main():
         season_balances_df = pd.read_csv(season_balances_data_file, index_col=[0])
         season_balances_df = data_migration_modern_wild(season_balances_df, season_balances_data_file)
 
+        wild_all_done = False
+        modern_all_done = False
+
         if os.path.isfile(season_wild_battle_data_file):
             season_wild_df = pd.read_csv(season_wild_battle_data_file, index_col=[0])
         else:
             season_wild_df = pd.DataFrame(season.get_all_season_data(ACCOUNT_NAME, Format.WILD))
             season_wild_df = add_battle_data_to_seasons_df(season_wild_df)
             season_wild_df.to_csv(season_wild_battle_data_file)
+            wild_all_done = True
 
         if os.path.isfile(season_modern_battle_data_file):
             season_modern_df = pd.read_csv(season_modern_battle_data_file, index_col=[0])
         else:
             season_modern_df = pd.DataFrame(season.get_all_season_data(ACCOUNT_NAME, Format.MODERN))
             season_modern_df = add_battle_data_to_seasons_df(season_modern_df)
-            season_modern_df.to_csv(season_wild_battle_data_file)
+            season_modern_df.to_csv(season_modern_battle_data_file)
+            modern_all_done = True
 
         # Determine if new data needs to be pulled?
         if season_balances_df.season.max() != current_season_data['id'] - 1:
@@ -67,18 +72,20 @@ def main():
             next_season = season_balances_df.season.max() + 1
             for season_id in range(next_season, current_season_data['id']):
                 print("Get season data: " + str(season_id))
-                season_wild_df_new = pd.DataFrame(api.get_leaderboard_with_player_season(ACCOUNT_NAME, season_id, mode=Format.WILD), index=[0])
-                season_wild_df_new = add_battle_data_to_seasons_df(season_wild_df_new)
-                season_wild_df = pd.concat([season_wild_df, season_wild_df_new], ignore_index=True)
-                season_wild_df.to_csv(season_wild_battle_data_file)
+                if not wild_all_done and season_id not in season_wild_df.season.values:
+                    season_wild_df_new = pd.DataFrame(api.get_leaderboard_with_player_season(ACCOUNT_NAME, season_id, mode=Format.WILD), index=[0])
+                    season_wild_df_new = add_battle_data_to_seasons_df(season_wild_df_new)
+                    season_wild_df = pd.concat([season_wild_df, season_wild_df_new], ignore_index=True)
+                    season_wild_df.to_csv(season_wild_battle_data_file)
 
-                season_modern_df_new = pd.DataFrame(api.get_leaderboard_with_player_season(ACCOUNT_NAME, season_id, mode=Format.MODERN), index=[0])
-                season_modern_df_new = add_battle_data_to_seasons_df(season_modern_df_new)
-                season_modern_df = pd.concat([season_modern_df, season_modern_df_new], ignore_index=True)
-                season_modern_df.to_csv(season_modern_battle_data_file)
+                if not modern_all_done and season_id not in season_modern_df.season.values:
+                    season_modern_df_new = pd.DataFrame(api.get_leaderboard_with_player_season(ACCOUNT_NAME, season_id, mode=Format.MODERN), index=[0])
+                    season_modern_df_new = add_battle_data_to_seasons_df(season_modern_df_new)
+                    season_modern_df = pd.concat([season_modern_df, season_modern_df_new], ignore_index=True)
+                    season_modern_df.to_csv(season_modern_battle_data_file)
 
-                season_balances_df = season_wild_df[['season', 'player']].copy()
-                season_balances_df = pd.concat([season_balances_df, pd.DataFrame(season_balances_df, index=[0])], ignore_index=True)
+                season_balances_df_new = season_wild_df[['season', 'player']].copy()
+                season_balances_df = pd.concat([season_balances_df, pd.DataFrame(season_balances_df_new, index=[0])], ignore_index=True)
 
                 season_balances_df = add_balance_data_to_season_df(season_balances_df,
                                                                    balance_history_credits_df,
@@ -115,8 +122,8 @@ def main():
                                                            balance_history_sps_df,
                                                            balance_history_voucher_df,
                                                            balance_history_merits_df)
-        # Write and store
-        season_balances_df.to_csv(season_balances_data_file)
+    # Write and store
+    season_balances_df.to_csv(season_balances_data_file)
 
     nr_of_battles = season_modern_df[season_modern_df.season == season_modern_df.season.max()].battles.values[0]
     battle_history_modern = pd.DataFrame(api.get_battle_history(ACCOUNT_NAME, nr_of_battles, Format.MODERN))
@@ -296,7 +303,7 @@ def add_balance_data_to_season_df(season_df,
         # Voucher add
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                          balance_history_voucher_df,
-                                                         'voucher_drop')
+                                                         'claim_staking_rewards', column_prefix="voucher_")
 
         # SPS add
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
@@ -362,19 +369,17 @@ def add_balance_data_to_season_df(season_df,
                                                          'market_purchase',
                                                          column_prefix='dec_sell_')
 
-
         # MERITS add
-        #TODO find out correct labels
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                          balance_history_merits_df,
-                                                         'quest_reward', column_prefix='merits_')
+                                                         'quest_rewards', column_prefix='merits_')
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                          balance_history_merits_df,
                                                          'brawl_prize', column_prefix='merits_')
         # NOTE SEASON REWARDS are always in the time frame of the new season
         season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
                                                          balance_history_merits_df,
-                                                         'season_reward', column_prefix='merits_')
+                                                         'season_rewards', column_prefix='merits_')
     return season_df
 
 

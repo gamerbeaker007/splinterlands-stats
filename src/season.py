@@ -49,14 +49,28 @@ def get_season_end_times(time_zone_str):
         if x['DD'] == 15:
             # last day of this month
             x['DD'] = calendar.monthrange(x['YYYY'], x['MM'])[1]
+
+            # changes since 1 aug 2022? to first day of the next month
+            if x['YYYY'] > 2022 or (x['YYYY'] == 2022 and x['MM'] >= 7):
+                x['DD'] = 1
+                if x['MM'] == 12:
+                    x['YYYY'] = x['YYYY'] + 1
+                    x['MM'] = 1
+                else:
+                    x['MM'] = x['MM'] + 1
+
         else:
-            # next month
             x['DD'] = 15
-            if x['MM'] == 12:
-                x['YYYY'] = x['YYYY'] + 1
-                x['MM'] = 1
-            else:
-                x['MM'] = x['MM'] + 1
+
+            # changes since 1 aug 2022? to first day of the next month
+            if x['YYYY'] < 2022 or (x['YYYY'] == 2022 and x['MM'] <= 7):
+                if x['MM'] == 12:
+                    x['YYYY'] = x['YYYY'] + 1
+                    x['MM'] = 1
+                else:
+                    x['MM'] = x['MM'] + 1
+
+
         # HH
         cycle = hours.index(x['HH'])
         # select the next xHH

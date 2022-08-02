@@ -138,7 +138,7 @@ def plot_season_stats_earnings(season_df, output_dir=""):
     dec_rental_payed = season_df.dec_market_rental + season_df.dec_rental_refund
     dec_tournament = season_df.dec_tournament_prize + season_df.dec_enter_tournament
     dec_total = dec_earned + dec_rental_earned + dec_rental_payed + dec_tournament
-    merits_total = season_df.merits_quest_reward + season_df.merits_season_reward + season_df.merits_brawl_prize
+    merits_total = season_df.merits_quest_rewards + season_df.merits_season_rewards + season_df.merits_brawl_prize
 
     # trace1 = go.Scatter(x=season_df.season, y=credits_earned, mode='lines+markers',  name='credits (quest + season reward)')
     trace2 = go.Scatter(x=season_df.season, y=sps_earned, mode='lines+markers',  name='sps (staking + token award)')
@@ -239,5 +239,5 @@ def plot_season_battle_history(battle_history, output_dir, mode):
         ),
     )
 
-    fig.show()
+    # fig.show()
     fig.write_image(output_dir + "\\4_season_battle_history_" + str(mode.value) + ".png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
