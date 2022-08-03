@@ -33,54 +33,54 @@ https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/2
 <br><br><br>
 ![Season summary divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tSKXK2kCpyZXosK34FeU6MPbw4RGCrrs7TY1tgy4k5Lgndj2JNPEbpjr8JAgQ7kW8v1.png)
 
-# Season Summery:
+# <div class="phishy"><center>Season Summery</center></div>
 
 
-## Season overall stats and history
+## <div class="phishy"><center>Season overall stats and history</center></div>
+
 <Place overall images here> 
 
 
 <br><br>
 ![Season result divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGwQHB4Z1zXu1MnXFvSF7REdndP7Gu67aQgWuwp9VoWurqjvGq81w2M6WkfCtovhXo4.png)
-# Last Season
+# <div class="phishy"><center>Last Season</center></div>
 """ + str(get_last_season_statistics_table(last_season_wild_battles, last_season_modern_battles)) + """
 
 
 <br><br>
 ![tournament divider1.png](https://files.peakd.com/file/peakd-hive/beaker007/23u5vZxRCDsEy53q1Rd2sXkXvnAg94fBPj2kCVNoPnjVDiyQfiPecgCJMvoSdqwe4vjQp.png)
 
-## Tournaments
+## <div class="phishy"><center>Tournaments</center></div>
 """ + str(get_tournament_info(tournaments_info)) + """
 
 <br><br>
 ![Earnings divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23u5tAfbYKhy3zti8o5cVxxgE2LfnjkAV4xZtm1CLAqpJL9zzEF67C7Ec8Tx6b7odFvvK.png)
-## Earnings and costs:
-### Earnings 
+## <div class="phishy"><center>Earnings and costs</center></div>
 """ + str(get_last_season_earnings_table(last_season)) + """
 
-### Costs
+## <div class="phishy"><center>Costs</center></div>
 """ + str(get_last_season_costs_table(last_season)) + """
 
 <br><br>
 ![Card Market divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGyBstuQdzC1Pjv1CiAvt9S3W6sfo5qzCTa6Uv2mQTpfHkwkQ89YxncGYmqsrpynjEv.png)
 
-## Cards Purchased
+## <div class="phishy"><center>Cards Purchased</center></div>
 """ + str(get_card_table(last_season_market_history_purchases)) + """ 
 
-## Cards Sold
+## <div class="phishy"><center>Cards Sold</center></div>
 """ + str(get_card_table(last_season_market_history_sales)) + """ 
 
-## Cards Earned
+## <div class="phishy"><center>Cards Earned</center></div>
 """ + str(get_card_table(last_season_rewards[(last_season_rewards['type'] == 'reward_card')])) + """
 
-## Potions/Packs earned
+## <div class="phishy"><center>Potions/Packs earned</center></div>
 """ + str(get_rewards_potion_packs_table(last_season_rewards)) + """
 
 
 <br><br>
 ![Closing notes divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tSMhwJoyukZ42QAed1tFdaMc2XGwQZXAoTga9AByndMur5RT4oj5rMFeNJXwBeXr4tP.png)
 
-## Closing notes 
+## <div class="phishy"><center>Closing notes</center></div>
 This report is generated with the splinterstats tool from @beaker007 [git-repo](https://github.com/gamerbeaker007/splinterlands-stats). 
 Any comment/remarks/errors pop me a message on peakd.   
 If you like the content, consider adding @beaker007 as beneficiaries of your post created with the help of this tool. 
