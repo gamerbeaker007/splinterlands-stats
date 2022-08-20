@@ -148,7 +148,7 @@ def get_last_season_earnings_table(last_season):
     result += "| DEC rental rewards | " + dec_icon + " " + str(round(last_season.dec_rental_payment, 3)) + " |\n"
     result += "| DEC market sell | " + dec_icon + " " + str(round(last_season.dec_sell_market_purchase, 3)) + " |\n"
     result += "| SPS staking reward | " + sps_icon + " " + str(round(last_season.sps_claim_staking_rewards, 3)) + " |\n"
-    result += "| SPS airdrop reward | " + sps_icon + " " + str(round(last_season.sps_token_award, 3)) + " |\n"
+    result += "| SPS token award | " + sps_icon + " " + str(round(last_season.sps_token_award, 3)) + " |\n"
     result += "| VOUCHER earned | " + voucher_icon + " " + str(round(last_season.voucher_claim_staking_rewards, 3)) + " |\n"
 
     return result

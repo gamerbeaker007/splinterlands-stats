@@ -84,8 +84,9 @@ def main():
                     season_modern_df = pd.concat([season_modern_df, season_modern_df_new], ignore_index=True)
                     season_modern_df.to_csv(season_modern_battle_data_file)
 
-                season_balances_df_new = season_wild_df[['season', 'player']].copy()
-                season_balances_df = pd.concat([season_balances_df, pd.DataFrame(season_balances_df_new, index=[0])], ignore_index=True)
+                # add new season
+                season_balances_df = season_balances_df.concat({'season': season_id, 'player': ACCOUNT_NAME},
+                                                               ignore_index=True)
 
                 season_balances_df = add_balance_data_to_season_df(season_balances_df,
                                                                    balance_history_credits_df,
@@ -140,7 +141,6 @@ def main():
     filtered_modern = get_rating_from_ranked_battles(ACCOUNT_NAME, battle_history_modern)
     plots.plot_season_battle_history(filtered_wild, output_dir, Format.WILD)
     plots.plot_season_battle_history(filtered_modern, output_dir, Format.MODERN)
-
 
     # determine last season start and end time
     season_end_times = season.get_season_end_times(time_zone)

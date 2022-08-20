@@ -18,6 +18,7 @@ GRID_COLOR = 'rgba(255,255,255,255)'
 
 
 def plot_season_stats_rating(season_df, output_dir, mode):
+    season_df = season_df.sort_values(by=['season'])
 
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     trace1 = go.Scatter(x=season_df.season,
@@ -95,6 +96,8 @@ def plot_season_stats_rating(season_df, output_dir, mode):
 
 
 def plot_season_stats_battles(season_df, output_dir, mode):
+    season_df = season_df.sort_values(by=['season'])
+
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     trace3 = go.Scatter(x=season_df.season, y=season_df.win_pct, mode='lines+markers', name='win percentage')
     trace4 = go.Scatter(x=season_df.season, y=season_df.battles, mode='lines', name='battles')
@@ -130,6 +133,8 @@ def plot_season_stats_battles(season_df, output_dir, mode):
 
 
 def plot_season_stats_earnings(season_df, output_dir=""):
+    season_df = season_df.sort_values(by=['season'])
+
     fig = go.Figure()
     # credits_earned = season_df.credits_quest_rewards + season_df.credits_season_rewards
     sps_earned = season_df.sps_claim_staking_rewards + season_df.sps_token_award
