@@ -142,26 +142,31 @@ def plot_season_stats_earnings(season_df, output_dir=""):
     dec_rental_earned = season_df.dec_rental_payment + season_df.dec_rental_payment_fees
     dec_rental_payed = season_df.dec_market_rental + season_df.dec_rental_refund
     dec_tournament = season_df.dec_tournament_prize + season_df.dec_enter_tournament
+    sps_tournament = season_df.sps_tournament_prize + season_df.sps_enter_tournament
+
+    sps_total = sps_earned + sps_tournament
     dec_total = dec_earned + dec_rental_earned + dec_rental_payed + dec_tournament
     merits_total = season_df.merits_quest_rewards + season_df.merits_season_rewards + season_df.merits_brawl_prize
 
     # trace1 = go.Scatter(x=season_df.season, y=credits_earned, mode='lines+markers',  name='credits (quest + season reward)')
-    trace2 = go.Scatter(x=season_df.season, y=sps_earned, mode='lines+markers',  name='sps (staking + token award)')
-    trace3 = go.Scatter(x=season_df.season, y=dec_earned, mode='lines+markers',  name='dec (ranked + quest + season)')
-    trace4 = go.Scatter(x=season_df.season, y=dec_rental_earned, mode='lines+markers',  name='dec rental (payment-fees)')
-    trace5 = go.Scatter(x=season_df.season, y=dec_rental_payed, mode='lines+markers',  name='dec rental (cost-refund)')
-    trace6 = go.Scatter(x=season_df.season, y=dec_tournament, mode='lines+markers',  name='dec tournament (prize-entry)')
-    trace7 = go.Scatter(x=season_df.season, y=dec_total, mode='lines+markers',  name='dec total (earnings-payments)')
-    trace8 = go.Scatter(x=season_df.season, y=merits_total, mode='lines+markers',  name='merits earned total')
+    # trace2 = go.Scatter(x=season_df.season, y=sps_earned, mode='lines+markers',  name='sps (staking + token award)')
+    # trace3 = go.Scatter(x=season_df.season, y=dec_earned, mode='lines+markers',  name='dec (ranked + quest + season)')
+    # trace4 = go.Scatter(x=season_df.season, y=dec_rental_earned, mode='lines+markers',  name='dec rental (payment-fees)')
+    # trace5 = go.Scatter(x=season_df.season, y=dec_rental_payed, mode='lines+markers',  name='dec rental (cost-refund)')
+    # trace6 = go.Scatter(x=season_df.season, y=dec_tournament, mode='lines+markers',  name='dec tournament (prize-entry)')
+    trace7 = go.Scatter(x=season_df.season, y=dec_total, mode='lines+markers',  name='DEC total (earnings - payments)')
+    trace8 = go.Scatter(x=season_df.season, y=merits_total, mode='lines+markers',  name='MERITS  total (earnings)')
+    trace9 = go.Scatter(x=season_df.season, y=sps_total, mode='lines+markers',  name='SPS total (earnings - payments)')
 
     # fig.add_trace(trace1)
-    fig.add_trace(trace2)
-    fig.add_trace(trace3)
-    fig.add_trace(trace4)
-    fig.add_trace(trace5)
-    fig.add_trace(trace6)
+    # fig.add_trace(trace2)
+    # fig.add_trace(trace3)
+    # fig.add_trace(trace4)
+    # fig.add_trace(trace5)
+    # fig.add_trace(trace6)
     fig.add_trace(trace7)
     fig.add_trace(trace8)
+    fig.add_trace(trace9)
 
 
     fig.update_layout(

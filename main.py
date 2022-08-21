@@ -24,13 +24,6 @@ season_wild_battle_data_file = os.path.join(output_dir, 'season_wild_data.csv')
 season_modern_battle_data_file = os.path.join(output_dir, 'season_modern_data.csv')
 
 
-def get_rating_from_ranked_battles(username, battle_history):
-    df = pd.DataFrame()
-    battle_history = battle_history.drop(battle_history[battle_history.match_type != "Ranked"].index)
-    df['rating'] = battle_history.apply(lambda row: row.player_1_rating_final if row.player_1 == username else row.player_2_rating_final, axis=1)
-    return df
-
-
 def main():
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
@@ -85,8 +78,9 @@ def main():
                     season_modern_df.to_csv(season_modern_battle_data_file)
 
                 # add new season
-                season_balances_df = season_balances_df.concat({'season': season_id, 'player': ACCOUNT_NAME},
-                                                               ignore_index=True)
+                season_balances_df = pd.concat([season_balances_df,
+                                                pd.DataFrame({'season': [season_id], 'player': [ACCOUNT_NAME]})],
+                                               ignore_index=True)
 
                 season_balances_df = add_balance_data_to_season_df(season_balances_df,
                                                                    balance_history_credits_df,
@@ -136,11 +130,6 @@ def main():
     plots.plot_season_stats_battles(season_wild_df, output_dir, Format.WILD)
     plots.plot_season_stats_battles(season_modern_df, output_dir, Format.MODERN)
     plots.plot_season_stats_earnings(season_balances_df, output_dir)
-
-    filtered_wild = get_rating_from_ranked_battles(ACCOUNT_NAME, battle_history_wild)
-    filtered_modern = get_rating_from_ranked_battles(ACCOUNT_NAME, battle_history_modern)
-    plots.plot_season_battle_history(filtered_wild, output_dir, Format.WILD)
-    plots.plot_season_battle_history(filtered_modern, output_dir, Format.MODERN)
 
     # determine last season start and end time
     season_end_times = season.get_season_end_times(time_zone)
@@ -245,7 +234,7 @@ def get_last_season_player_history_rewards(start_date, end_date, season_id):
 def add_battle_data_to_seasons_df(season_df):
     season_ratings = [0, 400, 700, 1000, 1300, 1600, 1900, 2200, 2500, 2800, 3100, 3400, 3700, 4200, 4700, 5100]
 
-    if not season_df.empty:
+    if not season_df.empty and len(season_df.columns) > 1:
         # translate end rating to max (for graph)
         season_df['end_league_rating'] = season_df.apply(lambda row: season_ratings[row.league], axis=1)
 
@@ -435,13 +424,15 @@ def get_tournaments_info(username, start_date, end_date):
                 if player_data:
                     player_data = player_data[0]
 
-                    prize = "0"
+                    prize_qty = "0"
+                    prize_type = ""
                     if player_data['prize']:
-                        prize = player_data['prize']
+                        prize_qty = player_data['prize']
                     else:
                         if player_data['ext_prize_info']:
                             prize_info = json.loads(player_data['ext_prize_info'])
-                            prize = prize_info[0]['qty'] + " " + prize_info[0]['type']
+                            prize_qty = prize_info[0]['qty']
+                            prize_type = prize_info[0]['type']
 
                     tournament_record = {
                         'name': tournament['name'],
@@ -452,7 +443,8 @@ def get_tournaments_info(username, start_date, end_date):
                         'losses': player_data['losses'],
                         'draws': player_data['draws'],
                         'entry_fee': player_data['fee_amount'],
-                        'prize': prize
+                        'prize_qty': prize_qty,
+                        'prize_type': prize_type
                     }
                     collect = pd.concat([collect, pd.DataFrame(tournament_record, index=[0])], ignore_index=True)
     return collect

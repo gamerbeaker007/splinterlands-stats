@@ -38,7 +38,12 @@ https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/2
 
 ## <div class="phishy"><center>Season overall stats and history</center></div>
 
-<Place overall images here> 
+### Modern
+
+### Wild
+
+### Earnings
+ 
 
 
 <br><br>
@@ -100,8 +105,8 @@ Thx all for reading
 
 
 def get_last_season_statistics_table(last_season_wild_battles, last_season_modern_battles):
-    wild_league_logo = "https://images.hive.blog/75x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/leagues/wild_150/league_" + str(last_season_wild_battles.league) + ".png"
-    modern_league_logo = "https://images.hive.blog/75x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/leagues/modern_150/league_" + str(last_season_modern_battles.league) + ".png"
+    wild_league_logo = "https://images.hive.blog/75x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/leagues/wild_150/league_" + str(last_season_wild_battles.league.astype(int)) + ".png"
+    modern_league_logo = "https://images.hive.blog/75x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/leagues/modern_150/league_" + str(last_season_modern_battles.league.astype(int)) + ".png"
     extra_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
     result = "| Statistic |  " + wild_league_logo + "<br>" + extra_space + "Wild| " + modern_league_logo + "<br>" + extra_space + "Modern | \n"
     result += "| - | - | - |\n"
@@ -158,15 +163,26 @@ def get_tournament_info(tournaments_info):
     result = "|Tournament name | League | finish / entrants | wins/losses/draws | entry fee | prize |  \n"
     result += "|-|-|-|-|-|-| \n"
 
-    for index, tournament in tournaments_info.iterrows():
-        if tournament.finish:
-            result += "| " + tournament['name']
-            result += "| " + tournament.league
-            result += "| " + str(int(tournament.finish)) + " / " + str(int(tournament.num_players))
-            result += "| " + str(int(tournament.wins)) + " / " + str(int(tournament.losses)) + " / " + str(int(tournament.draws))
-            result += "| " + tournament.entry_fee
-            result += "| " + tournament.prize
-            result += "| \n"
+    if not tournaments_info.empty:
+        for index, tournament in tournaments_info.iterrows():
+            if tournament.finish:
+                result += "| " + tournament['name']
+                result += "| " + tournament.league
+                result += "| " + str(int(tournament.finish)) + " / " + str(int(tournament.num_players))
+                result += "| " + str(int(tournament.wins)) + " / " + str(int(tournament.losses)) + " / " + str(int(tournament.draws))
+                result += "| " + tournament.entry_fee
+                result += "| " + tournament.prize_qty + " " + tournament.prize_type
+                result += "| \n"
+
+        filters_sps_prizes = tournaments_info[tournaments_info.prize_type == "SPS"]
+        total_sps_earned = pd.to_numeric(filters_sps_prizes[['prize_qty']].sum(1), errors='coerce').sum()
+
+        filters_sps_entry_fee = tournaments_info[tournaments_info.entry_fee.str.contains("SPS")]
+        filters_sps_entry_fee[['fee_qty', 'fee_type']] = filters_sps_entry_fee.entry_fee.str.split(" ", expand=True, )
+        total_sps_fee = pd.to_numeric(filters_sps_entry_fee[['fee_qty']].sum(1), errors='coerce').sum()
+
+        result += "|**Total SPS** | | | | **" + str(total_sps_fee) + "**|**" + str(total_sps_earned) + "**| \n"
+
     return result
 
 
