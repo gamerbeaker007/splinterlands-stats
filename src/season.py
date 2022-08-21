@@ -2,6 +2,7 @@ import calendar
 import datetime
 
 import pytz
+from dateutil import parser
 from pytz import timezone
 
 from src import api
@@ -23,7 +24,8 @@ def get_all_season_data(username, mode):
             break
     return season_array
 
-
+# Used information about season end dates from:
+# https://kiokizz.github.io/Splinterlands/seasonReportCard/scripts/report_array.js?v=1
 def get_season_end_times(time_zone_str):
     # season origin
     x = {
@@ -49,28 +51,14 @@ def get_season_end_times(time_zone_str):
         if x['DD'] == 15:
             # last day of this month
             x['DD'] = calendar.monthrange(x['YYYY'], x['MM'])[1]
-
-            # changes since 1 aug 2022? to first day of the next month
-            if x['YYYY'] > 2022 or (x['YYYY'] == 2022 and x['MM'] >= 7):
-                x['DD'] = 1
-                if x['MM'] == 12:
-                    x['YYYY'] = x['YYYY'] + 1
-                    x['MM'] = 1
-                else:
-                    x['MM'] = x['MM'] + 1
-
         else:
+            # next month
             x['DD'] = 15
-
-            # changes since 1 aug 2022? to first day of the next month
-            if x['YYYY'] < 2022 or (x['YYYY'] == 2022 and x['MM'] <= 7):
-                if x['MM'] == 12:
-                    x['YYYY'] = x['YYYY'] + 1
-                    x['MM'] = 1
-                else:
-                    x['MM'] = x['MM'] + 1
-
-
+            if x['MM'] == 12:
+                x['YYYY'] = x['YYYY'] + 1
+                x['MM'] = 1
+            else:
+                x['MM'] = x['MM'] + 1
         # HH
         cycle = hours.index(x['HH'])
         # select the next xHH
@@ -84,5 +72,22 @@ def get_season_end_times(time_zone_str):
     # https://discord.com/channels/447924793048825866/451123773882499085/876471197708206090
     for season in season_end_dates_array:
         if season['id'] == 68:
-            season['date'] = "2021-08-16T20:00:00.000Z"
+            season['date'] = parser.parse("2021-08-16T20:00:00.000Z").astimezone(timezone(time_zone_str))
+        # we have changed it to make seasons not end on weekends or holidays since there have been technical issues recently and we want the team to be available
+        elif season['id'] == 86:
+            season['date'] = parser.parse("2022-05-16T14:00:00.000Z").astimezone(timezone(time_zone_str))
+        # Times provided by @yabapmatt
+        elif season['id'] == 93:
+            season['date'] = parser.parse("2022-08-31T14:00:00.000Z").astimezone(timezone(time_zone_str))
+        elif season['id'] == 92:
+            season['date'] = parser.parse("2022-08-16T14:00:00.000Z").astimezone(timezone(time_zone_str))
+        elif season['id'] == 91:
+            season['date'] = parser.parse("2022-08-01T14:00:00.000Z").astimezone(timezone(time_zone_str))
+        elif season['id'] == 90:
+            season['date'] = parser.parse("2022-07-13T14:00:00.000Z").astimezone(timezone(time_zone_str))
+        elif season['id'] == 89:
+            season['date'] = parser.parse("2022-06-30T14:00:00.000Z").astimezone(timezone(time_zone_str))
+        elif season['id'] == 88:
+            season['date'] = parser.parse("2022-06-15T14:00:00.000Z").astimezone(timezone(time_zone_str))
+
     return season_end_dates_array
