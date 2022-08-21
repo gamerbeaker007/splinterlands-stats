@@ -6,6 +6,7 @@ from dateutil import parser
 from pytz import timezone
 
 from src import api
+from src.static_values_enum import Format
 
 
 def get_all_season_data(username, mode):
@@ -13,15 +14,20 @@ def get_all_season_data(username, mode):
     season = api.get_current_season()
     current_season_id = season['id']
     season_array = []
-    for i in range(1, current_season_id):
+    season_count = current_season_id
+    if mode.value == Format.MODERN.value:
+        # season 90 modern/wild is introduced
+        season_count = current_season_id - 89
+    for i in range(1, season_count):
         print("Pulling season data: " + str(current_season_id - i))
         player_result_season_x = api.get_leaderboard_with_player_season(username, current_season_id - i, mode)
         if 'season' in player_result_season_x:
             print("Get season data done (mode: " + str(mode.value) + "): " + str(current_season_id - i))
             season_array.append(player_result_season_x)
         else:
-            print("STOP no more (" + str(mode.value) + ") seasons found for  '" + str(username) + "'  last season: " + str(current_season_id - (i-1)))
-            break
+            # print("STOP no more (" + str(mode.value) + ") seasons found for  '" + str(username) + "'  last season: " + str(current_season_id - (i-1)))
+            # break
+            print("CONTINUE no data found for  (" + str(mode.value) + ") seasons found for  '" + str(username) + "'  season: " + str(current_season_id - i))
     return season_array
 
 # Used information about season end dates from:
