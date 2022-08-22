@@ -116,11 +116,3 @@ def get_player_tournaments_ids(username):
     for tournament in tournaments_transfers:
         tournaments_ids.append(json.loads(tournament['data'])['tournament_id'])
     return tournaments_ids
-
-
-def get_battle_history(username, number_of_battles, mode):
-    address = base_url_api2 + "battle/history2?player=" + username + \
-             "&leaderboard=0&limit=" + str(number_of_battles) + \
-             "&format=" + str(mode.value)
-    result = requests.get(address).json()
-    return result['battles']
