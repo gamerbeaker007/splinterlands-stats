@@ -3,7 +3,7 @@ import json
 import numpy as np
 import pandas as pd
 
-from src import api, configuration, season, card_info
+from src import api, configuration
 from src.static_values_enum import Edition
 
 
