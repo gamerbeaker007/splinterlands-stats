@@ -24,7 +24,7 @@ def get_battle_info(battle_info_file, mode):
                     season_battle_df_new = pd.DataFrame({'season': season_id, 'player': configuration.ACCOUNT_NAME}, index=[0])
                 season_battle_df = pd.concat([season_battle_df, season_battle_df_new], ignore_index=True)
         else:
-            print("All battle information for mode " + str(mode.value) + " is already pulled continue with the current data set")
+            print("All battle information for mode " + str(mode.value) + " already pulled continue with the current data set")
 
     else:
         season_battle_df = pd.DataFrame(season.get_all_season_data(configuration.ACCOUNT_NAME, mode))
