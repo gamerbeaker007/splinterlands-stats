@@ -1,16 +1,7 @@
-import configparser
-import json
 import os
-from datetime import datetime
-
-import numpy as np
-import pytz
-
-from src import api, season, plots, hive_blog, balances_info, configuration, battle_info, tournaments_info, market_info
 import pandas as pd
-
-from src.data_migrations import data_migration_modern_wild
-from src.static_values_enum import Leagues, Edition, RatingLevel, Format
+from src import api, season, plots, hive_blog, balances_info, configuration, battle_info, tournaments_info, market_info
+from src.static_values_enum import Format
 
 output_dir = os.path.join('output', configuration.ACCOUNT_NAME)
 season_balances_data_file = os.path.join(output_dir, 'season_data.csv')
@@ -28,7 +19,6 @@ def main():
     # Determine season array of both wild and modern
     combined_season = pd.concat([season_wild_df,season_modern_df]).season.sort_values(ascending=False).unique().astype(int)
     season_balances_df = balances_info.get_balances(season_balances_data_file, combined_season)
-
 
     plots.plot_season_stats_rating(season_wild_df, output_dir, Format.WILD)
     plots.plot_season_stats_rating(season_modern_df, output_dir, Format.MODERN)
