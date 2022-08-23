@@ -17,12 +17,17 @@ def get_balances(season_balances_data_file, seasons_played_array):
         # Determine if new data needs to be pulled?
         if season_balances_df.season.max() != current_season_data['id'] - 1:
             # continue pull x season data
-            # TODO do only the pull for the x number season needed now all is pulled
-            balance_history_dec_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="DEC"))
-            balance_history_voucher_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="VOUCHER"))
-            balance_history_credits_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="CREDITS"))
-            balance_history_sps_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="SPS"))
-            balance_history_merits_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="MERITS"))
+            season_end_times = season.get_season_end_times(configuration.time_zone)
+            last_season_end_date = [season_end_time['date'] for season_end_time in season_end_times if
+                        season_end_time["id"] == season_balances_df.season.max()][0]
+
+            balance_history_dec_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="DEC", from_date=last_season_end_date))
+            balance_history_voucher_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="VOUCHER", from_date=last_season_end_date))
+            balance_history_credits_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="CREDITS", from_date=last_season_end_date))
+            balance_history_sps_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="SPS", from_date=last_season_end_date))
+            balance_history_merits_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="MERITS", from_date=last_season_end_date))
+
+            balance_history_sps_unclaimed_df = pd.DataFrame(api.get_balance_history_for_token_unclaimed(configuration.ACCOUNT_NAME, token="SPS", from_date=last_season_end_date))
 
             next_season = season_balances_df.season.max() + 1
             for season_id in range(next_season, current_season_data['id']):
@@ -39,6 +44,7 @@ def get_balances(season_balances_data_file, seasons_played_array):
                                                                    balance_history_sps_df,
                                                                    balance_history_voucher_df,
                                                                    balance_history_merits_df,
+                                                                   balance_history_sps_unclaimed_df,
                                                                    single_season_id=season_id)
         else:
             print("All balances data is already pulled and processed continue with the current data set")
@@ -53,6 +59,8 @@ def get_balances(season_balances_data_file, seasons_played_array):
         balance_history_sps_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="SPS"))
         balance_history_merits_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="MERITS"))
 
+        balance_history_sps_unclaimed_df = pd.DataFrame(api.get_balance_history_for_token_unclaimed(configuration.ACCOUNT_NAME, token="SPS"))
+
         # Copy season id's from wild (because this will contain the most data, wild exists first)
         season_balances_df = pd.DataFrame()
         season_balances_df['season'] = seasons_played_array.tolist()
@@ -62,7 +70,8 @@ def get_balances(season_balances_data_file, seasons_played_array):
                                                            balance_history_dec_df,
                                                            balance_history_sps_df,
                                                            balance_history_voucher_df,
-                                                           balance_history_merits_df)
+                                                           balance_history_merits_df,
+                                                           balance_history_sps_unclaimed_df)
         # Write and store
     season_balances_df.to_csv(season_balances_data_file)
 
@@ -75,6 +84,7 @@ def add_balance_data_to_season_df(season_df,
                                   balance_history_sps_df,
                                   balance_history_voucher_df,
                                   balance_history_merits_df,
+                                  balance_history_sps_unclaimed_df,
                                   single_season_id=None):
     season_end_times = season.get_season_end_times(configuration.time_zone)
 
@@ -120,6 +130,24 @@ def add_balance_data_to_season_df(season_df,
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                          balance_history_sps_df,
                                                          'enter_tournament', column_prefix='sps_')
+
+        # SPS unclaimed add (earnings for quest/season/ranked battles)
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_sps_unclaimed_df,
+                                                         'modern', column_prefix='sps_', positive_only=True)
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_sps_unclaimed_df,
+                                                         'wild', column_prefix='sps_', positive_only=True)
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_sps_unclaimed_df,
+                                                         'focus', column_prefix='sps_', positive_only=True)
+
+        # NOTE SEASON REWARDS are always in the time frame of the new season
+        ## TODO find out what this will be ??? https://api2.splinterlands.com/players/unclaimed_balance_history?token_type=SPS&offset=0&limit=500&username=beaker007
+        # season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
+        #                                                  balance_history_sps_unclaimed_df,
+        #                                                  'season', column_prefix='sps_')
+
 
         # Credits add
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
@@ -184,16 +212,21 @@ def add_balance_data_to_season_df(season_df,
                                                          'season_rewards', column_prefix='merits_')
     return season_df
 
+
 def cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, input_df, search_type,
-                                         column_prefix=""):
+                                         column_prefix="", positive_only=False):
     # make sure it is a datetime field
     if not input_df.empty:
         input_df.created_date = pd.to_datetime(input_df.created_date)
         input_df.amount = pd.to_numeric(input_df.amount)
 
         # greater than the start date and smaller than the end date and type is search_type
-        mask = (input_df['created_date'] > start_date) & (input_df['created_date'] <= end_date) & (
-                input_df['type'] == search_type)
+        if positive_only:
+            mask = (input_df['created_date'] > start_date) & (input_df['created_date'] <= end_date) & (
+                    input_df['type'] == search_type) & (input_df['amount'] > 0.0)
+        else:
+            mask = (input_df['created_date'] > start_date) & (input_df['created_date'] <= end_date) & (
+                    input_df['type'] == search_type)
 
         # print("Amount " + str(search_type) + ": " + str(input_df.loc[mask].amount.sum()))
         season_df.loc[season_df.season == season_id, str(column_prefix + search_type)] = input_df.loc[mask].amount.sum()

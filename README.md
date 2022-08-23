@@ -1,9 +1,12 @@
 # splinterlands-stats
 
+How-to use:
+
+https://peakd.com/hive-13323/@beaker007/how-to-use-the-splinterlands-season-statistics-tool-python
+
+
 ## TODO
 * Create manual
-* Add sold cards
-* create own dividers and thumbnail
 * Reference to PeakD post on how to use it?
 
 

@@ -1,6 +1,7 @@
 import json
 
 import requests
+from dateutil import parser
 from urllib3 import Retry
 from requests.adapters import HTTPAdapter
 
@@ -58,7 +59,7 @@ def get_player_history_rewards(username):
     return requests.get(address).json()
 
 
-def get_balance_history_for_token(username, token="DEC", offset=0, result=None):
+def get_balance_history_for_token(username, token="DEC", offset=0, result=None, from_date=None):
     token_types = ["SPS", "DEC", "VOUCHER", "CREDITS", "MERITS"]
     if token not in token_types:
         raise ValueError("Invalid token type. Expected one of: %s" % token_types)
@@ -87,8 +88,41 @@ def get_balance_history_for_token(username, token="DEC", offset=0, result=None):
         result += requests.get(address).json()
 
     if len(result) == offset + LIMIT:
-        print(token + ": More then '" + str(offset + LIMIT) + "' returned, continue for another balance pull...")
-        get_balance_history_for_token(username, token=token, offset=offset + LIMIT, result=result)
+        created_date = parser.parse(result[-1]['created_date'])
+        if not from_date or from_date < created_date:
+            print(token + ": More then '" + str(offset + LIMIT) + "' returned, continue for another balance pull...")
+            get_balance_history_for_token(username, token=token, offset=offset + LIMIT, result=result, from_date=from_date)
+        else:
+            print(token + ": last pull contains all season information data from '" + str(from_date) + "' till NOW")
+    else:
+        print(token + ": all data pulled")
+
+    return result
+
+
+def get_balance_history_for_token_unclaimed(username, token="SPS", offset=0, result=None, from_date=None):
+    token_types = ["SPS"]
+    if token not in token_types:
+        raise ValueError("Invalid token type. Expected one of: %s" % token_types)
+
+    address = base_url_api2 + "players/unclaimed_balance_history?token_type=" + str(token) + "&username=" + str(
+        username) + "&offset=" + str(offset) + "&limit=" + str(LIMIT)
+
+    if result is None:  # create a new result if no intermediate was given
+        result = requests.get(address).json()
+    else:
+        result += requests.get(address).json()
+
+    if len(result) == offset + LIMIT:
+        created_date = parser.parse(result[-1]['created_date'])
+        if not from_date or from_date < created_date:
+            print(token + " UNCLAIMED: More then '" + str(offset + LIMIT) + "' returned, continue for another balance pull...")
+            get_balance_history_for_token_unclaimed(username, token=token, offset=offset + LIMIT, result=result, from_date=from_date)
+        else:
+            print(token + " UNCLAIMED: last pull contains all season information data from '" + str(from_date) + "' till NOW")
+    else:
+        print(token + "UNCLAIMED: all data pulled")
+
     return result
 
 

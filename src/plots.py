@@ -133,18 +133,20 @@ def plot_season_stats_battles(season_df, output_dir, mode):
 
 
 def plot_season_stats_earnings(season_df, output_dir=""):
-    season_df = season_df.sort_values(by=['season'])
+    season_df = season_df.sort_values(by=['season']).fillna(0)
 
     fig = go.Figure()
     # credits_earned = season_df.credits_quest_rewards + season_df.credits_season_rewards
-    sps_earned = season_df.sps_claim_staking_rewards + season_df.sps_token_award
     dec_earned = season_df.dec_reward + season_df.dec_quest_rewards + season_df.dec_season_rewards
     dec_rental_earned = season_df.dec_rental_payment + season_df.dec_rental_payment_fees
     dec_rental_payed = season_df.dec_market_rental + season_df.dec_rental_refund
     dec_tournament = season_df.dec_tournament_prize + season_df.dec_enter_tournament
-    sps_tournament = season_df.sps_tournament_prize + season_df.sps_enter_tournament
 
-    sps_total = sps_earned + sps_tournament
+    sps_earned = season_df.sps_claim_staking_rewards + season_df.sps_token_award
+    sps_tournament = season_df.sps_tournament_prize + season_df.sps_enter_tournament
+    sps_battle_earning = season_df.sps_modern + season_df.sps_wild + season_df.sps_focus # TODO + season_df.sps_season
+
+    sps_total = sps_earned + sps_tournament + sps_battle_earning
     dec_total = dec_earned + dec_rental_earned + dec_rental_payed + dec_tournament
     merits_total = season_df.merits_quest_rewards + season_df.merits_season_rewards + season_df.merits_brawl_prize
 
