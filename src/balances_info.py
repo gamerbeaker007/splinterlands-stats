@@ -143,11 +143,9 @@ def add_balance_data_to_season_df(season_df,
                                                          'focus', column_prefix='sps_', positive_only=True)
 
         # NOTE SEASON REWARDS are always in the time frame of the new season
-        ## TODO find out what this will be ??? https://api2.splinterlands.com/players/unclaimed_balance_history?token_type=SPS&offset=0&limit=500&username=beaker007
-        # season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
-        #                                                  balance_history_sps_unclaimed_df,
-        #                                                  'season', column_prefix='sps_')
-
+        season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
+                                                         balance_history_sps_unclaimed_df,
+                                                         'season', column_prefix='sps_', positive_only=True)
 
         # Credits add
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,

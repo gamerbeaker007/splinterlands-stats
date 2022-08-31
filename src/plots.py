@@ -144,7 +144,7 @@ def plot_season_stats_earnings(season_df, output_dir=""):
 
     sps_earned = season_df.sps_claim_staking_rewards + season_df.sps_token_award
     sps_tournament = season_df.sps_tournament_prize + season_df.sps_enter_tournament
-    sps_battle_earning = season_df.sps_modern + season_df.sps_wild + season_df.sps_focus # TODO + season_df.sps_season
+    sps_battle_earning = season_df.sps_modern + season_df.sps_wild + season_df.sps_focus + season_df.sps_season
 
     sps_total = sps_earned + sps_tournament + sps_battle_earning
     dec_total = dec_earned + dec_rental_earned + dec_rental_payed + dec_tournament

@@ -83,17 +83,21 @@ def get_season_end_times(time_zone_str):
         elif season['id'] == 86:
             season['date'] = parser.parse("2022-05-16T14:00:00.000Z").astimezone(timezone(time_zone_str))
         # Times provided by @yabapmatt
-        elif season['id'] == 93:
-            season['date'] = parser.parse("2022-08-31T14:00:00.000Z").astimezone(timezone(time_zone_str))
-        elif season['id'] == 92:
-            season['date'] = parser.parse("2022-08-16T14:00:00.000Z").astimezone(timezone(time_zone_str))
-        elif season['id'] == 91:
-            season['date'] = parser.parse("2022-08-01T14:00:00.000Z").astimezone(timezone(time_zone_str))
-        elif season['id'] == 90:
-            season['date'] = parser.parse("2022-07-13T14:00:00.000Z").astimezone(timezone(time_zone_str))
-        elif season['id'] == 89:
-            season['date'] = parser.parse("2022-06-30T14:00:00.000Z").astimezone(timezone(time_zone_str))
         elif season['id'] == 88:
             season['date'] = parser.parse("2022-06-15T14:00:00.000Z").astimezone(timezone(time_zone_str))
+        elif season['id'] == 89:
+            season['date'] = parser.parse("2022-06-30T14:00:00.000Z").astimezone(timezone(time_zone_str))
+        elif season['id'] == 90:
+            season['date'] = parser.parse("2022-07-13T14:00:00.000Z").astimezone(timezone(time_zone_str))
+        elif season['id'] == 91:
+            season['date'] = parser.parse("2022-08-01T14:00:00.000Z").astimezone(timezone(time_zone_str))
+        elif season['id'] == 92:
+            season['date'] = parser.parse("2022-08-16T14:00:00.000Z").astimezone(timezone(time_zone_str))
+        elif season['id'] == 93:
+            season['date'] = parser.parse("2022-08-31T14:00:00.000Z").astimezone(timezone(time_zone_str))
+
+        # Manual update
+        elif season['id'] == 94:
+            season['date'] = parser.parse("2022-09-15T14:00:00.000Z").astimezone(timezone(time_zone_str))
 
     return season_end_dates_array
