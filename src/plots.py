@@ -135,7 +135,9 @@ def plot_season_stats_battles(season_df, output_dir, mode):
 def plot_season_stats_earnings(season_df, output_dir=""):
     season_df = season_df.sort_values(by=['season']).fillna(0)
 
-    fig = go.Figure()
+    fig = make_subplots(rows=3, cols=1)
+    #
+    # fig = go.Figure()
     # credits_earned = season_df.credits_quest_rewards + season_df.credits_season_rewards
     dec_earned = season_df.dec_reward + season_df.dec_quest_rewards + season_df.dec_season_rewards
     dec_rental_earned = season_df.dec_rental_payment + season_df.dec_rental_payment_fees
@@ -156,9 +158,22 @@ def plot_season_stats_earnings(season_df, output_dir=""):
     # trace4 = go.Scatter(x=season_df.season, y=dec_rental_earned, mode='lines+markers',  name='dec rental (payment-fees)')
     # trace5 = go.Scatter(x=season_df.season, y=dec_rental_payed, mode='lines+markers',  name='dec rental (cost-refund)')
     # trace6 = go.Scatter(x=season_df.season, y=dec_tournament, mode='lines+markers',  name='dec tournament (prize-entry)')
-    trace7 = go.Scatter(x=season_df.season, y=dec_total, mode='lines+markers',  name='DEC total (earnings - payments)')
-    trace8 = go.Scatter(x=season_df.season, y=merits_total, mode='lines+markers',  name='MERITS  total (earnings)')
-    trace9 = go.Scatter(x=season_df.season, y=sps_total, mode='lines+markers',  name='SPS total (earnings - payments)')
+    trace7 = go.Scatter(x=season_df.season,
+                        y=dec_total,
+                        mode='lines+markers',
+                        name='DEC total (earnings - payments)',
+                        line=dict(color='royalblue'))
+
+    trace8 = go.Scatter(x=season_df.season,
+                        y=merits_total,
+                        mode='lines+markers',
+                        name='MERITS  total (earnings)',
+                        line=dict(color='red', width=2))
+    trace9 = go.Scatter(x=season_df.season,
+                        y=sps_total,
+                        mode='lines+markers',
+                        name='SPS total (earnings - payments)',
+                        line=dict(color='lightgreen', width=2))
 
     # fig.add_trace(trace1)
     # fig.add_trace(trace2)
@@ -166,9 +181,9 @@ def plot_season_stats_earnings(season_df, output_dir=""):
     # fig.add_trace(trace4)
     # fig.add_trace(trace5)
     # fig.add_trace(trace6)
-    fig.add_trace(trace7)
-    fig.add_trace(trace8)
-    fig.add_trace(trace9)
+    fig.add_trace(trace7, row=1, col=1)
+    fig.add_trace(trace8, row=2, col=1)
+    fig.add_trace(trace9, row=3, col=1)
 
 
     fig.update_layout(
@@ -196,16 +211,23 @@ def plot_season_stats_earnings(season_df, output_dir=""):
         ),
 
         yaxis=dict(
-            title="earnings",
-            gridcolor="gray",
-            gridwidth=1,
-            nticks=50,
+            title="DEC",
+            # gridwidth=1,
+            # nticks=50,
+            side="right"
+        ),
+        yaxis2=dict(
+            title="MERITS",
+            side="right"
+        ),
+        yaxis3=dict(
+            title="SPS",
             side="right"
         ),
     )
 
     # fig.show()
-    fig.write_image(output_dir + "\\3_season_stats_earnings.png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
+    fig.write_image(output_dir + "\\3_season_stats_earnings.png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT*2)
 
 
 def plot_season_battle_history(battle_history, output_dir, mode):

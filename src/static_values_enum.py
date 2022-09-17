@@ -42,5 +42,6 @@ class Edition(Enum):
     untamed = 4
     dice = 5
     chaos = 7
+    rift = 8
 
 

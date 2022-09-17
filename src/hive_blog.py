@@ -142,8 +142,6 @@ def get_last_season_costs_table(last_season):
 def get_last_season_earnings_table(last_season):
     result = "| Earnings |  # | \n"
     result += "| - | - |\n"
-    result += "| DEC battle rewards | " + dec_icon + " " + str(round(last_season.dec_reward, 3)) + " |\n"
-    result += "| DEC quest rewards | " + dec_icon + " " + str(round(last_season.dec_quest_rewards, 3)) + " |\n"
     result += "| DEC rental rewards | " + dec_icon + " " + str(round(last_season.dec_rental_payment, 3)) + " |\n"
     result += "| DEC market sell | " + dec_icon + " " + str(round(last_season.dec_sell_market_purchase, 3)) + " |\n"
     result += "| DEC tournament rewards | " + dec_icon + " " + str(round(last_season.dec_tournament_prize, 3)) + " |\n"

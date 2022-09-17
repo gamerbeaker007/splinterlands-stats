@@ -15,7 +15,7 @@ def get_battle_info(battle_info_file, mode):
 
         if season_battle_df.season.max() != current_season_data['id'] - 1:
             for season_id in range(next_season, current_season_data['id']):
-                print("Get battle information of season: " + str(season_id))
+                print("Get battle information (" + str(mode.value) + ") of season: " + str(season_id))
                 season_info = api.get_leaderboard_with_player_season(configuration.ACCOUNT_NAME, season_id, mode=mode)
                 if season_info and len(season_info) > 1:
                     season_battle_df_new = pd.DataFrame(season_info, index=[0])
