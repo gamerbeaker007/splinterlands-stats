@@ -118,6 +118,7 @@ def plot_season_stats_battles(season_df, output_dir, mode):
         ),
         yaxis1=dict(
             showgrid=False,
+            range=[0, season_df.battles.max()+20],
             title="battles",
         ),
         yaxis2=dict(

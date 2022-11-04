@@ -11,7 +11,7 @@ def get_battle_info(battle_info_file, mode):
 
     if os.path.isfile(battle_info_file):
         season_battle_df = pd.read_csv(battle_info_file, index_col=[0])
-        next_season = season_battle_df.season.max().astype(int) + 1
+        next_season = season_battle_df.season.max() + 1
 
         if season_battle_df.season.max() != current_season_data['id'] - 1:
             for season_id in range(next_season, current_season_data['id']):
