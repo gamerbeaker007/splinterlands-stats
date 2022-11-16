@@ -210,16 +210,27 @@ def plot_season_stats_earnings(season_df, output_dir=""):
             gridcolor=GRID_COLOR,
             tickvals=season_df.season,
         ),
-
         yaxis=dict(
             title="DEC",
-            # gridwidth=1,
-            # nticks=50,
-            side="right"
+            side="right",
+        ),
+
+        xaxis2=dict(
+            showgrid=True,
+            gridwidth=1,
+            gridcolor=GRID_COLOR,
+            tickvals=season_df.season,
         ),
         yaxis2=dict(
             title="MERITS",
             side="right"
+        ),
+
+        xaxis3=dict(
+            showgrid=True,
+            gridwidth=1,
+            gridcolor=GRID_COLOR,
+            tickvals=season_df.season,
         ),
         yaxis3=dict(
             title="SPS",
