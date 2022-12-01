@@ -141,6 +141,15 @@ def add_balance_data_to_season_df(season_df,
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                          balance_history_sps_unclaimed_df,
                                                          'focus', column_prefix='sps_', positive_only=True)
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_sps_unclaimed_df,
+                                                         'nightmare', column_prefix='sps_', positive_only=True)
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_sps_unclaimed_df,
+                                                         'land', column_prefix='sps_', positive_only=True)
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_sps_unclaimed_df,
+                                                         'brawl', column_prefix='sps_', positive_only=True)
 
         # NOTE SEASON REWARDS are always in the time frame of the new season
         season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
