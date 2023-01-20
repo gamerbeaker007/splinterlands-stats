@@ -23,7 +23,7 @@ def print_season_post(username,
     if not last_season_market_history.empty:
         last_season_market_history_purchases = last_season_market_history[(last_season_market_history.purchaser == username)]
         last_season_market_history_sales = last_season_market_history[(last_season_market_history.seller == username)]
-    print("########################################## BLOG STARTS HERE ##########################")
+    # print("########################################## BLOG STARTS HERE ##########################")
     print_blog = """
 # """ + str(last_season.season_name) + """ of (""" + str(username) + """): 
 
@@ -101,7 +101,8 @@ Thx all for reading
     text_file = open(output_dir + "\\post.txt", "w")
     text_file.write(print_blog)
     text_file.close()
-    print(print_blog)
+    print("Post can be found in file: " + str(text_file.name))
+    # print(print_blog)
 
 
 def get_last_season_statistics_table(last_season_wild_battles, last_season_modern_battles):
@@ -157,9 +158,6 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
         modern_ratio = "NA"
         modern_loss = "NA"
 
-
-
-
     wild_league_logo = "https://images.hive.blog/75x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/leagues/wild_150/league_" + str(wild_league) + ".png"
     modern_league_logo = "https://images.hive.blog/75x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/leagues/modern_150/league_" + str(modern_league) + ".png"
     extra_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
@@ -200,7 +198,8 @@ def get_last_season_earnings_table(last_season):
     result += "| DEC rental rewards | " + dec_icon + " " + str(round(last_season.dec_rental_payment, 3)) + " |\n"
     result += "| DEC market sell | " + dec_icon + " " + str(round(last_season.dec_sell_market_purchase, 3)) + " |\n"
     result += "| DEC tournament rewards | " + dec_icon + " " + str(round(last_season.dec_tournament_prize, 3)) + " |\n"
-    result += "| SPS tournament rewards | " + sps_icon + " " + str(round(last_season.sps_tournament_prize, 3)) + " |\n"
+    result += "| SPS tournament rewards | " + sps_icon + " " + str(round(last_season.sps_tournament_prize, 3)
+                                                                   + round(last_season.sps_token_transfer_multi, 3)) + " |\n"
     result += "| SPS staking reward | " + sps_icon + " " + str(round(last_season.sps_claim_staking_rewards, 3)) + " |\n"
     result += "| SPS token award (pools) | " + sps_icon + " " + str(round(last_season.sps_token_award, 3)) + " |\n"
     result += "| SPS ranked battle (modern) | " + sps_icon + " " + str(round(last_season.sps_modern, 3)) + " |\n"

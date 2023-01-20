@@ -17,7 +17,7 @@ def get_balances(season_balances_data_file, seasons_played_array):
         # Determine if new data needs to be pulled?
         if season_balances_df.season.max() != current_season_data['id'] - 1:
             # continue pull x season data
-            season_end_times = season.get_season_end_times(configuration.time_zone)
+            season_end_times = season.get_season_end_times()
             last_season_end_date = [season_end_time['date'] for season_end_time in season_end_times if
                         season_end_time["id"] == season_balances_df.season.max()][0]
 
@@ -86,7 +86,7 @@ def add_balance_data_to_season_df(season_df,
                                   balance_history_merits_df,
                                   balance_history_sps_unclaimed_df,
                                   single_season_id=None):
-    season_end_times = season.get_season_end_times(configuration.time_zone)
+    season_end_times = season.get_season_end_times()
 
     curr_season = api.get_current_season()
     last_season_name_id = int(curr_season['name'].split(' ')[-1]) - 1
@@ -127,6 +127,9 @@ def add_balance_data_to_season_df(season_df,
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                          balance_history_sps_df,
                                                          'tournament_prize', column_prefix='sps_')
+        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                         balance_history_sps_df,
+                                                         'token_transfer_multi', column_prefix='sps_')
         season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                          balance_history_sps_df,
                                                          'enter_tournament', column_prefix='sps_')
@@ -234,6 +237,13 @@ def cumulate_specific_balance_for_season(start_date, end_date, season_df, season
         else:
             mask = (input_df['created_date'] > start_date) & (input_df['created_date'] <= end_date) & (
                     input_df['type'] == search_type)
+
+        if search_type == "token_transfer_multi":
+            mask = (input_df['created_date'] > start_date) \
+                   & (input_df['created_date'] <= end_date) \
+                   & (input_df['type'] == search_type) \
+                   & (input_df['token'] == 'SPS')
+
 
         # print("Amount " + str(search_type) + ": " + str(input_df.loc[mask].amount.sum()))
         season_df.loc[season_df.season == season_id, str(column_prefix + search_type)] = input_df.loc[mask].amount.sum()

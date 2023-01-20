@@ -27,7 +27,7 @@ def main():
     plots.plot_season_stats_earnings(season_balances_df, output_dir)
 
     # determine last season start and end time
-    season_end_times = season.get_season_end_times(configuration.time_zone)
+    season_end_times = season.get_season_end_times()
     end_date = [season_end_time['date'] for season_end_time in season_end_times if
                 season_end_time["id"] == season_balances_df.season.max()][0]
     start_date = [season_end_time['date'] for season_end_time in season_end_times if
@@ -41,6 +41,7 @@ def main():
 
     # get last season rewards
     current_season_data = api.get_current_season()
+    print("DETERMINE NEXT END SEASON (" + str(current_season_data['id']) + "), DATE: " + str(current_season_data['ends']))
     last_season_player_history_rewards = market_info.get_last_season_player_history_rewards(start_date, end_date,
                                                                                 current_season_data['id'] - 1)
 

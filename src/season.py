@@ -5,7 +5,7 @@ import pytz
 from dateutil import parser
 from pytz import timezone
 
-from src import api
+from src import api, configuration
 from src.static_values_enum import Format
 
 
@@ -30,9 +30,12 @@ def get_all_season_data(username, mode):
             print("CONTINUE no data found for  (" + str(mode.value) + ") seasons found for  '" + str(username) + "'  season: " + str(current_season_id - i))
     return season_array
 
+
 # Used information about season end dates from:
 # https://kiokizz.github.io/Splinterlands/seasonReportCard/scripts/report_array.js?v=1
-def get_season_end_times(time_zone_str):
+def get_season_end_times():
+    time_zone_str = configuration.time_zone
+
     # season origin
     x = {
         "id": 55,
@@ -108,6 +111,8 @@ def get_season_end_times(time_zone_str):
         elif season['id'] == 101:
             season['date'] = parser.parse("2022-12-29T15:00:00.000Z").astimezone(timezone(time_zone_str))
         elif season['id'] == 102:
-            season['date'] = parser.parse("2023-01-16T15:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2023-01-16T14:00:00.000Z").astimezone(timezone(time_zone_str))
+        elif season['id'] == 103:
+            season['date'] = parser.parse("2023-01-31T14:00:00.000Z").astimezone(timezone(time_zone_str))
 
     return season_end_dates_array
