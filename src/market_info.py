@@ -103,14 +103,15 @@ def filter_df_last_season(start_date, end_date, data_frame):
 
 def get_sold_cards(account_name, cards_df):
     sold_cards = []
-    # first remove duplicate card ids
-    cards_df = cards_df.drop_duplicates()
+    if not cards_df.empty:
+        # first remove duplicate card ids
+        cards_df = cards_df.drop_duplicates()
 
-    ids = ','.join(cards_df['card'].values.tolist())
-    cards = get_cards_by_ids(ids)
-    for card in cards:
-        if card['player'] != account_name:
-            sold_cards += [card]
+        ids = ','.join(cards_df['card'].values.tolist())
+        cards = get_cards_by_ids(ids)
+        for card in cards:
+            if card['player'] != account_name:
+                sold_cards += [card]
     return sold_cards
 
 
