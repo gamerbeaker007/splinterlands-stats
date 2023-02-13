@@ -43,5 +43,6 @@ class Edition(Enum):
     dice = 5
     chaos = 7
     rift = 8
+    soulbound = 10
 
 

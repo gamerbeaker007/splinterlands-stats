@@ -11,6 +11,8 @@ def print_season_post(username,
                       season_battles_wild,
                       season_battles_modern,
                       last_season_market_history,
+                      purchases_cards,
+                      sold_cards,
                       last_season_rewards,
                       tournaments_info,
                       output_dir=""):
@@ -23,6 +25,11 @@ def print_season_post(username,
     if not last_season_market_history.empty:
         last_season_market_history_purchases = last_season_market_history[(last_season_market_history.purchaser == username)]
         last_season_market_history_sales = last_season_market_history[(last_season_market_history.seller == username)]
+
+    if not last_season_rewards.empty:
+        reward_cards = last_season_rewards[(last_season_rewards['type'] == 'reward_card')]
+    else:
+        reward_cards = last_season_rewards
     # print("########################################## BLOG STARTS HERE ##########################")
     print_blog = """
 # """ + str(last_season.season_name) + """ of (""" + str(username) + """): 
@@ -72,11 +79,20 @@ https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/2
 ## <div class="phishy"><center>Cards Purchased</center></div>
 """ + str(get_card_table(last_season_market_history_purchases)) + """ 
 
+# EXPERIMENTAL
+""" + str(get_card_table(purchases_cards)) + """ 
+
+
 ## <div class="phishy"><center>Cards Sold</center></div>
 """ + str(get_card_table(last_season_market_history_sales)) + """ 
 
+# EXPERIMENTAL
+Note that only card that are listed and sold int this season are displayed here.
+""" + str(get_card_table(sold_cards)) + """ 
+
+
 ## <div class="phishy"><center>Cards Earned</center></div>
-""" + str(get_card_table(last_season_rewards[(last_season_rewards['type'] == 'reward_card')])) + """
+""" + str(get_card_table(reward_cards)) + """
 
 ## <div class="phishy"><center>Potions/Packs earned</center></div>
 """ + str(get_rewards_potion_packs_table(last_season_rewards)) + """
@@ -236,7 +252,8 @@ def get_tournament_info(tournaments_info):
         total_sps_earned = pd.to_numeric(filters_sps_prizes[['prize_qty']].sum(1), errors='coerce').sum()
 
         filters_sps_entry_fee = tournaments_info[tournaments_info.entry_fee.str.contains("SPS")]
-        filters_sps_entry_fee[['fee_qty', 'fee_type']] = filters_sps_entry_fee.entry_fee.str.split(" ", expand=True, )
+        # TODO FIX Warning here no clue how yet
+        filters_sps_entry_fee[['fee_qty', 'fee_type']] = filters_sps_entry_fee.entry_fee.str.split(" ", expand=True)
         total_sps_fee = pd.to_numeric(filters_sps_entry_fee[['fee_qty']].sum(1), errors='coerce').sum()
 
         result += "|**Total SPS** | | | | **" + str(total_sps_fee) + "**|**" + str(total_sps_earned) + "**| \n"
@@ -287,23 +304,26 @@ def get_card_table(cards_df):
 
 
 def get_rewards_potion_packs_table(last_season_rewards):
-    gold_potion = "![alchemy.png](https://images.hive.blog/120x0/https://files.peakd.com/file/peakd-hive/beaker007/AK6ZKi4NWxuWbnhNc1V3k9DeqiqhTvmcenpsX5xhHUFdBGEYTMfMpsnC9aHL7R2.png)"
-    legendary_potion = "![legendary.png](https://images.hive.blog/120x0/https://files.peakd.com/file/peakd-hive/beaker007/AK3gbhdHjfaQxKVM39VfeHCw25haYejvUT17E8WBgveTKY5rucpRY7AbjgsAhdu.png)"
-    packs_img = "![chaosPack.png](https://images.hive.blog/120x0/https://files.peakd.com/file/peakd-hive/beaker007/Eo8M4f1Zieju9ibwbs6Tnp3KvN9Kb93HkqwMi3FqanTmV2XoNw7pmV4MbjDSxbgiSdo.png)"
+    if not last_season_rewards.empty:
+        gold_potion = "![alchemy.png](https://images.hive.blog/120x0/https://files.peakd.com/file/peakd-hive/beaker007/AK6ZKi4NWxuWbnhNc1V3k9DeqiqhTvmcenpsX5xhHUFdBGEYTMfMpsnC9aHL7R2.png)"
+        legendary_potion = "![legendary.png](https://images.hive.blog/120x0/https://files.peakd.com/file/peakd-hive/beaker007/AK3gbhdHjfaQxKVM39VfeHCw25haYejvUT17E8WBgveTKY5rucpRY7AbjgsAhdu.png)"
+        packs_img = "![chaosPack.png](https://images.hive.blog/120x0/https://files.peakd.com/file/peakd-hive/beaker007/Eo8M4f1Zieju9ibwbs6Tnp3KvN9Kb93HkqwMi3FqanTmV2XoNw7pmV4MbjDSxbgiSdo.png)"
 
-    potions = last_season_rewards[(last_season_rewards['type'] == 'potion')].groupby(['potion_type']).sum()
-    packs = last_season_rewards[(last_season_rewards['type'] == 'pack')].groupby(['edition']).sum()
-    result = "| Legendary | Gold | Packs |\n"
-    result += "|-|-|-|\n"
-    result += "| " + str(legendary_potion) + "<br> " + str(potions.loc['legendary'].quantity) + "x"
-    result += "| " + str(gold_potion) + "<br> " + str(potions.loc['gold'].quantity) + "x"
-    if packs.empty:
-        result += "| " + str(packs_img) + "<br> 0x"
+        potions = last_season_rewards[(last_season_rewards['type'] == 'potion')].groupby(['potion_type']).sum()
+        packs = last_season_rewards[(last_season_rewards['type'] == 'pack')].groupby(['edition']).sum()
+        result = "| Legendary | Gold | Packs |\n"
+        result += "|-|-|-|\n"
+        result += "| " + str(legendary_potion) + "<br> " + str(potions.loc['legendary'].quantity) + "x"
+        result += "| " + str(gold_potion) + "<br> " + str(potions.loc['gold'].quantity) + "x"
+        if packs.empty:
+            result += "| " + str(packs_img) + "<br> 0x"
+        else:
+            result += "| " + str(packs_img) + "<br> " + str(packs.loc[7.0].quantity) + "x"
+
+        result += "|\n"
+        return result
     else:
-        result += "| " + str(packs_img) + "<br> " + str(packs.loc[7.0].quantity) + "x"
-
-    result += "|\n"
-    return result
+        return "None"
 
 
 def get_splinterlands_logo_centered():

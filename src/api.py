@@ -1,5 +1,7 @@
 import json
+from datetime import datetime
 
+import pytz
 import requests
 from dateutil import parser
 from urllib3 import Retry
@@ -8,6 +10,7 @@ from requests.adapters import HTTPAdapter
 base_url_api2 = "https://api2.splinterlands.com/"
 base_url_api = "https://api.splinterlands.com/"
 cached_url = "https://cache-api.splinterlands.com/"
+hive_api_url = 'https://api.hive.blog'
 LIMIT = 500
 
 
@@ -150,3 +153,66 @@ def get_player_tournaments_ids(username):
     for tournament in tournaments_transfers:
         tournaments_ids.append(json.loads(tournament['data'])['tournament_id'])
     return tournaments_ids
+
+
+def get_cards_by_ids(ids):
+    #https://api.splinterlands.io/cards/find?ids=C3-457-3VIL75QJ2O,
+    address = base_url_api + "cards/find?ids=" + str(ids)
+    retry_strategy = Retry(
+        total=5,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["HEAD", "GET", "OPTIONS"]
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    http = requests.Session()
+    http.mount("https://", adapter)
+    result = http.get(address)
+    if result.status_code == 200:
+        return result.json()
+    else:
+        return None
+
+
+def get_spl_transaction(trx_id):
+    # https://api.splinterlands.io/market/status?id=d8f8593d637ebdd0bca7994dd7e1a15d9f12efa7-0
+    address = base_url_api + "market/status?id=" + str(trx_id)
+    retry_strategy = Retry(
+        total=5,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["HEAD", "GET", "OPTIONS"]
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    http = requests.Session()
+    http.mount("https://", adapter)
+    result = http.get(address)
+    if result.status_code == 200:
+        return result.json()
+    else:
+        return None
+
+
+def get_hive_transactions(account_name, from_date, till_date, last_id, results):
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    data = '{"jsonrpc":"2.0", ' \
+           '"method":"condenser_api.get_account_history", ' \
+           '"params":["' + str(account_name) + '" , ' \
+           + str(last_id) + ', ' \
+           + str(LIMIT) + ', 262144], "id":1}'
+
+    response = requests.post(hive_api_url, headers=headers, data=data)
+    if response.status_code == 200:
+        transactions = json.loads(response.text)['result']
+        for transaction in transactions:
+            timestamp = transaction[1]['timestamp']
+            timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S').astimezone(pytz.utc)
+            if from_date < timestamp < till_date:
+                results.append(transaction[1])
+
+        # Check last transaction if there need to be another pull
+        timestamp = transactions[0][1]['timestamp']
+        timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S').astimezone(pytz.utc)
+        if from_date < timestamp:
+            last_id = transactions[0][0]
+
+            get_hive_transactions(account_name, from_date, till_date, last_id-1, results)
+    return results
