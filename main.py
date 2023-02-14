@@ -28,20 +28,22 @@ def main():
 
     # determine last season start and end time
     current_season_data = api.get_current_season()
-    print("DETERMINE NEXT END SEASON (" + str(current_season_data['id']) + "), DATE: " + str(current_season_data['ends']))
 
     season_end_times = season.get_season_end_times()
+    previous_season_id = current_season_data['id']-1
     start_date = [season_end_time['date'] for season_end_time in season_end_times if
-                  season_end_time["id"] == current_season_data['id'] - 1][0]
+                  season_end_time["id"] == previous_season_id - 1][0]
     end_date = [season_end_time['date'] for season_end_time in season_end_times if
-                season_end_time["id"] == current_season_data['id']][0]
+                season_end_time["id"] == previous_season_id][0]
 
+    print("Get tournament and market info for season " + str(previous_season_id) +
+          " Start: " + str(start_date) +
+          " End: " + str(end_date))
     # get tournament information
     tournaments_info_df = tournaments_info.get_tournaments_info(configuration.ACCOUNT_NAME, start_date, end_date)
 
     # get last season market purchases
     last_season_market_history = market_info.get_last_season_market_history(start_date, end_date)
-
 
     purchases_cards, sold_cards = market_info.get_purchased_sold_cards(configuration.ACCOUNT_NAME,
                                                                        start_date,
@@ -50,6 +52,8 @@ def main():
     # get last season rewards
     last_season_player_history_rewards = market_info.get_last_season_player_history_rewards(start_date, end_date,
                                                                                 current_season_data['id'] - 1)
+
+    print("DETERMINE NEXT END SEASON (" + str(current_season_data['id']) + "), DATE: " + str(current_season_data['ends']))
 
     hive_blog.print_season_post(configuration.ACCOUNT_NAME,
                                 season_balances_df,
