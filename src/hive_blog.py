@@ -87,7 +87,7 @@ https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/2
 """ + str(get_card_table(last_season_market_history_sales)) + """ 
 
 # EXPERIMENTAL
-Note that only card that are listed and sold int this season are displayed here.
+Note that only card that are listed and sold in this season are displayed here.
 """ + str(get_card_table(sold_cards)) + """ 
 
 
