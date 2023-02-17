@@ -13,6 +13,15 @@ cached_url = "https://cache-api.splinterlands.com/"
 hive_api_url = 'https://api.hive.blog'
 LIMIT = 500
 
+retry_strategy = Retry(
+    total=5,
+    status_forcelist=[429, 500, 502, 503, 504],
+    method_whitelist=["HEAD", "GET", "OPTIONS"]
+)
+adapter = HTTPAdapter(max_retries=retry_strategy)
+http = requests.Session()
+http.mount("https://", adapter)
+
 
 def get_current_season():
     address = base_url_api2 + "settings"
@@ -36,14 +45,6 @@ def get_leaderboard_with_player_season(username, season, mode):
               "&format=" + str(mode.value) + \
               "&username=" + str(username)
 
-    retry_strategy = Retry(
-        total=5,
-        status_forcelist=[429, 500, 502, 503, 504],
-        method_whitelist=["HEAD", "GET", "OPTIONS"]
-    )
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    http = requests.Session()
-    http.mount("https://", adapter)
     result = http.get(address)
     if result.status_code == 200:
         return result.json()['player']
@@ -85,10 +86,12 @@ def get_balance_history_for_token(username, token="DEC", offset=0, result=None, 
     # rental_refund
     # address = str(address) + "&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward,season_rewards"
 
-    if result is None:  # create a new result if no intermediate was given
-        result = requests.get(address).json()
-    else:
-        result += requests.get(address).json()
+    response = http.get(address)
+    if response.status_code == 200:
+        if result is None:  # create a new result if no intermediate was given
+            result = response.json()
+        else:
+            result += response.json()
 
     if len(result) == offset + LIMIT:
         created_date = parser.parse(result[-1]['created_date'])
@@ -158,14 +161,7 @@ def get_player_tournaments_ids(username):
 def get_cards_by_ids(ids):
     #https://api.splinterlands.io/cards/find?ids=C3-457-3VIL75QJ2O,
     address = base_url_api + "cards/find?ids=" + str(ids)
-    retry_strategy = Retry(
-        total=5,
-        status_forcelist=[429, 500, 502, 503, 504],
-        allowed_methods=["HEAD", "GET", "OPTIONS"]
-    )
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    http = requests.Session()
-    http.mount("https://", adapter)
+
     result = http.get(address)
     if result.status_code == 200:
         return result.json()
@@ -176,14 +172,7 @@ def get_cards_by_ids(ids):
 def get_spl_transaction(trx_id):
     # https://api.splinterlands.io/market/status?id=d8f8593d637ebdd0bca7994dd7e1a15d9f12efa7-0
     address = base_url_api + "market/status?id=" + str(trx_id)
-    retry_strategy = Retry(
-        total=5,
-        status_forcelist=[429, 500, 502, 503, 504],
-        allowed_methods=["HEAD", "GET", "OPTIONS"]
-    )
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    http = requests.Session()
-    http.mount("https://", adapter)
+
     result = http.get(address)
     if result.status_code == 200:
         return result.json()

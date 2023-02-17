@@ -102,124 +102,128 @@ def add_balance_data_to_season_df(season_df,
         season_arr = season_df.season.values
 
     for season_id in season_arr:
-        end_date = [season_end_time['date'] for season_end_time in season_end_times if
-                    season_end_time["id"] == season_id][0]
-        start_date = [season_end_time['date'] for season_end_time in season_end_times if
-                      season_end_time["id"] == season_id - 1][0]
+        if season_id > season_end_times[0]['id']:
+            end_date = [season_end_time['date'] for season_end_time in season_end_times if
+                        season_end_time["id"] == season_id][0]
+            start_date = [season_end_time['date'] for season_end_time in season_end_times if
+                          season_end_time["id"] == season_id - 1][0]
 
-        new_end_date = [season_end_time['date'] for season_end_time in season_end_times if
-                        season_end_time["id"] == season_id + 1][0]
-        new_start_date = [season_end_time['date'] for season_end_time in season_end_times if
-                          season_end_time["id"] == season_id][0]
+            new_end_date = [season_end_time['date'] for season_end_time in season_end_times if
+                            season_end_time["id"] == season_id + 1][0]
+            new_start_date = [season_end_time['date'] for season_end_time in season_end_times if
+                              season_end_time["id"] == season_id][0]
 
-        # Voucher add
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_voucher_df,
-                                                         'claim_staking_rewards', column_prefix="voucher_")
+            # Voucher add
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_voucher_df,
+                                                             'claim_staking_rewards', column_prefix="voucher_")
 
-        # SPS add
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_sps_df,
-                                                         'claim_staking_rewards', column_prefix='sps_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_sps_df,
-                                                         'token_award', column_prefix='sps_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_sps_df,
-                                                         'tournament_prize', column_prefix='sps_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_sps_df,
-                                                         'token_transfer_multi', column_prefix='sps_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_sps_df,
-                                                         'enter_tournament', column_prefix='sps_')
+            # SPS add
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_df,
+                                                             'claim_staking_rewards', column_prefix='sps_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_df,
+                                                             'token_award', column_prefix='sps_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_df,
+                                                             'tournament_prize', column_prefix='sps_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_df,
+                                                             'token_transfer_multi', column_prefix='sps_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_df,
+                                                             'enter_tournament', column_prefix='sps_')
 
-        # SPS unclaimed add (earnings for quest/season/ranked battles)
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_sps_unclaimed_df,
-                                                         'modern', column_prefix='sps_', positive_only=True)
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_sps_unclaimed_df,
-                                                         'wild', column_prefix='sps_', positive_only=True)
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_sps_unclaimed_df,
-                                                         'focus', column_prefix='sps_', positive_only=True)
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_sps_unclaimed_df,
-                                                         'nightmare', column_prefix='sps_', positive_only=True)
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_sps_unclaimed_df,
-                                                         'land', column_prefix='sps_', positive_only=True)
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_sps_unclaimed_df,
-                                                         'brawl', column_prefix='sps_', positive_only=True)
+            # SPS unclaimed add (earnings for quest/season/ranked battles)
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'modern', column_prefix='sps_', positive_only=True)
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'wild', column_prefix='sps_', positive_only=True)
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'focus', column_prefix='sps_', positive_only=True)
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'nightmare', column_prefix='sps_', positive_only=True)
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'land', column_prefix='sps_', positive_only=True)
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'brawl', column_prefix='sps_', positive_only=True)
 
-        # NOTE SEASON REWARDS are always in the time frame of the new season
-        season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
-                                                         balance_history_sps_unclaimed_df,
-                                                         'season', column_prefix='sps_', positive_only=True)
+            # NOTE SEASON REWARDS are always in the time frame of the new season
+            season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'season', column_prefix='sps_', positive_only=True)
 
-        # Credits add
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_credits_df,
-                                                         'quest_rewards', column_prefix='credits_')
-        # NOTE SEASON REWARDS are always in the time frame of the new season
-        season_df = cumulate_specific_balance_for_season(new_start_date, new_start_date, season_df, season_id,
-                                                         balance_history_credits_df,
-                                                         'season_rewards', column_prefix='credits_')
+            # Credits add
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_credits_df,
+                                                             'quest_rewards', column_prefix='credits_')
+            # NOTE SEASON REWARDS are always in the time frame of the new season
+            season_df = cumulate_specific_balance_for_season(new_start_date, new_start_date, season_df, season_id,
+                                                             balance_history_credits_df,
+                                                             'season_rewards', column_prefix='credits_')
 
-        # DEC add
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_dec_df,
-                                                         'dec_reward')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_dec_df,
-                                                         'quest_rewards', column_prefix='dec_')
-        # NOTE SEASON REWARDS are always in the time frame of the new season
-        season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
-                                                         balance_history_dec_df,
-                                                         'season_rewards', column_prefix='dec_')
+            # DEC add
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_dec_df,
+                                                             'dec_reward')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_dec_df,
+                                                             'quest_rewards', column_prefix='dec_')
+            # NOTE SEASON REWARDS are always in the time frame of the new season
+            season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
+                                                             balance_history_dec_df,
+                                                             'season_rewards', column_prefix='dec_')
 
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_dec_df,
-                                                         'tournament_prize', column_prefix='dec_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_dec_df,
-                                                         'enter_tournament', column_prefix='dec_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_dec_df,
-                                                         'rental_payment_fees', column_prefix='dec_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_dec_df,
-                                                         'rental_payment', column_prefix='dec_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_dec_df,
-                                                         'market_rental', column_prefix='dec_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_dec_df,
-                                                         'rental_refund', column_prefix='dec_')
-        buy_df = balance_history_dec_df[(balance_history_dec_df.type == 'market_purchase') & (
-                pd.to_numeric(balance_history_dec_df.amount) < 0)].copy()
-        sell_df = balance_history_dec_df[(balance_history_dec_df.type == 'market_purchase') & (
-                pd.to_numeric(balance_history_dec_df.amount) > 0)].copy()
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, buy_df,
-                                                         'market_purchase',
-                                                         column_prefix='dec_buy_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, sell_df,
-                                                         'market_purchase',
-                                                         column_prefix='dec_sell_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_dec_df,
+                                                             'tournament_prize', column_prefix='dec_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_dec_df,
+                                                             'enter_tournament', column_prefix='dec_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_dec_df,
+                                                             'rental_payment_fees', column_prefix='dec_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_dec_df,
+                                                             'rental_payment', column_prefix='dec_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_dec_df,
+                                                             'market_rental', column_prefix='dec_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_dec_df,
+                                                             'rental_refund', column_prefix='dec_')
+            buy_df = balance_history_dec_df[(balance_history_dec_df.type == 'market_purchase') & (
+                    pd.to_numeric(balance_history_dec_df.amount) < 0)].copy()
+            sell_df = balance_history_dec_df[(balance_history_dec_df.type == 'market_purchase') & (
+                    pd.to_numeric(balance_history_dec_df.amount) > 0)].copy()
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, buy_df,
+                                                             'market_purchase',
+                                                             column_prefix='dec_buy_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, sell_df,
+                                                             'market_purchase',
+                                                             column_prefix='dec_sell_')
 
-        # MERITS add
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_merits_df,
-                                                         'quest_rewards', column_prefix='merits_')
-        season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
-                                                         balance_history_merits_df,
-                                                         'brawl_prize', column_prefix='merits_')
-        # NOTE SEASON REWARDS are always in the time frame of the new season
-        season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
-                                                         balance_history_merits_df,
-                                                         'season_rewards', column_prefix='merits_')
+            # MERITS add
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_merits_df,
+                                                             'quest_rewards', column_prefix='merits_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_merits_df,
+                                                             'brawl_prize', column_prefix='merits_')
+            # NOTE SEASON REWARDS are always in the time frame of the new season
+            season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
+                                                             balance_history_merits_df,
+                                                             'season_rewards', column_prefix='merits_')
+        else:
+            print("To old season '" + str(season_id) +
+                  "' to process, do not have the season start and end times... sorry")
     return season_df
 
 
