@@ -1,3 +1,5 @@
+import os
+
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
@@ -92,7 +94,7 @@ def plot_season_stats_rating(season_df, output_dir, mode):
     )
 
     # fig.show()
-    fig.write_image(output_dir + "\\1_season_stats_rating_" + str(mode.value) + ".png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
+    fig.write_image(os.path.join(output_dir, "1_season_stats_rating_" + str(mode.value) + ".png"), width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
 
 
 def plot_season_stats_battles(season_df, output_dir, mode):
@@ -130,7 +132,7 @@ def plot_season_stats_battles(season_df, output_dir, mode):
             title='win (%)'),
     )
     # fig.show()
-    fig.write_image(output_dir + "\\2_season_stats_battles_" + str(mode.value) + ".png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
+    fig.write_image(os.path.join(output_dir, "2_season_stats_battles_" + str(mode.value) + ".png"), width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
 
 
 def plot_season_stats_earnings(season_df, output_dir=""):
@@ -240,7 +242,7 @@ def plot_season_stats_earnings(season_df, output_dir=""):
     )
 
     # fig.show()
-    fig.write_image(output_dir + "\\3_season_stats_earnings.png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT*2)
+    fig.write_image(os.path.join(output_dir, "3_season_stats_earnings.png"), width=IMAGES_WIDTH, height=IMAGES_HEIGHT*2)
 
 
 def plot_season_battle_history(battle_history, output_dir, mode):
@@ -287,4 +289,4 @@ def plot_season_battle_history(battle_history, output_dir, mode):
     )
 
     # fig.show()
-    fig.write_image(output_dir + "\\4_season_battle_history_" + str(mode.value) + ".png", width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
+    fig.write_image(os.path.join(output_dir, "4_season_battle_history_" + str(mode.value) + ".png"), width=IMAGES_WIDTH, height=IMAGES_HEIGHT)

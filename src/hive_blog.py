@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 
 credit_icon = "![credit.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/AK3iY7Tb28oEV8oALeHvUbBpKjWxvADTHcaqtPSL4C2YzcJ4oZLp36MAiX3qGNw.png)"
@@ -114,7 +116,7 @@ Thx all for reading
 
 """ + str(get_splinterlands_logo_centered())
 
-    text_file = open(output_dir + "\\post.txt", "w")
+    text_file = open(os.path.join(output_dir, "post.txt"), "w")
     text_file.write(print_blog)
     text_file.close()
     print("Post can be found in file: " + str(text_file.name))
