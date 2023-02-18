@@ -106,17 +106,14 @@ def plot_season_stats_battles(season_df, output_dir, mode):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     trace3 = go.Scatter(x=season_df.season,
                         y=season_df.win_pct,
-                        line=dict(color='blue'),
                         mode='lines+markers',
                         name='win percentage')
     trace4 = go.Scatter(x=season_df.season,
                         y=season_df.battles,
-                        line=dict(color='red'),
                         mode='lines+markers',
                         name='battles')
     trace5 = go.Scatter(x=season_df.season,
                         y=season_df.wins,
-                        line=dict(color='green'),
                         mode='lines+markers',
                         name='wins')
     fig.add_trace(trace3, secondary_y=True)
