@@ -68,7 +68,7 @@ def plot_season_stats_rating(season_df, output_dir, mode):
             title="rating",
             gridcolor=GRID_COLOR,
             gridwidth=1,
-            nticks=50,
+            nticks=25,
             range=[0, season_df.rating.max()*1.05]
         ),
         yaxis=dict(
@@ -104,9 +104,21 @@ def plot_season_stats_battles(season_df, output_dir, mode):
     season_df = season_df.sort_values(by=['season'])
 
     fig = make_subplots(specs=[[{"secondary_y": True}]])
-    trace3 = go.Scatter(x=season_df.season, y=season_df.win_pct, mode='lines+markers', name='win percentage')
-    trace4 = go.Scatter(x=season_df.season, y=season_df.battles, mode='lines', name='battles')
-    trace5 = go.Scatter(x=season_df.season, y=season_df.wins, mode='lines', name='wins')
+    trace3 = go.Scatter(x=season_df.season,
+                        y=season_df.win_pct,
+                        line=dict(color='blue'),
+                        mode='lines+markers',
+                        name='win percentage')
+    trace4 = go.Scatter(x=season_df.season,
+                        y=season_df.battles,
+                        line=dict(color='red'),
+                        mode='lines+markers',
+                        name='battles')
+    trace5 = go.Scatter(x=season_df.season,
+                        y=season_df.wins,
+                        line=dict(color='green'),
+                        mode='lines+markers',
+                        name='wins')
     fig.add_trace(trace3, secondary_y=True)
     fig.add_trace(trace4)
     fig.add_trace(trace5)
@@ -119,17 +131,18 @@ def plot_season_stats_battles(season_df, output_dir, mode):
         font=TEXT_FONT,
 
         xaxis=dict(
-            zerolinecolor=GRID_COLOR,
             tickvals=season_df.season,
         ),
         yaxis1=dict(
+            zerolinecolor=GRID_COLOR,
             showgrid=False,
             range=[0, season_df.battles.max()+20],
             title="battles",
         ),
         yaxis2=dict(
+            zerolinecolor=GRID_COLOR,
             showgrid=False,
-            overlaying='y2',
+            overlaying='y',
             side='right',
             anchor='x2',
             range=[0, 100],
@@ -214,20 +227,17 @@ def plot_season_stats_earnings(season_df, output_dir=""):
         xaxis=dict(
             showgrid=True,
             gridwidth=1,
-            showline=False,
             gridcolor=GRID_COLOR,
             tickvals=season_df.season,
         ),
         yaxis=dict(
             zerolinecolor=GRID_COLOR,
-            showline=False,
             gridcolor=GRID_COLOR,
             title="DEC",
             side="right",
         ),
 
         xaxis2=dict(
-            showline=False,
             showgrid=True,
             gridwidth=1,
             gridcolor=GRID_COLOR,
@@ -235,14 +245,12 @@ def plot_season_stats_earnings(season_df, output_dir=""):
         ),
         yaxis2=dict(
             zerolinecolor=GRID_COLOR,
-            showline=False,
             gridcolor=GRID_COLOR,
             title="MERITS",
             side="right"
         ),
 
         xaxis3=dict(
-            showline=False,
             showgrid=True,
             gridwidth=1,
             gridcolor=GRID_COLOR,
@@ -250,7 +258,6 @@ def plot_season_stats_earnings(season_df, output_dir=""):
         ),
         yaxis3=dict(
             zerolinecolor=GRID_COLOR,
-            showline=False,
             gridcolor=GRID_COLOR,
             title="SPS",
             side="right"
