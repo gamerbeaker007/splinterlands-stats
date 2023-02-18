@@ -8,15 +8,15 @@ from src.static_values_enum import Leagues
 IMAGES_HEIGHT = 720
 IMAGES_WIDTH = 1280
 
+PAPER_BGCOLOR = 'rgba(35,35,35,255)'
+PLOT_BGCOLOR = 'rgba(35,35,35,255)'
+GRID_COLOR = 'rgba(170,170,170,255)'
+
 TEXT_FONT = dict(
     family="sans serif",
     size=14,
-    color="floralwhite"
+    color=GRID_COLOR,
 )
-
-PAPER_BGCOLOR = 'rgba(100,100,100,255)'
-PLOT_BGCOLOR = 'rgba(0,0,0,0)'
-GRID_COLOR = 'rgba(255,255,255,255)'
 
 
 def plot_season_stats_rating(season_df, output_dir, mode):
@@ -58,18 +58,21 @@ def plot_season_stats_rating(season_df, output_dir, mode):
         font=TEXT_FONT,
 
         xaxis=dict(
+            zerolinecolor=GRID_COLOR,
             tickvals=season_df.season,
         ),
 
         yaxis2=dict(
+            zerolinecolor=GRID_COLOR,
             showgrid=True,
             title="rating",
-            gridcolor="gray",
+            gridcolor=GRID_COLOR,
             gridwidth=1,
             nticks=50,
             range=[0, season_df.rating.max()*1.05]
         ),
         yaxis=dict(
+            zeroline=False,
             showgrid=False,
             title="league",
             range=[0, season_df.rating.max()*1.05],
@@ -116,6 +119,7 @@ def plot_season_stats_battles(season_df, output_dir, mode):
         font=TEXT_FONT,
 
         xaxis=dict(
+            zerolinecolor=GRID_COLOR,
             tickvals=season_df.season,
         ),
         yaxis1=dict(
@@ -210,32 +214,44 @@ def plot_season_stats_earnings(season_df, output_dir=""):
         xaxis=dict(
             showgrid=True,
             gridwidth=1,
+            showline=False,
             gridcolor=GRID_COLOR,
             tickvals=season_df.season,
         ),
         yaxis=dict(
+            zerolinecolor=GRID_COLOR,
+            showline=False,
+            gridcolor=GRID_COLOR,
             title="DEC",
             side="right",
         ),
 
         xaxis2=dict(
+            showline=False,
             showgrid=True,
             gridwidth=1,
             gridcolor=GRID_COLOR,
             tickvals=season_df.season,
         ),
         yaxis2=dict(
+            zerolinecolor=GRID_COLOR,
+            showline=False,
+            gridcolor=GRID_COLOR,
             title="MERITS",
             side="right"
         ),
 
         xaxis3=dict(
+            showline=False,
             showgrid=True,
             gridwidth=1,
             gridcolor=GRID_COLOR,
             tickvals=season_df.season,
         ),
         yaxis3=dict(
+            zerolinecolor=GRID_COLOR,
+            showline=False,
+            gridcolor=GRID_COLOR,
             title="SPS",
             side="right"
         ),

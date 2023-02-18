@@ -72,7 +72,10 @@ def get_balances(season_balances_data_file, seasons_played_array):
                                                            balance_history_voucher_df,
                                                            balance_history_merits_df,
                                                            balance_history_sps_unclaimed_df)
-        # Write and store
+    # drop rows if all values in columns are NA remove
+    number_of_columns = len(season_balances_df.columns.tolist())
+    season_balances_df = season_balances_df.dropna(thresh=number_of_columns - 4)
+    # Write and store
     season_balances_df.to_csv(season_balances_data_file)
 
     return season_balances_df

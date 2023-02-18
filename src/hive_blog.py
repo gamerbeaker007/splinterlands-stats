@@ -34,7 +34,7 @@ def print_season_post(username,
         reward_cards = last_season_rewards
     # print("########################################## BLOG STARTS HERE ##########################")
     print_blog = """
-# """ + str(last_season.season_name) + """ of (""" + str(username) + """): 
+# Splinterlands season """ + str(last_season.season) + """ of (""" + str(username) + """): 
 
 https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23xL2wuMjBE9nsXndxmCoPcGJARoydfwp52UTXVez31FnNbXKtkBqVx3eUBmybtD6L8J6.gif
 
