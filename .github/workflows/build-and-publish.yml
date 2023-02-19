@@ -36,18 +36,3 @@ jobs:
           registry: ghcr.io
           username: ${{ .github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build image and push to Docker Hub and GitHub Container Registry
-        uses: docker/build-push-action@v2
-        with:
-          # relative path to the place where source code with Dockerfile is located
-          context: ./
-          # Note: tags has to be all lower-case
-          tags: |
-            gamerbeaker/splinterlands-stats:latest 
-            ghcr.io/gamerbeaker/splinterlands-stats:latest
-          # build on feature branches, push only on main branch
-          push: ${{ .github.ref == 'refs/heads/test-docker-image' }}
-
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
