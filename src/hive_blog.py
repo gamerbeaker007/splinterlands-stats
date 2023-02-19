@@ -110,7 +110,7 @@ If you like the content, consider adding @beaker007 as beneficiaries of your pos
 https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23tkhySrnBbRV3iV2aD2jH7uuYJuCsFJF5j8P8EVG1aarjqSR7cRLRmuTDhji5MnTVKSM.png
 
 
-If you are not already playing splinterlands consider using my referral link [beaker007](https://splinterlands.com?ref=beaker007).
+If you are not playing splinterlands consider using my referral link [beaker007](https://splinterlands.com?ref=beaker007).
 
 Thx all for reading
 

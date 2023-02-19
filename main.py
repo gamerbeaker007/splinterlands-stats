@@ -18,7 +18,7 @@ def main():
     print("Getting information for account: " + str(account_name) +
           " with time zone: " + str(time_zone))
 
-    output_dir = os.path.join('', 'output', )
+    output_dir = os.path.join('output', account_name )
     season_balances_data_file = os.path.join(output_dir, 'season_data.csv')
     season_wild_battle_data_file = os.path.join(output_dir, 'season_wild_data.csv')
     season_modern_battle_data_file = os.path.join(output_dir, 'season_modern_data.csv')

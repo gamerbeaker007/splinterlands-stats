@@ -18,9 +18,11 @@ https://peakd.com/hive-13323/@beaker007/how-to-use-the-splinterlands-season-stat
 
 
 # Test docker
+docker login ghcr.io --username <github username>
 docker pull ghcr.io/gamerbeaker007/splinterlands-stats:latest
 
 ## windows:
-docker run -it -v C:\Temp\:/app/output -e "ACCOUNT_NAME=shinoumonk" -e "TIME_ZONE=Europe/Amsterdam" splinterlands-stats
+docker run -it -v C:\Temp\:/app/output -e "ACCOUNT_NAME=<splinterlands account name>" -e "TIME_ZONE=Europe/Amsterdam" ghcr.io/gamerbeaker007/splinterlands-stats:latest
+
 ## Linux:
-docker run -it -v \tmp\:/app/output -e "ACCOUNT_NAME=shinoumonk" -e "TIME_ZONE=Europe/Amsterdam" splinterlands-stats
+docker run -it -v \tmp\:/app/output -e "ACCOUNT_NAME=<splinterlands account name>" -e "TIME_ZONE=Europe/Amsterdam" ghcr.io/gamerbeaker007/splinterlands-stats:latest
