@@ -28,7 +28,7 @@ jobs:
         env:
           SUPER_SECRET: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
-          example-command "$SUPER_SECRET"
+          echo "$SUPER_SECRET"
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
