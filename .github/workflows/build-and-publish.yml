@@ -3,7 +3,7 @@ name: Build and Publish
 on:
   # run it on push to the default repository branch
   push:
-    branches: [test-docker-image]
+    branches: [main]
   # run it during pull request
   pull_request:
 
@@ -24,6 +24,6 @@ jobs:
 
       - name: Build the hello-docker Docker image
         run: |
-               docker build . --tag ghcr.io/gamerbeaker007/splinterlands-stats-test:latest
-               docker run ghcr.io/gamerbeaker007/splinterlands-stats-test:latest
-               docker push ghcr.io/gamerbeaker007/splinterlands-stats-test:latest
+               docker build . --tag ghcr.io/gamerbeaker007/splinterlands-stats:latest
+               docker run ghcr.io/gamerbeaker007/splinterlands-stats:latest
+               docker push ghcr.io/gamerbeaker007/splinterlands-stats:latest
