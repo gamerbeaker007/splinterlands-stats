@@ -34,7 +34,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ .github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build image and push to Docker Hub and GitHub Container Registry
@@ -47,7 +47,7 @@ jobs:
             gamerbeaker/splinterlands-stats:latest 
             ghcr.io/gamerbeaker/splinterlands-stats:latest
           # build on feature branches, push only on main branch
-          push: ${{ github.ref == 'refs/heads/test-docker-image' }}
+          push: ${{ .github.ref == 'refs/heads/test-docker-image' }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
