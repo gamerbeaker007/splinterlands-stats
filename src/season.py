@@ -5,7 +5,7 @@ import pytz
 from dateutil import parser
 from pytz import timezone
 
-from src import api, configuration
+from src import configuration, api
 from src.static_values_enum import Format
 
 
@@ -33,8 +33,7 @@ def get_all_season_data(username, mode):
 
 # Used information about season end dates from:
 # https://kiokizz.github.io/Splinterlands/seasonReportCard/scripts/report_array.js?v=1
-def get_season_end_times():
-    time_zone_str = configuration.time_zone
+def get_season_end_times(time_zone):
 
     # season origin
     x = {
@@ -49,7 +48,7 @@ def get_season_end_times():
     season_end_dates_array = []
     for i in range(0, 240):
         date = datetime.datetime(x['YYYY'], month=x['MM'], day=x['DD'], hour=x['HH'], tzinfo=pytz.utc)
-        date = date.astimezone(timezone(time_zone_str))
+        date = date.astimezone(timezone(time_zone))
 
         season_dict = {
             "id": x['id'] + i,
@@ -81,42 +80,42 @@ def get_season_end_times():
     # https://discord.com/channels/447924793048825866/451123773882499085/876471197708206090
     for season in season_end_dates_array:
         if season['id'] == 68:
-            season['date'] = parser.parse("2021-08-16T20:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2021-08-16T20:00:00.000Z").astimezone(timezone(time_zone))
         # we have changed it to make seasons not end on weekends or holidays since there have been technical issues recently and we want the team to be available
         elif season['id'] == 86:
-            season['date'] = parser.parse("2022-05-16T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2022-05-16T14:00:00.000Z").astimezone(timezone(time_zone))
         # Times provided by @yabapmatt
         elif season['id'] == 88:
-            season['date'] = parser.parse("2022-06-15T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2022-06-15T14:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 89:
-            season['date'] = parser.parse("2022-06-30T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2022-06-30T14:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 90:
-            season['date'] = parser.parse("2022-07-13T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2022-07-13T14:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 91:
-            season['date'] = parser.parse("2022-08-01T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2022-08-01T14:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 92:
-            season['date'] = parser.parse("2022-08-16T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2022-08-16T14:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 93:
-            season['date'] = parser.parse("2022-08-31T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2022-08-31T14:00:00.000Z").astimezone(timezone(time_zone))
 
         # Manual update
         elif season['id'] == 94:
-            season['date'] = parser.parse("2022-09-15T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2022-09-15T14:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 96:
-            season['date'] = parser.parse("2022-10-14T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2022-10-14T14:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 98:
-            season['date'] = parser.parse("2022-11-15T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2022-11-15T14:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 100:
-            season['date'] = parser.parse("2022-12-15T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2022-12-15T14:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 101:
-            season['date'] = parser.parse("2022-12-29T15:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2022-12-29T15:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 102:
-            season['date'] = parser.parse("2023-01-16T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2023-01-16T14:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 103:
-            season['date'] = parser.parse("2023-01-31T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2023-01-31T14:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 104:
-            season['date'] = parser.parse("2023-02-14T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2023-02-14T14:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 105:
-            season['date'] = parser.parse("2023-02-28T14:00:00.000Z").astimezone(timezone(time_zone_str))
+            season['date'] = parser.parse("2023-02-28T14:00:00.000Z").astimezone(timezone(time_zone))
 
     return season_end_dates_array

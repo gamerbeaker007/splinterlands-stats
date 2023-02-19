@@ -2,11 +2,11 @@ import os
 
 import pandas as pd
 
-from src import season, configuration, api
+from src import configuration, api, season
 from src.static_values_enum import Leagues
 
 
-def get_battle_info(battle_info_file, mode):
+def get_battle_info(account_name, battle_info_file, mode):
     current_season_data = api.get_current_season()
 
     if os.path.isfile(battle_info_file):
@@ -16,18 +16,18 @@ def get_battle_info(battle_info_file, mode):
         if season_battle_df.season.max() != current_season_data['id'] - 1:
             for season_id in range(next_season, current_season_data['id']):
                 print("Get battle information (" + str(mode.value) + ") of season: " + str(season_id))
-                season_info = api.get_leaderboard_with_player_season(configuration.ACCOUNT_NAME, season_id, mode=mode)
+                season_info = api.get_leaderboard_with_player_season(account_name, season_id, mode=mode)
                 if season_info and len(season_info) > 1:
                     season_battle_df_new = pd.DataFrame(season_info, index=[0])
                     season_battle_df_new = add_battle_data_to_seasons_df(season_battle_df_new)
                 else:
-                    season_battle_df_new = pd.DataFrame({'season': season_id, 'player': configuration.ACCOUNT_NAME}, index=[0])
+                    season_battle_df_new = pd.DataFrame({'season': season_id, 'player': account_name}, index=[0])
                 season_battle_df = pd.concat([season_battle_df, season_battle_df_new], ignore_index=True)
         else:
             print("All battle information for mode " + str(mode.value) + " already pulled continue with the current data set")
 
     else:
-        season_battle_df = pd.DataFrame(season.get_all_season_data(configuration.ACCOUNT_NAME, mode))
+        season_battle_df = pd.DataFrame(season.get_all_season_data(account_name, mode))
         season_battle_df = add_battle_data_to_seasons_df(season_battle_df)
 
     season_battle_df.to_csv(battle_info_file)

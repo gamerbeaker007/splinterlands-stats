@@ -3,13 +3,13 @@ import json
 import numpy as np
 import pandas as pd
 
-from src import api, configuration
+from src import configuration, api
 from src.api import get_hive_transactions, get_spl_transaction, get_cards_by_ids
 from src.static_values_enum import Edition
 
 
-def get_last_season_market_history(start_date, end_date):
-    market_history_df = pd.DataFrame(api.get_market_history(configuration.ACCOUNT_NAME))
+def get_last_season_market_history(account_name, start_date, end_date):
+    market_history_df = pd.DataFrame(api.get_market_history(account_name))
     if not market_history_df.empty:
         last_season_market_history = filter_df_last_season(start_date, end_date, market_history_df)
         if not last_season_market_history.empty:
@@ -26,8 +26,8 @@ def get_last_season_market_history(start_date, end_date):
         return market_history_df
 
 
-def get_last_season_player_history_rewards(start_date, end_date, season_id):
-    player_history_df = pd.DataFrame(api.get_player_history_rewards(configuration.ACCOUNT_NAME))
+def get_last_season_player_history_rewards(account_name, start_date, end_date, season_id):
+    player_history_df = pd.DataFrame(api.get_player_history_rewards(account_name))
     reward_data = pd.DataFrame()
 
     if not player_history_df.empty:

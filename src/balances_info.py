@@ -2,11 +2,11 @@ import os
 
 import pandas as pd
 
-from src import api, season, configuration
+from src import configuration, api, season
 from src.data_migrations import data_migration_modern_wild
 
 
-def get_balances(season_balances_data_file, seasons_played_array):
+def get_balances(account_name, time_zone, season_balances_data_file, seasons_played_array):
     current_season_data = api.get_current_season()
 
     if os.path.isfile(season_balances_data_file):
@@ -17,17 +17,23 @@ def get_balances(season_balances_data_file, seasons_played_array):
         # Determine if new data needs to be pulled?
         if season_balances_df.season.max() != current_season_data['id'] - 1:
             # continue pull x season data
-            season_end_times = season.get_season_end_times()
+            season_end_times = season.get_season_end_times(time_zone)
             last_season_end_date = [season_end_time['date'] for season_end_time in season_end_times if
                         season_end_time["id"] == season_balances_df.season.max()][0]
 
-            balance_history_dec_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="DEC", from_date=last_season_end_date))
-            balance_history_voucher_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="VOUCHER", from_date=last_season_end_date))
-            balance_history_credits_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="CREDITS", from_date=last_season_end_date))
-            balance_history_sps_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="SPS", from_date=last_season_end_date))
-            balance_history_merits_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="MERITS", from_date=last_season_end_date))
+            balance_history_dec_df = pd.DataFrame(
+                api.get_balance_history_for_token(account_name, token="DEC", from_date=last_season_end_date))
+            balance_history_voucher_df = pd.DataFrame(
+                api.get_balance_history_for_token(account_name, token="VOUCHER", from_date=last_season_end_date))
+            balance_history_credits_df = pd.DataFrame(
+                api.get_balance_history_for_token(account_name, token="CREDITS", from_date=last_season_end_date))
+            balance_history_sps_df = pd.DataFrame(
+                api.get_balance_history_for_token(account_name, token="SPS", from_date=last_season_end_date))
+            balance_history_merits_df = pd.DataFrame(
+                api.get_balance_history_for_token(account_name, token="MERITS", from_date=last_season_end_date))
 
-            balance_history_sps_unclaimed_df = pd.DataFrame(api.get_balance_history_for_token_unclaimed(configuration.ACCOUNT_NAME, token="SPS", from_date=last_season_end_date))
+            balance_history_sps_unclaimed_df = pd.DataFrame(
+                api.get_balance_history_for_token_unclaimed(account_name, token="SPS", from_date=last_season_end_date))
 
             next_season = season_balances_df.season.max() + 1
             for season_id in range(next_season, current_season_data['id']):
@@ -35,10 +41,12 @@ def get_balances(season_balances_data_file, seasons_played_array):
 
                 # add new season
                 season_balances_df = pd.concat([season_balances_df,
-                                                pd.DataFrame({'season': [season_id], 'player': [configuration.ACCOUNT_NAME]})],
+                                                pd.DataFrame({'season': [season_id], 'player': [
+                                                    account_name]})],
                                                ignore_index=True)
 
-                season_balances_df = add_balance_data_to_season_df(season_balances_df,
+                season_balances_df = add_balance_data_to_season_df(time_zone,
+                                                                   season_balances_df,
                                                                    balance_history_credits_df,
                                                                    balance_history_dec_df,
                                                                    balance_history_sps_df,
@@ -53,19 +61,26 @@ def get_balances(season_balances_data_file, seasons_played_array):
         # Get ALL
 
         # Get all balances
-        balance_history_dec_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="DEC"))
-        balance_history_voucher_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="VOUCHER"))
-        balance_history_credits_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="CREDITS"))
-        balance_history_sps_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="SPS"))
-        balance_history_merits_df = pd.DataFrame(api.get_balance_history_for_token(configuration.ACCOUNT_NAME, token="MERITS"))
+        balance_history_dec_df = pd.DataFrame(
+            api.get_balance_history_for_token(account_name, token="DEC"))
+        balance_history_voucher_df = pd.DataFrame(
+            api.get_balance_history_for_token(account_name, token="VOUCHER"))
+        balance_history_credits_df = pd.DataFrame(
+            api.get_balance_history_for_token(account_name, token="CREDITS"))
+        balance_history_sps_df = pd.DataFrame(
+            api.get_balance_history_for_token(account_name, token="SPS"))
+        balance_history_merits_df = pd.DataFrame(
+            api.get_balance_history_for_token(account_name, token="MERITS"))
 
-        balance_history_sps_unclaimed_df = pd.DataFrame(api.get_balance_history_for_token_unclaimed(configuration.ACCOUNT_NAME, token="SPS"))
+        balance_history_sps_unclaimed_df = pd.DataFrame(
+            api.get_balance_history_for_token_unclaimed(account_name, token="SPS"))
 
         # Copy season id's from wild (because this will contain the most data, wild exists first)
         season_balances_df = pd.DataFrame()
         season_balances_df['season'] = seasons_played_array.tolist()
-        season_balances_df['player'] = configuration.ACCOUNT_NAME
-        season_balances_df = add_balance_data_to_season_df(season_balances_df,
+        season_balances_df['player'] = account_name
+        season_balances_df = add_balance_data_to_season_df(time_zone,
+                                                           season_balances_df,
                                                            balance_history_credits_df,
                                                            balance_history_dec_df,
                                                            balance_history_sps_df,
@@ -81,7 +96,8 @@ def get_balances(season_balances_data_file, seasons_played_array):
     return season_balances_df
 
 
-def add_balance_data_to_season_df(season_df,
+def add_balance_data_to_season_df(time_zone,
+                                  season_df,
                                   balance_history_credits_df,
                                   balance_history_dec_df,
                                   balance_history_sps_df,
@@ -89,7 +105,7 @@ def add_balance_data_to_season_df(season_df,
                                   balance_history_merits_df,
                                   balance_history_sps_unclaimed_df,
                                   single_season_id=None):
-    season_end_times = season.get_season_end_times()
+    season_end_times = season.get_season_end_times(time_zone)
 
     curr_season = api.get_current_season()
     last_season_name_id = int(curr_season['name'].split(' ')[-1]) - 1

@@ -3,22 +3,35 @@ import pandas as pd
 from src import api, season, plots, hive_blog, balances_info, configuration, battle_info, tournaments_info, market_info
 from src.static_values_enum import Format
 
-output_dir = os.path.join('output', configuration.ACCOUNT_NAME)
-season_balances_data_file = os.path.join(output_dir, 'season_data.csv')
-season_wild_battle_data_file = os.path.join(output_dir, 'season_wild_data.csv')
-season_modern_battle_data_file = os.path.join(output_dir, 'season_modern_data.csv')
-
 
 def main():
+    account_name = os.environ.get("ACCOUNT_NAME")
+    time_zone = os.environ.get("TIME_ZONE")
+
+    if not account_name:
+        print("No environment ACCOUNT_NAME found, using default from config.properties")
+        account_name = configuration.ACCOUNT_NAME
+    if not time_zone:
+        print("No environment TIME_ZONE found, using default from config.properties")
+        time_zone = configuration.TIME_ZONE
+
+    print("Getting information for account: " + str(account_name) +
+          " with time zone: " + str(time_zone))
+
+    output_dir = os.path.join('', 'output', )
+    season_balances_data_file = os.path.join(output_dir, 'season_data.csv')
+    season_wild_battle_data_file = os.path.join(output_dir, 'season_wild_data.csv')
+    season_modern_battle_data_file = os.path.join(output_dir, 'season_modern_data.csv')
+
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
-    season_wild_df = battle_info.get_battle_info(season_wild_battle_data_file, Format.WILD)
-    season_modern_df = battle_info.get_battle_info(season_modern_battle_data_file, Format.MODERN)
+    season_wild_df = battle_info.get_battle_info(account_name, season_wild_battle_data_file, Format.WILD)
+    season_modern_df = battle_info.get_battle_info(account_name, season_modern_battle_data_file, Format.MODERN)
 
     # Determine season array of both wild and modern
     combined_season = pd.concat([season_wild_df, season_modern_df]).season.sort_values(ascending=False).unique().astype(int)
-    season_balances_df = balances_info.get_balances(season_balances_data_file, combined_season)
+    season_balances_df = balances_info.get_balances(account_name, season_balances_data_file, combined_season)
 
     plots.plot_season_stats_rating(season_wild_df, output_dir, Format.WILD)
     plots.plot_season_stats_rating(season_modern_df, output_dir, Format.MODERN)
@@ -29,7 +42,7 @@ def main():
     # determine last season start and end time
     current_season_data = api.get_current_season()
 
-    season_end_times = season.get_season_end_times()
+    season_end_times = season.get_season_end_times(time_zone)
     previous_season_id = current_season_data['id']-1
     start_date = [season_end_time['date'] for season_end_time in season_end_times if
                   season_end_time["id"] == previous_season_id - 1][0]
@@ -40,22 +53,22 @@ def main():
           " Start: " + str(start_date) +
           " End: " + str(end_date))
     # get tournament information
-    tournaments_info_df = tournaments_info.get_tournaments_info(configuration.ACCOUNT_NAME, start_date, end_date)
+    tournaments_info_df = tournaments_info.get_tournaments_info(account_name, start_date, end_date)
 
     # get last season market purchases
-    last_season_market_history = market_info.get_last_season_market_history(start_date, end_date)
+    last_season_market_history = market_info.get_last_season_market_history(account_name, start_date, end_date)
 
-    purchases_cards, sold_cards = market_info.get_purchased_sold_cards(configuration.ACCOUNT_NAME,
+    purchases_cards, sold_cards = market_info.get_purchased_sold_cards(account_name,
                                                                        start_date,
                                                                        end_date)
 
     # get last season rewards
-    last_season_player_history_rewards = market_info.get_last_season_player_history_rewards(start_date, end_date,
-                                                                                current_season_data['id'] - 1)
+    last_season_player_history_rewards = market_info.get_last_season_player_history_rewards(account_name, start_date, end_date,
+                                                                                            current_season_data['id'] - 1)
 
     print("DETERMINE NEXT END SEASON (" + str(current_season_data['id']) + "), DATE: " + str(current_season_data['ends']))
 
-    hive_blog.print_season_post(configuration.ACCOUNT_NAME,
+    hive_blog.print_season_post(account_name,
                                 season_balances_df,
                                 season_wild_df,
                                 season_modern_df,
