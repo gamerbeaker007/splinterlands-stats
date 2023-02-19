@@ -25,5 +25,4 @@ jobs:
       - name: Build the hello-docker Docker image
         run: |
                docker build . --tag ghcr.io/gamerbeaker007/splinterlands-stats:latest
-               docker run ghcr.io/gamerbeaker007/splinterlands-stats:latest
                docker push ghcr.io/gamerbeaker007/splinterlands-stats:latest
