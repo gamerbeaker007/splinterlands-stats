@@ -27,11 +27,16 @@ def main():
         os.mkdir(output_dir)
 
     season_wild_df = battle_info.get_battle_info(account_name, season_wild_battle_data_file, Format.WILD)
-    season_modern_df = battle_info.get_battle_info(account_name, season_modern_battle_data_file, Format.MODERN)
+    season_modern_df = battle_info.get_battle_info(account_name,
+                                                   season_modern_battle_data_file,
+                                                   Format.MODERN)
 
     # Determine season array of both wild and modern
     combined_season = pd.concat([season_wild_df, season_modern_df]).season.sort_values(ascending=False).unique().astype(int)
-    season_balances_df = balances_info.get_balances(account_name, season_balances_data_file, combined_season)
+    season_balances_df = balances_info.get_balances(account_name,
+                                                    time_zone,
+                                                    season_balances_data_file,
+                                                    combined_season)
 
     plots.plot_season_stats_rating(season_wild_df, output_dir, Format.WILD)
     plots.plot_season_stats_rating(season_modern_df, output_dir, Format.MODERN)
