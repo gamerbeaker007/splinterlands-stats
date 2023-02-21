@@ -11,7 +11,6 @@ base_url_api2 = "https://api2.splinterlands.com/"
 base_url_api = "https://api.splinterlands.com/"
 cached_url = "https://cache-api.splinterlands.com/"
 hive_api_url = 'https://api.hive.blog'
-LIMIT = 500
 
 retry_strategy = Retry(
     total=5,
@@ -25,18 +24,19 @@ http.mount("https://", adapter)
 
 def get_current_season():
     address = base_url_api2 + "settings"
-    return requests.get(address).json()['season']
+    return http.get(address).json()['season']
 
 
 def get_combine_rates():
     address = base_url_api2 + "settings"
-    return requests.get(address).json()['combine_rates'], requests.get(address).json()['combine_rates_gold'], \
-           requests.get(address).json()['core_editions']
+    return http.get(address).json()['combine_rates'],\
+        http.get(address).json()['combine_rates_gold'], \
+        http.get(address).json()['core_editions']
 
 
 def get_specific_season_end_date(season):
     address = base_url_api2 + ""
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_leaderboard_with_player_season(username, season, mode):
@@ -54,103 +54,91 @@ def get_leaderboard_with_player_season(username, season, mode):
 
 def get_market_history(username):
     address = base_url_api2 + "market/history?player=" + str(username)
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_player_history_rewards(username):
     address = base_url_api + "players/history?username=" + str(
         username) + "&from_block=-1&limit=500&types=card_award,claim_reward"
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
-def get_balance_history_for_token(username, token="DEC", offset=0, result=None, from_date=None):
+def get_balance_history_for_token(username, token="DEC", from_date=None, unclaimed_sps=False):
+    limit = 1000
+    offset = 0
+    max_transactions = 1000000
+    print_suffix = ""
+
+    if unclaimed_sps:
+        print_suffix = " UNCLAIMED"
+
+    complete_result = current_result = get_balance_history_for_token_impl(username,
+                                                                          token=token,
+                                                                          offset=offset,
+                                                                          limit=limit,
+                                                                          unclaimed_sps=unclaimed_sps)
+
+    while len(current_result) > 0 and offset <= max_transactions:
+        print(str(token) + str(print_suffix) +
+              ": More then '" + str(offset + limit) +
+              "' returned, continue for another balance pull...")
+        current_result = get_balance_history_for_token_impl(username,
+                                                            token=token,
+                                                            offset=offset + limit,
+                                                            limit=limit,
+                                                            unclaimed_sps=unclaimed_sps)
+        complete_result += current_result
+        offset += limit
+        created_date = parser.parse(complete_result[-1]['created_date'])
+        if from_date and from_date > created_date:
+            print(token + ": last pull contains all season information data from '" + str(from_date) + "' till NOW")
+            break
+
+    if offset > max_transactions:
+        print("Stop pulling data MAX transactions (" + str(max_transactions) + ") reached. Possible not all data pulled")
+    print(token + ": all data pulled")
+
+    return complete_result
+
+
+def get_balance_history_for_token_impl(username, token="DEC", offset=0, limit=1000, unclaimed_sps=False):
     token_types = ["SPS", "DEC", "VOUCHER", "CREDITS", "MERITS"]
     if token not in token_types:
         raise ValueError("Invalid token type. Expected one of: %s" % token_types)
 
-    address = base_url_api2 + "players/balance_history?token_type=" + str(token) + "&username=" + str(
-        username) + "&offset=" + str(offset) + "&limit=" + str(LIMIT)
-    # if token == "DEC":
-    # all found :
-    # dec_reward
-    # rental_payment_fee
-    # rental_payment
-    # season_rewards
-    # tournament_prize
-    # quest_rewards
-    # withdraw
-    # token_transfer
-    # market_purchase
-    # enter_tournament
-    # market_rental
-    # rental_refund
-    # address = str(address) + "&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward,season_rewards"
+    if unclaimed_sps:
+        balance_history_link = "players/unclaimed_balance_history?token_type="
+    else:
+        balance_history_link = "players/balance_history?token_type="
+    address = base_url_api2 + str(balance_history_link) + str(token) + "&username=" + str(
+        username) + "&offset=" + str(offset) + "&limit=" + str(limit)
 
     response = http.get(address)
-    if response.status_code == 200:
-        if result is None:  # create a new result if no intermediate was given
-            result = response.json()
-        else:
-            result += response.json()
-
-    if len(result) == offset + LIMIT:
-        created_date = parser.parse(result[-1]['created_date'])
-        if not from_date or from_date < created_date:
-            print(token + ": More then '" + str(offset + LIMIT) + "' returned, continue for another balance pull...")
-            get_balance_history_for_token(username, token=token, offset=offset + LIMIT, result=result, from_date=from_date)
-        else:
-            print(token + ": last pull contains all season information data from '" + str(from_date) + "' till NOW")
+    if response.status_code == 200 and response.text != '':
+        return response.json()
     else:
-        print(token + ": all data pulled")
-
-    return result
-
-
-def get_balance_history_for_token_unclaimed(username, token="SPS", offset=0, result=None, from_date=None):
-    token_types = ["SPS"]
-    if token not in token_types:
-        raise ValueError("Invalid token type. Expected one of: %s" % token_types)
-
-    address = base_url_api2 + "players/unclaimed_balance_history?token_type=" + str(token) + "&username=" + str(
-        username) + "&offset=" + str(offset) + "&limit=" + str(LIMIT)
-
-    if result is None:  # create a new result if no intermediate was given
-        result = requests.get(address).json()
-    else:
-        result += requests.get(address).json()
-
-    if len(result) == offset + LIMIT:
-        created_date = parser.parse(result[-1]['created_date'])
-        if not from_date or from_date < created_date:
-            print(token + " UNCLAIMED: More then '" + str(offset + LIMIT) + "' returned, continue for another balance pull...")
-            get_balance_history_for_token_unclaimed(username, token=token, offset=offset + LIMIT, result=result, from_date=from_date)
-        else:
-            print(token + " UNCLAIMED: last pull contains all season information data from '" + str(from_date) + "' till NOW")
-    else:
-        print(token + "UNCLAIMED: all data pulled")
-
-    return result
+        return []
 
 
 def get_market_transaction(trx_id):
     address = base_url_api2 + "market/status?id=" + str(trx_id)
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_card_details():
     address = base_url_api2 + "cards/get_details"
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_tournament(tournament_id):
     address = base_url_api2 + "tournaments/find?id=" + str(tournament_id)
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_player_tournaments_ids(username):
     address = base_url_api2 + "players/history?username=" + str(
         username) + "&from_block=-1&limit=500&types=token_transfer"
-    result = requests.get(address).json()
+    result = http.get(address).json()
     tournaments_transfers = list(filter(lambda item: "enter_tournament" in item['data'], result))
     tournaments_ids = []
     for tournament in tournaments_transfers:
@@ -181,14 +169,15 @@ def get_spl_transaction(trx_id):
 
 
 def get_hive_transactions(account_name, from_date, till_date, last_id, results):
+    limit = 1000
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     data = '{"jsonrpc":"2.0", ' \
            '"method":"condenser_api.get_account_history", ' \
            '"params":["' + str(account_name) + '" , ' \
            + str(last_id) + ', ' \
-           + str(LIMIT) + ', 262144], "id":1}'
+           + str(limit) + ', 262144], "id":1}'
 
-    response = requests.post(hive_api_url, headers=headers, data=data)
+    response = http.post(hive_api_url, headers=headers, data=data)
     if response.status_code == 200:
         transactions = json.loads(response.text)['result']
         for transaction in transactions:
