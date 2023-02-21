@@ -24,18 +24,19 @@ http.mount("https://", adapter)
 
 def get_current_season():
     address = base_url_api2 + "settings"
-    return requests.get(address).json()['season']
+    return http.get(address).json()['season']
 
 
 def get_combine_rates():
     address = base_url_api2 + "settings"
-    return requests.get(address).json()['combine_rates'], requests.get(address).json()['combine_rates_gold'], \
-           requests.get(address).json()['core_editions']
+    return http.get(address).json()['combine_rates'],\
+        http.get(address).json()['combine_rates_gold'], \
+        http.get(address).json()['core_editions']
 
 
 def get_specific_season_end_date(season):
     address = base_url_api2 + ""
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_leaderboard_with_player_season(username, season, mode):
@@ -53,28 +54,34 @@ def get_leaderboard_with_player_season(username, season, mode):
 
 def get_market_history(username):
     address = base_url_api2 + "market/history?player=" + str(username)
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_player_history_rewards(username):
     address = base_url_api + "players/history?username=" + str(
         username) + "&from_block=-1&limit=500&types=card_award,claim_reward"
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_balance_history_for_token(username, token="DEC", from_date=None, unclaimed_sps=False):
     limit = 1000
     offset = 0
     max_transactions = 1000000
+    print_suffix = ""
+
+    if unclaimed_sps:
+        print_suffix = " UNCLAIMED"
 
     complete_result = current_result = get_balance_history_for_token_impl(username,
                                                                           token=token,
-                                                                          offset=-1,
+                                                                          offset=offset,
                                                                           limit=limit,
                                                                           unclaimed_sps=unclaimed_sps)
 
     while len(current_result) > 0 and offset <= max_transactions:
-        print(token + ": More then '" + str(offset + limit) + "' returned, continue for another balance pull...")
+        print(str(token) + str(print_suffix) +
+              ": More then '" + str(offset + limit) +
+              "' returned, continue for another balance pull...")
         current_result = get_balance_history_for_token_impl(username,
                                                             token=token,
                                                             offset=offset + limit,
@@ -115,23 +122,23 @@ def get_balance_history_for_token_impl(username, token="DEC", offset=0, limit=10
 
 def get_market_transaction(trx_id):
     address = base_url_api2 + "market/status?id=" + str(trx_id)
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_card_details():
     address = base_url_api2 + "cards/get_details"
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_tournament(tournament_id):
     address = base_url_api2 + "tournaments/find?id=" + str(tournament_id)
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_player_tournaments_ids(username):
     address = base_url_api2 + "players/history?username=" + str(
         username) + "&from_block=-1&limit=500&types=token_transfer"
-    result = requests.get(address).json()
+    result = http.get(address).json()
     tournaments_transfers = list(filter(lambda item: "enter_tournament" in item['data'], result))
     tournaments_ids = []
     for tournament in tournaments_transfers:
@@ -170,7 +177,7 @@ def get_hive_transactions(account_name, from_date, till_date, last_id, results):
            + str(last_id) + ', ' \
            + str(limit) + ', 262144], "id":1}'
 
-    response = requests.post(hive_api_url, headers=headers, data=data)
+    response = http.post(hive_api_url, headers=headers, data=data)
     if response.status_code == 200:
         transactions = json.loads(response.text)['result']
         for transaction in transactions:
