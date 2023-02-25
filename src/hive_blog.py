@@ -265,9 +265,10 @@ def get_tournament_info(tournaments_info):
         filters_sps_prizes = tournaments_info[tournaments_info.prize_type == "SPS"]
         total_sps_earned = pd.to_numeric(filters_sps_prizes[['prize_qty']].sum(1), errors='coerce').sum()
 
-        filters_sps_entry_fee = tournaments_info[tournaments_info.entry_fee.str.contains("SPS")]
-        # TODO FIX Warning here no clue how yet
-        filters_sps_entry_fee[['fee_qty', 'fee_type']] = filters_sps_entry_fee.entry_fee.str.split(" ", expand=True)
+        filters_sps_entry_fee = tournaments_info[tournaments_info.entry_fee.str.contains("SPS")].copy()
+        split = filters_sps_entry_fee.loc[:, 'entry_fee'].str.split(" ", expand=True)
+        filters_sps_entry_fee.loc[:, 'fee_qty'] = split[0]
+        filters_sps_entry_fee.loc[:, 'fee_type'] = split[1]
         total_sps_fee = pd.to_numeric(filters_sps_entry_fee[['fee_qty']].sum(1), errors='coerce').sum()
 
         result += "|**Total SPS** | | | | **" + str(total_sps_fee) + "**|**" + str(total_sps_earned) + "**| \n"
