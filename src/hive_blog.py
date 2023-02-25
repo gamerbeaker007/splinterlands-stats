@@ -459,7 +459,8 @@ Note that only card that are listed and sold in this season are displayed here.
 
 
 def get_account_introduction(account_names, previous_season_id):
-    result = "Tracking my result for season " + str(previous_season_id) + " : "
+    result = "Tracking my result for season " + str(previous_season_id) + " : " \
+             + str(get_account_names_str(account_names)) + "\n\n"
     return result
 
 
