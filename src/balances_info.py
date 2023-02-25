@@ -33,7 +33,7 @@ def get_balances(account_name, time_zone, season_balances_data_file, seasons_pla
                 api.get_balance_history_for_token(account_name, token="MERITS", from_date=last_season_end_date))
 
             balance_history_sps_unclaimed_df = pd.DataFrame(
-                api.get_balance_history_for_token_unclaimed(account_name, token="SPS", from_date=last_season_end_date))
+                api.get_balance_history_for_token(account_name, token="SPS", from_date=last_season_end_date), unclaimed_sps=True)
 
             next_season = season_balances_df.season.max() + 1
             for season_id in range(next_season, current_season_data['id']):
@@ -73,7 +73,7 @@ def get_balances(account_name, time_zone, season_balances_data_file, seasons_pla
             api.get_balance_history_for_token(account_name, token="MERITS"))
 
         balance_history_sps_unclaimed_df = pd.DataFrame(
-            api.get_balance_history_for_token_unclaimed(account_name, token="SPS"))
+            api.get_balance_history_for_token(account_name, token="SPS", unclaimed_sps=True))
 
         # Copy season id's from wild (because this will contain the most data, wild exists first)
         season_balances_df = pd.DataFrame()
