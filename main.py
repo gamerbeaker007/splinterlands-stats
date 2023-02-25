@@ -9,10 +9,10 @@ def main():
 
     account_names_str = os.environ.get("ACCOUNT_NAMES")
     time_zone = os.environ.get("TIME_ZONE")
-    skip_zeros = os.environ.get("SKIP_ZERO")
+    skip_zeros = os.environ.get("SKIP_ZEROS")
 
     if not account_names_str:
-        print("No environment ACCOUNT_NAME found, using default from config.properties")
+        print("No environment ACCOUNT_NAMES found, using default from config.properties")
         account_names_str = configuration.ACCOUNT_NAMES
     if not time_zone:
         print("No environment TIME_ZONE found, using default from config.properties")
