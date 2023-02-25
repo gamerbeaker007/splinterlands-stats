@@ -142,7 +142,7 @@ def get_purchased_sold_cards(account_name, start_date, end_date):
         count = sm_market_purchase.count().values[0]
         print("Number card to get: " + str())
         for index, row in sm_market_purchase.iterrows():
-            print(str(index) + "/" + str(count))
+            print("Get card transaction: " + str(index) + "/" + str(count))
             # TODO look into a way to parallel process
             result = get_spl_transaction(row.values[0])
             purchases = pd.concat([purchases, pd.DataFrame(result['cards'])])

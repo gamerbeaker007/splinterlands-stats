@@ -14,8 +14,9 @@ hive_api_url = 'https://api.hive.blog'
 LIMIT = 500
 
 retry_strategy = Retry(
-    total=5,
+    total=10,
     status_forcelist=[429, 500, 502, 503, 504],
+    backoff_factor=0.1,
     method_whitelist=["HEAD", "GET", "OPTIONS"]
 )
 adapter = HTTPAdapter(max_retries=retry_strategy)
@@ -25,18 +26,19 @@ http.mount("https://", adapter)
 
 def get_current_season():
     address = base_url_api2 + "settings"
-    return requests.get(address).json()['season']
+    return http.get(address).json()['season']
 
 
 def get_combine_rates():
     address = base_url_api2 + "settings"
-    return requests.get(address).json()['combine_rates'], requests.get(address).json()['combine_rates_gold'], \
-           requests.get(address).json()['core_editions']
+    return http.get(address).json()['combine_rates'],\
+        http.get(address).json()['combine_rates_gold'],\
+        http.get(address).json()['core_editions']
 
 
 def get_specific_season_end_date(season):
     address = base_url_api2 + ""
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_leaderboard_with_player_season(username, season, mode):
@@ -54,13 +56,13 @@ def get_leaderboard_with_player_season(username, season, mode):
 
 def get_market_history(username):
     address = base_url_api2 + "market/history?player=" + str(username)
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_player_history_rewards(username):
     address = base_url_api + "players/history?username=" + str(
         username) + "&from_block=-1&limit=500&types=card_award,claim_reward"
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_balance_history_for_token(username, token="DEC", offset=0, result=None, from_date=None):
@@ -115,9 +117,9 @@ def get_balance_history_for_token_unclaimed(username, token="SPS", offset=0, res
         username) + "&offset=" + str(offset) + "&limit=" + str(LIMIT)
 
     if result is None:  # create a new result if no intermediate was given
-        result = requests.get(address).json()
+        result = http.get(address).json()
     else:
-        result += requests.get(address).json()
+        result += http.get(address).json()
 
     if len(result) == offset + LIMIT:
         created_date = parser.parse(result[-1]['created_date'])
@@ -134,23 +136,23 @@ def get_balance_history_for_token_unclaimed(username, token="SPS", offset=0, res
 
 def get_market_transaction(trx_id):
     address = base_url_api2 + "market/status?id=" + str(trx_id)
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_card_details():
     address = base_url_api2 + "cards/get_details"
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_tournament(tournament_id):
     address = base_url_api2 + "tournaments/find?id=" + str(tournament_id)
-    return requests.get(address).json()
+    return http.get(address).json()
 
 
 def get_player_tournaments_ids(username):
     address = base_url_api2 + "players/history?username=" + str(
         username) + "&from_block=-1&limit=500&types=token_transfer"
-    result = requests.get(address).json()
+    result = http.get(address).json()
     tournaments_transfers = list(filter(lambda item: "enter_tournament" in item['data'], result))
     tournaments_ids = []
     for tournament in tournaments_transfers:
@@ -188,7 +190,7 @@ def get_hive_transactions(account_name, from_date, till_date, last_id, results):
            + str(last_id) + ', ' \
            + str(LIMIT) + ', 262144], "id":1}'
 
-    response = requests.post(hive_api_url, headers=headers, data=data)
+    response = http.post(hive_api_url, headers=headers, data=data)
     if response.status_code == 200:
         transactions = json.loads(response.text)['result']
         for transaction in transactions:

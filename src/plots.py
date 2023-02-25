@@ -149,13 +149,44 @@ def plot_season_stats_battles(season_df, output_dir, mode):
     fig.write_image(os.path.join(output_dir, "2_season_stats_battles_" + str(mode.value) + ".png"), width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
 
 
-def plot_season_stats_earnings(season_df, output_dir=""):
+def check_data_consistency(season_df, columns):
+    for column in columns:
+        if column not in season_df:
+            season_df[column] = season_df.get(column, 0)
+    return season_df
+    pass
+
+
+def plot_season_stats_earnings(season_df, output_dir="", skip_zeros=False):
     season_df = season_df.sort_values(by=['season']).fillna(0)
 
-    fig = make_subplots(rows=3, cols=1)
-    #
-    # fig = go.Figure()
-    # credits_earned = season_df.credits_quest_rewards + season_df.credits_season_rewards
+    # Data consistency
+    columns = ['dec_reward',
+    'dec_quest_rewards',
+    'dec_season_rewards',
+    'dec_rental_payment',
+    'dec_rental_payment_fees',
+    'dec_market_rental',
+    'dec_rental_refund',
+    'dec_tournament_prize',
+    'dec_enter_tournament',
+    'sps_claim_staking_rewards',
+    'sps_token_award',
+    'sps_tournament_prize',
+    'sps_token_transfer_multi',
+    'sps_enter_tournament',
+    'sps_modern',
+    'sps_wild',
+    'sps_focus',
+    'sps_season',
+    'sps_brawl',
+    'sps_land',
+    'sps_nightmare',
+    'merits_quest_rewards',
+    'merits_season_rewards',
+    'merits_brawl_prize']
+    check_data_consistency(season_df, columns)
+
     dec_earned = season_df.dec_reward + season_df.dec_quest_rewards + season_df.dec_season_rewards
     dec_rental_earned = season_df.dec_rental_payment + season_df.dec_rental_payment_fees
     dec_rental_payed = season_df.dec_market_rental + season_df.dec_rental_refund
@@ -170,12 +201,15 @@ def plot_season_stats_earnings(season_df, output_dir=""):
     dec_total = dec_earned + dec_rental_earned + dec_rental_payed + dec_tournament
     merits_total = season_df.merits_quest_rewards + season_df.merits_season_rewards + season_df.merits_brawl_prize
 
+    # credits_earned = season_df.credits_quest_rewards + season_df.credits_season_rewards
+
     # trace1 = go.Scatter(x=season_df.season, y=credits_earned, mode='lines+markers',  name='credits (quest + season reward)')
     # trace2 = go.Scatter(x=season_df.season, y=sps_earned, mode='lines+markers',  name='sps (staking + token award)')
     # trace3 = go.Scatter(x=season_df.season, y=dec_earned, mode='lines+markers',  name='dec (ranked + quest + season)')
     # trace4 = go.Scatter(x=season_df.season, y=dec_rental_earned, mode='lines+markers',  name='dec rental (payment-fees)')
     # trace5 = go.Scatter(x=season_df.season, y=dec_rental_payed, mode='lines+markers',  name='dec rental (cost-refund)')
     # trace6 = go.Scatter(x=season_df.season, y=dec_tournament, mode='lines+markers',  name='dec tournament (prize-entry)')
+
     trace7 = go.Scatter(x=season_df.season,
                         y=dec_total,
                         mode='lines+markers',
@@ -193,15 +227,37 @@ def plot_season_stats_earnings(season_df, output_dir=""):
                         name='SPS total (earnings - payments)',
                         line=dict(color='lightgreen', width=2))
 
-    # fig.add_trace(trace1)
-    # fig.add_trace(trace2)
-    # fig.add_trace(trace3)
-    # fig.add_trace(trace4)
-    # fig.add_trace(trace5)
-    # fig.add_trace(trace6)
-    fig.add_trace(trace7, row=1, col=1)
-    fig.add_trace(trace8, row=2, col=1)
-    fig.add_trace(trace9, row=3, col=1)
+    titles = ["", "", ""]
+    if not skip_zeros:
+        titles = ["DEC", "MERITS", "SPS"]
+        rows = 3
+        fig = make_subplots(rows=rows, cols=1)
+        fig.add_trace(trace7, row=1, col=1)
+        fig.add_trace(trace8, row=2, col=1)
+        fig.add_trace(trace9, row=3, col=1)
+    else:
+        total_rows = 0
+        if dec_total.sum() > 0:
+            total_rows += 1
+        if merits_total.sum() > 0:
+            total_rows += 1
+        if sps_total.sum() > 0:
+            total_rows += 1
+
+        fig = make_subplots(rows=total_rows, cols=1)
+        rows = 0
+        if dec_total.sum() > 0:
+            titles[rows] = "DEC"
+            rows += 1
+            fig.add_trace(trace7, row=rows, col=1)
+        if merits_total.sum() > 0:
+            titles[rows] = "MERITS"
+            rows += 1
+            fig.add_trace(trace8, row=rows, col=1)
+        if sps_total.sum() > 0:
+            titles[rows] = "SPS"
+            rows += 1
+            fig.add_trace(trace9, row=rows, col=1)
 
 
     fig.update_layout(
@@ -230,7 +286,7 @@ def plot_season_stats_earnings(season_df, output_dir=""):
         yaxis=dict(
             zerolinecolor=GRID_COLOR,
             gridcolor=GRID_COLOR,
-            title="DEC",
+            title=titles[0],
             side="right",
         ),
 
@@ -243,7 +299,7 @@ def plot_season_stats_earnings(season_df, output_dir=""):
         yaxis2=dict(
             zerolinecolor=GRID_COLOR,
             gridcolor=GRID_COLOR,
-            title="MERITS",
+            title=titles[1],
             side="right"
         ),
 
@@ -256,13 +312,13 @@ def plot_season_stats_earnings(season_df, output_dir=""):
         yaxis3=dict(
             zerolinecolor=GRID_COLOR,
             gridcolor=GRID_COLOR,
-            title="SPS",
+            title=titles[2],
             side="right"
         ),
     )
 
     # fig.show()
-    fig.write_image(os.path.join(output_dir, "3_season_stats_earnings.png"), width=IMAGES_WIDTH, height=IMAGES_HEIGHT*2)
+    fig.write_image(os.path.join(output_dir, "3_season_stats_earnings.png"), width=IMAGES_WIDTH, height=480*rows)
 
 
 def plot_season_battle_history(battle_history, output_dir, mode):

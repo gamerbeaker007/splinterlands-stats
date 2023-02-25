@@ -5,8 +5,25 @@ import pytz
 from dateutil import parser
 from pytz import timezone
 
-from src import configuration, api
+from src import api
 from src.static_values_enum import Format
+
+
+# determine last season start and end time
+def get_previous_season_dates_and_id(time_zone):
+    current_season_data = api.get_current_season()
+    season_end_times = get_season_end_times(time_zone)
+    previous_season_id = current_season_data['id'] - 1
+    start_date = [season_end_time['date'] for season_end_time in season_end_times if
+                  season_end_time["id"] == previous_season_id - 1][0]
+    end_date = [season_end_time['date'] for season_end_time in season_end_times if
+                season_end_time["id"] == previous_season_id][0]
+    return start_date, end_date, previous_season_id
+
+
+def print_new_season_dates():
+    current_season_data = api.get_current_season()
+    print("DETERMINE NEXT END SEASON (" + str(current_season_data['id']) + "), DATE: " + str(current_season_data['ends']))
 
 
 def get_all_season_data(username, mode):

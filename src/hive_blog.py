@@ -1,32 +1,34 @@
 import os
-
 import pandas as pd
 
-credit_icon = "![credit.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/AK3iY7Tb28oEV8oALeHvUbBpKjWxvADTHcaqtPSL4C2YzcJ4oZLp36MAiX3qGNw.png)"
-dec_icon = "![dec.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/AJoDPJLp3GXfJPTZijeTGTaHE5K7vzdhCXUedhPRnp6kKhanQnpfwzfnemFdz2x.png)"
-sps_icon = "![sps.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/AKNLw1pd6ryatb2Rg9VHbWEWWUMupgMEtxYsJyxckcGH1Hb7YoxC1cFdNv37tW3.png)"
-voucher_icon = "![voucher.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/Eo8RPwT4kQnGyvkNp9Vx1kLpFYYVhKSy88Fsy7YrAStKwrHCRX6GNvhywGxPbQpW2bu.png)"
-merits_icon = "![merits.png](https://images.hive.blog/20x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png)"
+credit_icon = "![credit.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/" \
+              "AK3iY7Tb28oEV8oALeHvUbBpKjWxvADTHcaqtPSL4C2YzcJ4oZLp36MAiX3qGNw.png)"
+dec_icon = "![dec.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/" \
+           "AJoDPJLp3GXfJPTZijeTGTaHE5K7vzdhCXUedhPRnp6kKhanQnpfwzfnemFdz2x.png)"
+sps_icon = "![sps.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/" \
+           "AKNLw1pd6ryatb2Rg9VHbWEWWUMupgMEtxYsJyxckcGH1Hb7YoxC1cFdNv37tW3.png)"
+voucher_icon = "![voucher.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/" \
+               "Eo8RPwT4kQnGyvkNp9Vx1kLpFYYVhKSy88Fsy7YrAStKwrHCRX6GNvhywGxPbQpW2bu.png)"
+merits_icon = "![merits.png](https://images.hive.blog/20x0/" \
+              "https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png)"
+
 
 def print_season_post(username,
                       season_balances,
                       season_battles_wild,
                       season_battles_modern,
-                      last_season_market_history,
                       purchases_cards,
                       sold_cards,
                       last_season_rewards,
                       tournaments_info,
+                      skip_zeros,
                       output_dir=""):
     last_season = season_balances.loc[(season_balances.season_id == season_balances.season_id.max())].iloc[0]
-    last_season_wild_battles = season_battles_wild.loc[(season_battles_wild.season_id == last_season.season_id)]
-    last_season_modern_battles = season_battles_modern.loc[(season_battles_modern.season_id == last_season.season_id)]
+    last_season_wild_battles = season_battles_wild.loc[(season_battles_wild.season == last_season.season)]
+    last_season_modern_battles = season_battles_modern.loc[(season_battles_modern.season == last_season.season)]
 
     last_season_market_history_purchases = None
     last_season_market_history_sales = None
-    if not last_season_market_history.empty:
-        last_season_market_history_purchases = last_season_market_history[(last_season_market_history.purchaser == username)]
-        last_season_market_history_sales = last_season_market_history[(last_season_market_history.seller == username)]
 
     if not last_season_rewards.empty:
         reward_cards = last_season_rewards[(last_season_rewards['type'] == 'reward_card')]
@@ -70,10 +72,10 @@ https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/2
 <br><br>
 ![Earnings divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23u5tAfbYKhy3zti8o5cVxxgE2LfnjkAV4xZtm1CLAqpJL9zzEF67C7Ec8Tx6b7odFvvK.png)
 ## <div class="phishy"><center>Earnings and costs</center></div>
-""" + str(get_last_season_earnings_table(last_season)) + """
+""" + str(get_last_season_earnings_table(last_season, skip_zeros)) + """
 
 ## <div class="phishy"><center>Costs</center></div>
-""" + str(get_last_season_costs_table(last_season)) + """
+""" + str(get_last_season_costs_table(last_season, skip_zeros)) + """
 
 <br><br>
 ![Card Market divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGyBstuQdzC1Pjv1CiAvt9S3W6sfo5qzCTa6Uv2mQTpfHkwkQ89YxncGYmqsrpynjEv.png)
@@ -114,7 +116,9 @@ If you are not playing splinterlands consider using my referral link [beaker007]
 
 Thx all for reading
 
-""" + str(get_splinterlands_logo_centered())
+<center>https://d36mxiodymuqjm.cloudfront.net/website/splinterlands_logo.png</center>
+
+"""
 
     text_file = open(os.path.join(output_dir, "post.txt"), "w")
     text_file.write(print_blog)
@@ -124,7 +128,7 @@ Thx all for reading
 
 
 def get_last_season_statistics_table(last_season_wild_battles, last_season_modern_battles):
-    if not last_season_wild_battles.empty:
+    if not last_season_wild_battles.empty and not last_season_wild_battles.rating.isna().values[0]:
         last_season_wild_battles = last_season_wild_battles.iloc[0]
         wild_league = last_season_wild_battles.league.astype(int)
         wild_battles = last_season_wild_battles.battles
@@ -150,7 +154,7 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
         wild_ratio = "NA"
         wild_loss = "NA"
 
-    if not last_season_modern_battles.empty:
+    if not last_season_modern_battles.empty and not last_season_modern_battles.rating.isna().values[0]:
         last_season_modern_battles = last_season_modern_battles.iloc[0]
         modern_league = last_season_modern_battles.league.astype(int)
         modern_battles = last_season_modern_battles.battles
@@ -199,38 +203,55 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
     return result
 
 
-def get_last_season_costs_table(last_season):
-    result = "| Costs |  # |\n"
-    result += "| - | - |\n"
-    result += "| DEC rental fees | " + dec_icon + " " + str(round(last_season.dec_rental_payment_fees, 3)) + " |\n"
-    result += "| DEC tournament entry fees | " + dec_icon + " " + str(round(last_season.dec_enter_tournament, 3)) + " |\n"
-    result += "| SPS tournament entry fees | " + sps_icon + " " + str(round(last_season.sps_enter_tournament, 3)) + " |\n"
-    result += "| DEC rental payment | " + dec_icon + " " + str(round(last_season.dec_market_rental, 3)) + " |\n"
-    result += "| DEC market buy | " + dec_icon + " " + str(round(last_season.dec_buy_market_purchase, 3)) + " |\n"
+def get_last_season_costs_table(last_season, skip_zeros):
+    costs_rows = cost_earning_row("DEC rental fees", dec_icon, last_season.dec_rental_payment_fees, skip_zeros)
+    costs_rows += cost_earning_row("DEC tournament entry fees", dec_icon, last_season.dec_enter_tournament, skip_zeros)
+    costs_rows += cost_earning_row("SPS tournament entry fees", sps_icon, last_season.sps_enter_tournament, skip_zeros)
+    costs_rows += cost_earning_row("DEC rental payment", dec_icon, last_season.dec_market_rental, skip_zeros)
+    costs_rows += cost_earning_row("DEC market buy", dec_icon, last_season.dec_buy_market_purchase, skip_zeros)
+
+    result = "None"
+    if costs_rows != "":
+        result = "| Costs |  # |\n"
+        result += "| - | - |\n"
+        result += costs_rows
+
     return result
 
 
-def get_last_season_earnings_table(last_season):
-    result = "| Earnings |  # | \n"
-    result += "| - | - |\n"
-    result += "| DEC rental rewards | " + dec_icon + " " + str(round(last_season.dec_rental_payment, 3)) + " |\n"
-    result += "| DEC market sell | " + dec_icon + " " + str(round(last_season.dec_sell_market_purchase, 3)) + " |\n"
-    result += "| DEC tournament rewards | " + dec_icon + " " + str(round(last_season.dec_tournament_prize, 3)) + " |\n"
-    result += "| SPS tournament rewards | " + sps_icon + " " + str(round(last_season.sps_tournament_prize, 3)
-                                                                   + round(last_season.sps_token_transfer_multi, 3)) + " |\n"
-    result += "| SPS staking reward | " + sps_icon + " " + str(round(last_season.sps_claim_staking_rewards, 3)) + " |\n"
-    result += "| SPS token award (pools) | " + sps_icon + " " + str(round(last_season.sps_token_award, 3)) + " |\n"
-    result += "| SPS ranked battle (modern) | " + sps_icon + " " + str(round(last_season.sps_modern, 3)) + " |\n"
-    result += "| SPS ranked battle (wild) | " + sps_icon + " " + str(round(last_season.sps_wild, 3)) + " |\n"
-    result += "| SPS daily focus | " + sps_icon + " " + str(round(last_season.sps_focus, 3)) + " |\n"
-    result += "| SPS season | " + sps_icon + " " + str(round(last_season.sps_season, 3)) + " |\n"
-    result += "| SPS land | " + sps_icon + " " + str(round(last_season.sps_land, 3)) + " |\n"
-    result += "| SPS nightmare (TD)  | " + sps_icon + " " + str(round(last_season.sps_nightmare, 3)) + " |\n"
-    result += "| SPS brawl | " + sps_icon + " " + str(round(last_season.sps_brawl, 3)) + " |\n"
-    result += "| MERITS quest reward | " + merits_icon + " " + str(round(last_season.merits_quest_rewards, 3)) + " |\n"
-    result += "| MERITS season rewards | " + merits_icon + " " + str(round(last_season.merits_season_rewards, 3)) + " |\n"
-    result += "| MERITS brawl prizes | " + merits_icon + " " + str(round(last_season.merits_brawl_prize, 3)) + " |\n"
-    result += "| VOUCHER earned | " + voucher_icon + " " + str(round(last_season.voucher_claim_staking_rewards, 3)) + " |\n"
+def cost_earning_row(title, icon, value, skip_zeros):
+    if skip_zeros and value == 0:
+        return ""
+    else:
+        return "| " + str(title) + " | " + icon + " " + str(round(value, 3)) + " |\n"
+
+
+def get_last_season_earnings_table(last_season, skip_zeros):
+    earning_rows = cost_earning_row("DEC rental rewards", dec_icon, last_season.dec_rental_payment, skip_zeros)
+    earning_rows += cost_earning_row("DEC market sell", dec_icon, last_season.dec_sell_market_purchase, skip_zeros)
+    earning_rows += cost_earning_row("DEC tournament rewards", dec_icon, last_season.dec_tournament_prize, skip_zeros)
+    earning_rows += cost_earning_row("SPS tournament rewards", sps_icon,
+                               last_season.sps_tournament_prize + last_season.sps_token_transfer_multi, skip_zeros)
+    earning_rows += cost_earning_row("SPS staking reward", sps_icon, last_season.sps_claim_staking_rewards, skip_zeros)
+    earning_rows += cost_earning_row("SPS token award (pools)", sps_icon, last_season.sps_token_award, skip_zeros)
+    earning_rows += cost_earning_row("SPS ranked battle (modern)", sps_icon, last_season.sps_modern, skip_zeros)
+    earning_rows += cost_earning_row("SPS ranked battle (wild)", sps_icon, last_season.sps_wild, skip_zeros)
+    earning_rows += cost_earning_row("SPS daily focus", sps_icon, last_season.sps_focus, skip_zeros)
+    earning_rows += cost_earning_row("SPS season", sps_icon, last_season.sps_season, skip_zeros)
+    earning_rows += cost_earning_row("SPS land", sps_icon, last_season.sps_land, skip_zeros)
+    earning_rows += cost_earning_row("SPS nightmare (TD) ", sps_icon, last_season.sps_nightmare, skip_zeros)
+    earning_rows += cost_earning_row("SPS brawl", sps_icon, last_season.sps_brawl, skip_zeros)
+    earning_rows += cost_earning_row("MERITS quest reward", merits_icon, last_season.merits_quest_rewards, skip_zeros)
+    earning_rows += cost_earning_row("MERITS season rewards", merits_icon, last_season.merits_season_rewards, skip_zeros)
+    earning_rows += cost_earning_row("MERITS brawl prizes", merits_icon, last_season.merits_brawl_prize, skip_zeros)
+    earning_rows += cost_earning_row("VOUCHER earned", voucher_icon, last_season.voucher_claim_staking_rewards,
+                               skip_zeros)
+
+    result = "None"
+    if earning_rows != "":
+        result = "| Earnings |  # | \n"
+        result += "| - | - |\n"
+        result += earning_rows
 
     return result
 
@@ -328,6 +349,132 @@ def get_rewards_potion_packs_table(last_season_rewards):
         return "None"
 
 
-def get_splinterlands_logo_centered():
-    return "<center>https://d36mxiodymuqjm.cloudfront.net/website/splinterlands_logo.png</center>\n"
+def get_introduction_chapter(account_names):
+    return """ 
+https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23xL2wuMjBE9nsXndxmCoPcGJARoydfwp52UTXVez31FnNbXKtkBqVx3eUBmybtD6L8J6.gif
 
+
+<br><br><br>
+![Season summary divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tSKXK2kCpyZXosK34FeU6MPbw4RGCrrs7TY1tgy4k5Lgndj2JNPEbpjr8JAgQ7kW8v1.png)
+
+# <div class="phishy"><center>Season Summery (""" + get_account_names_str(account_names) + """)</center></div> 
+   
+"""
+
+
+def get_closure_chapter():
+    return """
+<br><br>
+![Closing notes divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tSMhwJoyukZ42QAed1tFdaMc2XGwQZXAoTga9AByndMur5RT4oj5rMFeNJXwBeXr4tP.png)
+
+## <div class="phishy"><center>Closing notes</center></div>
+This report is generated with the splinterstats tool from @beaker007 [git-repo](https://github.com/gamerbeaker007/splinterlands-stats). 
+Any comment/remarks/errors pop me a message on peakd.   
+If you like the content, consider adding @beaker007 as beneficiaries of your post created with the help of this tool. 
+https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23tkhySrnBbRV3iV2aD2jH7uuYJuCsFJF5j8P8EVG1aarjqSR7cRLRmuTDhji5MnTVKSM.png
+
+
+If you are not playing splinterlands consider using my referral link [beaker007](https://splinterlands.com?ref=beaker007).
+
+Thx all for reading
+
+<center>https://d36mxiodymuqjm.cloudfront.net/website/splinterlands_logo.png</center>
+"""
+
+
+def get_plot_placeholder(account_name):
+    return """
+## <div class="phishy"><center>Season overall stats and history (""" + str(account_name) + """)</center></div>
+
+### Modern
+
+### Wild
+
+### Earnings
+ 
+ 
+"""
+
+
+def get_last_season_results(account_name, season_battles_wild, season_battles_modern, previous_season_id):
+    last_season_wild_battles = season_battles_wild.loc[(season_battles_wild.season == previous_season_id)]
+    last_season_modern_battles = season_battles_modern.loc[(season_battles_modern.season == previous_season_id)]
+
+    return """
+<br><br>
+![Season result divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGwQHB4Z1zXu1MnXFvSF7REdndP7Gu67aQgWuwp9VoWurqjvGq81w2M6WkfCtovhXo4.png)
+# <div class="phishy"><center>Last Season results (""" + str(account_name) + """)</center></div>
+""" + str(get_last_season_statistics_table(last_season_wild_battles, last_season_modern_battles)) + """
+
+"""
+
+
+def get_tournament_results(account_name, tournaments_info):
+    if not tournaments_info.empty:
+        return """
+<br><br>
+![tournament divider1.png](https://files.peakd.com/file/peakd-hive/beaker007/23u5vZxRCDsEy53q1Rd2sXkXvnAg94fBPj2kCVNoPnjVDiyQfiPecgCJMvoSdqwe4vjQp.png)
+
+## <div class="phishy"><center>Tournaments (""" + str(account_name) + """)</center></div>
+""" + str(get_tournament_info(tournaments_info)) + """ 
+
+"""
+    return ""
+
+
+def get_last_season_earning_costs(account_name, season_balances, skip_zeros):
+    last_season = season_balances.loc[(season_balances.season_id == season_balances.season_id.max())].iloc[0]
+    return """
+<br><br>
+![Earnings divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23u5tAfbYKhy3zti8o5cVxxgE2LfnjkAV4xZtm1CLAqpJL9zzEF67C7Ec8Tx6b7odFvvK.png)
+## <div class="phishy"><center>Earnings and costs (""" + str(account_name) + """)</center></div>
+""" + str(get_last_season_earnings_table(last_season, skip_zeros)) + """
+
+## <div class="phishy"><center>Costs</center></div>
+""" + str(get_last_season_costs_table(last_season, skip_zeros)) + """     
+     """
+
+
+def get_last_season_rewards(account_name, last_season_rewards):
+    if not last_season_rewards.empty:
+        reward_cards = last_season_rewards[(last_season_rewards['type'] == 'reward_card')]
+    else:
+        reward_cards = last_season_rewards
+
+    return """
+## <div class="phishy"><center>Cards Earned (""" + str(account_name) + """)</center></div>
+""" + str(get_card_table(reward_cards)) + """
+
+## <div class="phishy"><center>Potions/Packs earned (""" + str(account_name) + """)</center></div>
+""" + str(get_rewards_potion_packs_table(last_season_rewards)) + """    
+    """
+
+
+def get_last_season_market_transactions(account_name, purchases_cards, sold_cards):
+    return """
+<br><br>
+![Card Market divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGyBstuQdzC1Pjv1CiAvt9S3W6sfo5qzCTa6Uv2mQTpfHkwkQ89YxncGYmqsrpynjEv.png)
+
+## <div class="phishy"><center>Cards Purchased (""" + str(account_name) + """)</center></div>
+""" + str(get_card_table(purchases_cards)) + """ 
+
+
+## <div class="phishy"><center>Cards Sold (""" + str(account_name) + """)</center></div>
+Note that only card that are listed and sold in this season are displayed here.
+""" + str(get_card_table(sold_cards)) + """ 
+
+"""
+
+
+def get_account_introduction(account_names, previous_season_id):
+    result = "Tracking my result for season " + str(previous_season_id) + " : "
+    return result
+
+
+def get_account_names_str(account_names):
+    result = ""
+    for account_name in account_names:
+        result += str(account_name)
+        if account_name != account_names[-1]:
+            result += ", "
+    return result
