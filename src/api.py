@@ -8,8 +8,6 @@ from urllib3 import Retry
 from requests.adapters import HTTPAdapter
 
 base_url_api2 = "https://api2.splinterlands.com/"
-base_url_api = "https://api.splinterlands.com/"
-cached_url = "https://cache-api.splinterlands.com/"
 hive_api_url = 'https://api.hive.blog'
 
 retry_strategy = Retry(
@@ -59,7 +57,7 @@ def get_market_history(username):
 
 
 def get_player_history_rewards(username):
-    address = base_url_api + "players/history?username=" + str(
+    address = base_url_api2 + "players/history?username=" + str(
         username) + "&from_block=-1&limit=500&types=card_award,claim_reward"
     return http.get(address).json()
 
@@ -149,7 +147,7 @@ def get_player_tournaments_ids(username):
 
 def get_cards_by_ids(ids):
     #https://api.splinterlands.io/cards/find?ids=C3-457-3VIL75QJ2O,
-    address = base_url_api + "cards/find?ids=" + str(ids)
+    address = base_url_api2 + "cards/find?ids=" + str(ids)
 
     result = http.get(address)
     if result.status_code == 200:
@@ -160,7 +158,7 @@ def get_cards_by_ids(ids):
 
 def get_spl_transaction(trx_id):
     # https://api.splinterlands.io/market/status?id=d8f8593d637ebdd0bca7994dd7e1a15d9f12efa7-0
-    address = base_url_api + "market/status?id=" + str(trx_id)
+    address = base_url_api2 + "market/status?id=" + str(trx_id)
 
     result = http.get(address)
     if result.status_code == 200:

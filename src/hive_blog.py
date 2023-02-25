@@ -27,9 +27,6 @@ def print_season_post(username,
     last_season_wild_battles = season_battles_wild.loc[(season_battles_wild.season == last_season.season)]
     last_season_modern_battles = season_battles_modern.loc[(season_battles_modern.season == last_season.season)]
 
-    last_season_market_history_purchases = None
-    last_season_market_history_sales = None
-
     if not last_season_rewards.empty:
         reward_cards = last_season_rewards[(last_season_rewards['type'] == 'reward_card')]
     else:
@@ -81,16 +78,10 @@ https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/2
 ![Card Market divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGyBstuQdzC1Pjv1CiAvt9S3W6sfo5qzCTa6Uv2mQTpfHkwkQ89YxncGYmqsrpynjEv.png)
 
 ## <div class="phishy"><center>Cards Purchased</center></div>
-""" + str(get_card_table(last_season_market_history_purchases)) + """ 
-
-# EXPERIMENTAL
 """ + str(get_card_table(purchases_cards)) + """ 
 
 
 ## <div class="phishy"><center>Cards Sold</center></div>
-""" + str(get_card_table(last_season_market_history_sales)) + """ 
-
-# EXPERIMENTAL
 Note that only card that are listed and sold in this season are displayed here.
 """ + str(get_card_table(sold_cards)) + """ 
 

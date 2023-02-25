@@ -34,7 +34,7 @@ def main():
     start_date, end_date, previous_season_id = season.get_previous_season_dates_and_id(time_zone)
 
     for account_name in account_names:
-        print("Getting information for account: " + str(account_name) +
+        print("\n\nGetting information for account: " + str(account_name) +
               " with time zone: " + str(time_zone))
         output_dir = os.path.join('output', account_name)
         season_balances_data_file = os.path.join(output_dir, 'season_data.csv')
@@ -98,32 +98,33 @@ def main():
                                     skip_zeros,
                                     output_dir)
 
-    post = hive_blog.get_account_introduction(account_names, previous_season_id)
-    post += hive_blog.get_introduction_chapter(account_names)
+    if len(account_names) > 1:
+        post = hive_blog.get_account_introduction(account_names, previous_season_id)
+        post += hive_blog.get_introduction_chapter(account_names)
 
-    for account_name in account_names:
-        post += hive_blog.get_plot_placeholder(account_name)
-        post += hive_blog.get_last_season_results(account_name,
-                                                  season_wild_dict[account_name],
-                                                  season_modern_dict[account_name],
-                                                  previous_season_id)
-        post += hive_blog.get_tournament_results(account_name,
-                                                 tournaments_info_dict[account_name])
-        post += hive_blog.get_last_season_earning_costs(account_name,
-                                                        season_balances_dict[account_name],
-                                                        skip_zeros)
-        post += hive_blog.get_last_season_market_transactions(account_name,
-                                                              purchases_cards_dict[account_name],
-                                                              sold_cards_dict[account_name])
-        post += hive_blog.get_last_season_rewards(account_name,
-                                                  last_season_rewards_dict[account_name])
+        for account_name in account_names:
+            post += hive_blog.get_plot_placeholder(account_name)
+            post += hive_blog.get_last_season_results(account_name,
+                                                      season_wild_dict[account_name],
+                                                      season_modern_dict[account_name],
+                                                      previous_season_id)
+            post += hive_blog.get_tournament_results(account_name,
+                                                     tournaments_info_dict[account_name])
+            post += hive_blog.get_last_season_earning_costs(account_name,
+                                                            season_balances_dict[account_name],
+                                                            skip_zeros)
+            post += hive_blog.get_last_season_market_transactions(account_name,
+                                                                  purchases_cards_dict[account_name],
+                                                                  sold_cards_dict[account_name])
+            post += hive_blog.get_last_season_rewards(account_name,
+                                                      last_season_rewards_dict[account_name])
 
-    post += hive_blog.get_closure_chapter()
+        post += hive_blog.get_closure_chapter()
 
-    text_file = open(os.path.join('output', "combined_post.txt"), "w")
-    text_file.write(post)
-    text_file.close()
-    print("Combined post can be found in file: " + str(text_file.name))
+        text_file = open(os.path.join('output', "combined_post.txt"), "w")
+        text_file.write(post)
+        text_file.close()
+        print("\n\nCombined post can be found in file: " + str(text_file.name))
 
     season.print_new_season_dates()
 
