@@ -10,10 +10,20 @@ from requests.adapters import HTTPAdapter
 base_url_api2 = "https://api2.splinterlands.com/"
 hive_api_url = 'https://api.hive.blog'
 
-retry_strategy = Retry(
+
+class LogRetry(Retry):
+    """
+     Adding extra logs before making a retry request
+    """
+    def __init__(self, *args, **kwargs):
+        print("Retry... api call")
+        super().__init__(*args, **kwargs)
+
+
+retry_strategy = LogRetry(
     total=10,
     status_forcelist=[429, 500, 502, 503, 504],
-    backoff_factor=0.1,
+    backoff_factor=2,  # wait will be [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
     method_whitelist=["HEAD", "GET", "OPTIONS"]
 )
 adapter = HTTPAdapter(max_retries=retry_strategy)
