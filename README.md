@@ -1,26 +1,25 @@
 # splinterlands-stats
 
-How-to use:
+# How-to use:
+detail description on how to use on window with anaconda is given in post:
 
 https://peakd.com/hive-13323/@beaker007/how-to-use-the-splinterlands-season-statistics-tool-python
 
-
-## TODO
-* Create manual
-* Reference to PeakD post on how to use it?
-
-
-
 ## Installed python packages:
-see requirement text
+<code>pip install -r requirements.txt</code>
 
-# Test docker
-docker login ghcr.io --username your_github_username
+## Execute
+Modify config.properties with you desired information
 
-docker pull ghcr.io/gamerbeaker007/splinterlands-stats:latest
+<code>python main.py</code>
 
-## windows:
-docker run -it -v C:\Temp\:/app/output -e "ACCOUNT_NAMES=spl_account_name,spl_name2" -e "TIME_ZONE=Europe/Amsterdam" -e "SKIP_ZEROS=True" ghcr.io/gamerbeaker007/splinterlands-stats:latest
+# How to it use docker
+<code>docker login ghcr.io --username your_github_username
+
+docker pull ghcr.io/gamerbeaker007/splinterlands-stats:latest</code>
+
+## Windows:
+<code>docker run -it -v C:\Temp\:/app/output -e "ACCOUNT_NAMES=spl_account_name,spl_name2" -e "TIME_ZONE=Europe/Amsterdam" -e "SKIP_ZEROS=True" ghcr.io/gamerbeaker007/splinterlands-stats:latest</code>
 
 ## Linux:
-docker run -it -v \tmp\:/app/output -e "ACCOUNT_NAMES=spl_account_name, spl_name2" -e "TIME_ZONE=Europe/Amsterdam" -e "SKIP_ZEROS=True" ghcr.io/gamerbeaker007/splinterlands-stats:latest
+<code>docker run -it -v \tmp\:/app/output -e "ACCOUNT_NAMES=spl_account_name,spl_name2" -e "TIME_ZONE=Europe/Amsterdam" -e "SKIP_ZEROS=True" ghcr.io/gamerbeaker007/splinterlands-stats:latest</code>
