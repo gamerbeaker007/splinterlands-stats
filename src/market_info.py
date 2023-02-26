@@ -3,27 +3,9 @@ import json
 import numpy as np
 import pandas as pd
 
-from src import configuration, api
+from src import api
 from src.api import get_hive_transactions, get_spl_transaction, get_cards_by_ids
 from src.static_values_enum import Edition
-
-
-def get_last_season_market_history(account_name, start_date, end_date):
-    market_history_df = pd.DataFrame(api.get_market_history(account_name))
-    if not market_history_df.empty:
-        last_season_market_history = filter_df_last_season(start_date, end_date, market_history_df)
-        if not last_season_market_history.empty:
-            # Todo create card image name based on id/gold/xp/edition for each row
-            card_details_list = api.get_card_details()
-            last_season_market_history['edition_name'] = last_season_market_history.apply(
-                lambda row: (Edition(row.edition)).name, axis=1)
-            last_season_market_history['card_name'] = last_season_market_history.apply(
-                lambda row: find_card_name(card_details_list, row.card_detail_id), axis=1)
-            # combine_rates, combine_rates_gold, core_editions = api.get_combine_rates()
-            # determine_card_level(combine_rates, core_editions, 3, 14)
-        return last_season_market_history
-    else:
-        return market_history_df
 
 
 def get_last_season_player_history_rewards(account_name, start_date, end_date, season_id):

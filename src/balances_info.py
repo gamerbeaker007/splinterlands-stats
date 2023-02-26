@@ -2,8 +2,7 @@ import os
 
 import pandas as pd
 
-from src import configuration, api, season
-from src.data_migrations import data_migration_modern_wild
+from src import api, season
 
 
 def get_balances(account_name, time_zone, season_balances_data_file, seasons_played_array):
@@ -12,14 +11,13 @@ def get_balances(account_name, time_zone, season_balances_data_file, seasons_pla
     if os.path.isfile(season_balances_data_file):
         # Season balances file found only pull new seasons
         season_balances_df = pd.read_csv(season_balances_data_file, index_col=[0])
-        season_balances_df = data_migration_modern_wild(season_balances_df, season_balances_data_file)
 
         # Determine if new data needs to be pulled?
         if season_balances_df.season.max() != current_season_data['id'] - 1:
             # continue pull x season data
             season_end_times = season.get_season_end_times(time_zone)
             last_season_end_date = [season_end_time['date'] for season_end_time in season_end_times if
-                        season_end_time["id"] == season_balances_df.season.max()][0]
+                                    season_end_time["id"] == season_balances_df.season.max()][0]
 
             balance_history_dec_df = pd.DataFrame(
                 api.get_balance_history_for_token(account_name, token="DEC", from_date=last_season_end_date))

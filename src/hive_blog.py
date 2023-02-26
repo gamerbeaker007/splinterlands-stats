@@ -13,111 +13,6 @@ merits_icon = "![merits.png](https://images.hive.blog/20x0/" \
               "https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png)"
 
 
-def print_season_post(username,
-                      season_balances,
-                      season_battles_wild,
-                      season_battles_modern,
-                      purchases_cards,
-                      sold_cards,
-                      last_season_rewards,
-                      tournaments_info,
-                      skip_zeros,
-                      output_dir=""):
-    last_season = season_balances.loc[(season_balances.season_id == season_balances.season_id.max())].iloc[0]
-    last_season_wild_battles = season_battles_wild.loc[(season_battles_wild.season == last_season.season)]
-    last_season_modern_battles = season_battles_modern.loc[(season_battles_modern.season == last_season.season)]
-
-    if not last_season_rewards.empty:
-        reward_cards = last_season_rewards[(last_season_rewards['type'] == 'reward_card')]
-    else:
-        reward_cards = last_season_rewards
-    # print("########################################## BLOG STARTS HERE ##########################")
-    print_blog = """
-# Splinterlands season """ + str(last_season.season) + """ of (""" + str(username) + """): 
-
-https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23xL2wuMjBE9nsXndxmCoPcGJARoydfwp52UTXVez31FnNbXKtkBqVx3eUBmybtD6L8J6.gif
-
-
-<br><br><br>
-![Season summary divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tSKXK2kCpyZXosK34FeU6MPbw4RGCrrs7TY1tgy4k5Lgndj2JNPEbpjr8JAgQ7kW8v1.png)
-
-# <div class="phishy"><center>Season Summery</center></div>
-
-
-## <div class="phishy"><center>Season overall stats and history</center></div>
-
-### Modern
-
-### Wild
-
-### Earnings
- 
-
-
-<br><br>
-![Season result divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGwQHB4Z1zXu1MnXFvSF7REdndP7Gu67aQgWuwp9VoWurqjvGq81w2M6WkfCtovhXo4.png)
-# <div class="phishy"><center>Last Season</center></div>
-""" + str(get_last_season_statistics_table(last_season_wild_battles, last_season_modern_battles)) + """
-
-
-<br><br>
-![tournament divider1.png](https://files.peakd.com/file/peakd-hive/beaker007/23u5vZxRCDsEy53q1Rd2sXkXvnAg94fBPj2kCVNoPnjVDiyQfiPecgCJMvoSdqwe4vjQp.png)
-
-## <div class="phishy"><center>Tournaments</center></div>
-""" + str(get_tournament_info(tournaments_info)) + """
-
-<br><br>
-![Earnings divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23u5tAfbYKhy3zti8o5cVxxgE2LfnjkAV4xZtm1CLAqpJL9zzEF67C7Ec8Tx6b7odFvvK.png)
-## <div class="phishy"><center>Earnings and costs</center></div>
-""" + str(get_last_season_earnings_table(last_season, skip_zeros)) + """
-
-## <div class="phishy"><center>Costs</center></div>
-""" + str(get_last_season_costs_table(last_season, skip_zeros)) + """
-
-<br><br>
-![Card Market divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGyBstuQdzC1Pjv1CiAvt9S3W6sfo5qzCTa6Uv2mQTpfHkwkQ89YxncGYmqsrpynjEv.png)
-
-## <div class="phishy"><center>Cards Purchased</center></div>
-""" + str(get_card_table(purchases_cards)) + """ 
-
-
-## <div class="phishy"><center>Cards Sold</center></div>
-Note that only card that are listed and sold in this season are displayed here.
-""" + str(get_card_table(sold_cards)) + """ 
-
-
-## <div class="phishy"><center>Cards Earned</center></div>
-""" + str(get_card_table(reward_cards)) + """
-
-## <div class="phishy"><center>Potions/Packs earned</center></div>
-""" + str(get_rewards_potion_packs_table(last_season_rewards)) + """
-
-
-<br><br>
-![Closing notes divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tSMhwJoyukZ42QAed1tFdaMc2XGwQZXAoTga9AByndMur5RT4oj5rMFeNJXwBeXr4tP.png)
-
-## <div class="phishy"><center>Closing notes</center></div>
-This report is generated with the splinterstats tool from @beaker007 [git-repo](https://github.com/gamerbeaker007/splinterlands-stats). 
-Any comment/remarks/errors pop me a message on peakd.   
-If you like the content, consider adding @beaker007 as beneficiaries of your post created with the help of this tool. 
-https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23tkhySrnBbRV3iV2aD2jH7uuYJuCsFJF5j8P8EVG1aarjqSR7cRLRmuTDhji5MnTVKSM.png
-
-
-If you are not playing splinterlands consider using my referral link [beaker007](https://splinterlands.com?ref=beaker007).
-
-Thx all for reading
-
-<center>https://d36mxiodymuqjm.cloudfront.net/website/splinterlands_logo.png</center>
-
-"""
-
-    text_file = open(os.path.join(output_dir, "post.txt"), "w")
-    text_file.write(print_blog)
-    text_file.close()
-    print("Post can be found in file: " + str(text_file.name))
-    # print(print_blog)
-
-
 def get_last_season_statistics_table(last_season_wild_battles, last_season_modern_battles):
     if not last_season_wild_battles.empty and not last_season_wild_battles.rating.isna().values[0]:
         last_season_wild_battles = last_season_wild_battles.iloc[0]
@@ -290,7 +185,6 @@ def get_card_table(cards_df):
                 'edition_name': str(cards_df[(cards_df['card_name'] == card_name)].edition_name.values[0]),
             }, index=[0])], ignore_index=True)
 
-
         if len(temp.index) > 5:
             result = "| | | | | |\n"
             result += "|-|-|-|-|-|\n"
@@ -342,6 +236,9 @@ def get_rewards_potion_packs_table(last_season_rewards):
 
 
 def get_introduction_chapter(account_names):
+    account_suffix = ""
+    if len(account_names) > 1:
+        account_suffix = " (" + str(get_account_names_str(account_names)) + ")"
     return """ 
 https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/23xL2wuMjBE9nsXndxmCoPcGJARoydfwp52UTXVez31FnNbXKtkBqVx3eUBmybtD6L8J6.gif
 
@@ -349,7 +246,7 @@ https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/2
 <br><br><br>
 ![Season summary divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tSKXK2kCpyZXosK34FeU6MPbw4RGCrrs7TY1tgy4k5Lgndj2JNPEbpjr8JAgQ7kW8v1.png)
 
-# <div class="phishy"><center>Season Summery (""" + get_account_names_str(account_names) + """)</center></div> 
+# <div class="phishy"><center>Season Summery""" + str(account_suffix) + """</center></div> 
    
 """
 
@@ -374,9 +271,13 @@ Thx all for reading
 """
 
 
-def get_plot_placeholder(account_name):
+def get_plot_placeholder(account_name=None):
+    account_suffix = ""
+    if account_name:
+        account_suffix = " (" + str(account_name) + ")"
+
     return """
-## <div class="phishy"><center>Season overall stats and history (""" + str(account_name) + """)</center></div>
+## <div class="phishy"><center>Season overall stats and history""" + str(account_suffix) + """</center></div>
 
 ### Modern
 
@@ -388,38 +289,49 @@ def get_plot_placeholder(account_name):
 """
 
 
-def get_last_season_results(account_name, season_battles_wild, season_battles_modern, previous_season_id):
+def get_last_season_results(season_battles_wild, season_battles_modern, previous_season_id, account_name=None):
     last_season_wild_battles = season_battles_wild.loc[(season_battles_wild.season == previous_season_id)]
     last_season_modern_battles = season_battles_modern.loc[(season_battles_modern.season == previous_season_id)]
 
+    account_suffix = ""
+    if account_name:
+        account_suffix = " (" + str(account_name) + ")"
     return """
 <br><br>
 ![Season result divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGwQHB4Z1zXu1MnXFvSF7REdndP7Gu67aQgWuwp9VoWurqjvGq81w2M6WkfCtovhXo4.png)
-# <div class="phishy"><center>Last Season results (""" + str(account_name) + """)</center></div>
+# <div class="phishy"><center>Last Season results""" + str(account_suffix) + """</center></div>
 """ + str(get_last_season_statistics_table(last_season_wild_battles, last_season_modern_battles)) + """
 
 """
 
 
-def get_tournament_results(account_name, tournaments_info):
+def get_tournament_results(tournaments_info, account_name=None):
+    account_suffix = ""
+    if account_name:
+        account_suffix = " (" + str(account_name) + ")"
+
     if not tournaments_info.empty:
         return """
 <br><br>
 ![tournament divider1.png](https://files.peakd.com/file/peakd-hive/beaker007/23u5vZxRCDsEy53q1Rd2sXkXvnAg94fBPj2kCVNoPnjVDiyQfiPecgCJMvoSdqwe4vjQp.png)
 
-## <div class="phishy"><center>Tournaments (""" + str(account_name) + """)</center></div>
+## <div class="phishy"><center>Tournaments""" + str(account_suffix) + """</center></div>
 """ + str(get_tournament_info(tournaments_info)) + """ 
 
 """
     return ""
 
 
-def get_last_season_earning_costs(account_name, season_balances, skip_zeros):
+def get_last_season_earning_costs(season_balances, skip_zeros, account_name=None):
+    account_suffix = ""
+    if account_name:
+        account_suffix = " (" + str(account_name) + ")"
+
     last_season = season_balances.loc[(season_balances.season_id == season_balances.season_id.max())].iloc[0]
     return """
 <br><br>
 ![Earnings divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23u5tAfbYKhy3zti8o5cVxxgE2LfnjkAV4xZtm1CLAqpJL9zzEF67C7Ec8Tx6b7odFvvK.png)
-## <div class="phishy"><center>Earnings and costs (""" + str(account_name) + """)</center></div>
+## <div class="phishy"><center>Earnings and costs""" + str(account_suffix) + """</center></div>
 """ + str(get_last_season_earnings_table(last_season, skip_zeros)) + """
 
 ## <div class="phishy"><center>Costs</center></div>
@@ -427,31 +339,39 @@ def get_last_season_earning_costs(account_name, season_balances, skip_zeros):
      """
 
 
-def get_last_season_rewards(account_name, last_season_rewards):
+def get_last_season_rewards(last_season_rewards, account_name=None):
+    account_suffix = ""
+    if account_name:
+        account_suffix = " (" + str(account_name) + ")"
+
     if not last_season_rewards.empty:
         reward_cards = last_season_rewards[(last_season_rewards['type'] == 'reward_card')]
     else:
         reward_cards = last_season_rewards
 
     return """
-## <div class="phishy"><center>Cards Earned (""" + str(account_name) + """)</center></div>
+## <div class="phishy"><center>Cards Earned""" + str(account_suffix) + """</center></div>
 """ + str(get_card_table(reward_cards)) + """
 
-## <div class="phishy"><center>Potions/Packs earned (""" + str(account_name) + """)</center></div>
+## <div class="phishy"><center>Potions/Packs earned""" + str(account_suffix) + """</center></div>
 """ + str(get_rewards_potion_packs_table(last_season_rewards)) + """    
     """
 
 
-def get_last_season_market_transactions(account_name, purchases_cards, sold_cards):
+def get_last_season_market_transactions(purchases_cards, sold_cards, account_name=None):
+    account_suffix = ""
+    if account_name:
+        account_suffix = " (" + str(account_name) + ")"
+
     return """
 <br><br>
 ![Card Market divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGyBstuQdzC1Pjv1CiAvt9S3W6sfo5qzCTa6Uv2mQTpfHkwkQ89YxncGYmqsrpynjEv.png)
 
-## <div class="phishy"><center>Cards Purchased (""" + str(account_name) + """)</center></div>
+## <div class="phishy"><center>Cards Purchased""" + str(account_suffix) + """</center></div>
 """ + str(get_card_table(purchases_cards)) + """ 
 
 
-## <div class="phishy"><center>Cards Sold (""" + str(account_name) + """)</center></div>
+## <div class="phishy"><center>Cards Sold""" + str(account_suffix) + """</center></div>
 Note that only card that are listed and sold in this season are displayed here.
 """ + str(get_card_table(sold_cards)) + """ 
 
@@ -471,3 +391,48 @@ def get_account_names_str(account_names):
         if account_name != account_names[-1]:
             result += ", "
     return result
+
+
+def write_blog_post(account_names, season_balances_dict, season_wild_dict, season_modern_dict, last_season_rewards_dict,
+                    tournaments_info_dict, purchases_cards_dict, sold_cards_dict, previous_season_id, skip_zeros,
+                    output_file):
+    single_account = (len(account_names) == 1)
+    post = get_account_introduction(account_names, previous_season_id)
+    post += get_introduction_chapter(account_names)
+
+    for account_name in account_names:
+        # If there is only one account so a single post do not use account name in post.
+        if single_account:
+            print_account_name = None
+        else:
+            print_account_name = account_name
+
+        post += get_plot_placeholder(account_name=print_account_name)
+        post += get_last_season_results(season_wild_dict[account_name],
+                                        season_modern_dict[account_name],
+                                        previous_season_id,
+                                        account_name=print_account_name)
+        post += get_tournament_results(tournaments_info_dict[account_name],
+                                       account_name=account_name)
+        post += get_last_season_earning_costs(season_balances_dict[account_name],
+                                              skip_zeros,
+                                              account_name=print_account_name)
+        post += get_last_season_market_transactions(purchases_cards_dict[account_name],
+                                                    sold_cards_dict[account_name],
+                                                    account_name=print_account_name)
+        post += get_last_season_rewards(last_season_rewards_dict[account_name],
+                                        account_name=print_account_name)
+
+        post += get_closure_chapter()
+
+        if single_account:
+            text_file = open(output_file, "w")
+            text_file.write(post)
+            text_file.close()
+            print("Post can be found in file: " + str(text_file.name))
+
+    if not single_account:
+        text_file = open(output_file, "w")
+        text_file.write(post)
+        text_file.close()
+        print("\n\nPost can be found in file: " + str(text_file.name))

@@ -4,21 +4,11 @@ from datetime import datetime
 import pytz
 import requests
 from dateutil import parser
-from urllib3 import Retry
 from requests.adapters import HTTPAdapter
+from src.logRetry import LogRetry
 
 base_url_api2 = "https://api2.splinterlands.com/"
 hive_api_url = 'https://api.hive.blog'
-
-
-class LogRetry(Retry):
-    """
-     Adding extra logs before making a retry request
-    """
-    def __init__(self, *args, **kwargs):
-        print("Retry... api call backoff/wait sequence 1s, 2s, 4s, 8s, 16s, 32s, 64s, 128s, 256s, 512s")
-        super().__init__(*args, **kwargs)
-
 
 retry_strategy = LogRetry(
     total=10,
@@ -36,18 +26,6 @@ def get_current_season():
     return http.get(address).json()['season']
 
 
-def get_combine_rates():
-    address = base_url_api2 + "settings"
-    return http.get(address).json()['combine_rates'],\
-        http.get(address).json()['combine_rates_gold'],\
-        http.get(address).json()['core_editions']
-
-
-def get_specific_season_end_date(season):
-    address = base_url_api2 + ""
-    return http.get(address).json()
-
-
 def get_leaderboard_with_player_season(username, season, mode):
     address = base_url_api2 + \
               "players/leaderboard_with_player?season=" + str(season) + \
@@ -59,11 +37,6 @@ def get_leaderboard_with_player_season(username, season, mode):
         return result.json()['player']
     else:
         return None
-
-
-def get_market_history(username):
-    address = base_url_api2 + "market/history?player=" + str(username)
-    return http.get(address).json()
 
 
 def get_player_history_rewards(username):
@@ -127,11 +100,6 @@ def get_balance_history_for_token_impl(username, token="DEC", offset=0, limit=10
         return response.json()
     else:
         return []
-
-
-def get_market_transaction(trx_id):
-    address = base_url_api2 + "market/status?id=" + str(trx_id)
-    return http.get(address).json()
 
 
 def get_card_details():
