@@ -423,15 +423,16 @@ def write_blog_post(account_names, season_balances_dict, season_wild_dict, seaso
         post += get_last_season_rewards(last_season_rewards_dict[account_name],
                                         account_name=print_account_name)
 
-    post += get_closure_chapter()
 
         if single_account:
+            post += get_closure_chapter()
             text_file = open(output_file, "w")
             text_file.write(post)
             text_file.close()
             print("Post can be found in file: " + str(text_file.name))
 
     if not single_account:
+        post += get_closure_chapter()
         text_file = open(output_file, "w")
         text_file.write(post)
         text_file.close()
