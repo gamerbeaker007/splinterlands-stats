@@ -368,11 +368,13 @@ def get_last_season_market_transactions(purchases_cards, sold_cards, account_nam
 ![Card Market divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tGyBstuQdzC1Pjv1CiAvt9S3W6sfo5qzCTa6Uv2mQTpfHkwkQ89YxncGYmqsrpynjEv.png)
 
 ## <div class="phishy"><center>Cards Purchased""" + str(account_suffix) + """</center></div>
+Note: Splex.gg fulfilled bids are not in this overview, those are purchased by other account
+
 """ + str(get_card_table(purchases_cards)) + """ 
 
 
 ## <div class="phishy"><center>Cards Sold""" + str(account_suffix) + """</center></div>
-Note that only card that are listed and sold in this season are displayed here.
+Note: Only cards that are listed and sold in this season are displayed here.
 """ + str(get_card_table(sold_cards)) + """ 
 
 """
