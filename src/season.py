@@ -134,5 +134,7 @@ def get_season_end_times(time_zone):
             season['date'] = parser.parse("2023-02-14T14:00:00.000Z").astimezone(timezone(time_zone))
         elif season['id'] == 105:
             season['date'] = parser.parse("2023-02-28T14:00:00.000Z").astimezone(timezone(time_zone))
+        elif season['id'] == 10:
+            season['date'] = parser.parse("2023-03-15T14:00:00.000Z").astimezone(timezone(time_zone))
 
     return season_end_dates_array
