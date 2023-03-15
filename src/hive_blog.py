@@ -116,6 +116,11 @@ def get_last_season_earnings_table(last_season, skip_zeros):
     earning_rows = cost_earning_row("DEC rental rewards", dec_icon, last_season.dec_rental_payment, skip_zeros)
     earning_rows += cost_earning_row("DEC market sell", dec_icon, last_season.dec_sell_market_purchase, skip_zeros)
     earning_rows += cost_earning_row("DEC tournament rewards", dec_icon, last_season.dec_tournament_prize, skip_zeros)
+    earning_rows += cost_earning_row("DEC modern leaderboard rewards", dec_icon,
+                                     last_season.dec_modern_leaderboard_prizes, skip_zeros)
+    earning_rows += cost_earning_row("DEC wild leaderboard rewards", dec_icon,
+                                     last_season.dec_wild_leaderboard_prizes, skip_zeros)
+
     earning_rows += cost_earning_row("SPS tournament rewards", sps_icon,
                                last_season.sps_tournament_prize + last_season.sps_token_transfer_multi, skip_zeros)
     earning_rows += cost_earning_row("SPS staking reward", sps_icon, last_season.sps_claim_staking_rewards, skip_zeros)

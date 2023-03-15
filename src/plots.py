@@ -69,13 +69,13 @@ def plot_season_stats_rating(season_df, output_dir, mode):
             gridcolor=GRID_COLOR,
             gridwidth=1,
             nticks=25,
-            range=[0, season_df.rating.max()*1.05]
+            range=[0, season_df.rating.max() * 1.05]
         ),
         yaxis=dict(
             zeroline=False,
             showgrid=False,
             title="league",
-            range=[0, season_df.rating.max()*1.05],
+            range=[0, season_df.rating.max() * 1.05],
             tickvals=[0, 400, 700, 1000, 1300, 1600, 1900, 2200, 2500, 2800, 3100, 3400, 3700, 4200, 4700, 9999],
             ticktext=[Leagues(0).name,
                       Leagues(1).name,
@@ -97,7 +97,8 @@ def plot_season_stats_rating(season_df, output_dir, mode):
     )
 
     # fig.show()
-    fig.write_image(os.path.join(output_dir, "1_season_stats_rating_" + str(mode.value) + ".png"), width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
+    fig.write_image(os.path.join(output_dir, "1_season_stats_rating_" + str(mode.value) + ".png"), width=IMAGES_WIDTH,
+                    height=IMAGES_HEIGHT)
 
 
 def plot_season_stats_battles(season_df, output_dir, mode):
@@ -133,7 +134,7 @@ def plot_season_stats_battles(season_df, output_dir, mode):
         yaxis1=dict(
             zerolinecolor=GRID_COLOR,
             showgrid=False,
-            range=[0, season_df.battles.max()+20],
+            range=[0, season_df.battles.max() + 20],
             title="battles",
         ),
         yaxis2=dict(
@@ -146,7 +147,8 @@ def plot_season_stats_battles(season_df, output_dir, mode):
             title='win (%)'),
     )
     # fig.show()
-    fig.write_image(os.path.join(output_dir, "2_season_stats_battles_" + str(mode.value) + ".png"), width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
+    fig.write_image(os.path.join(output_dir, "2_season_stats_battles_" + str(mode.value) + ".png"), width=IMAGES_WIDTH,
+                    height=IMAGES_HEIGHT)
 
 
 def check_data_consistency(season_df, columns):
@@ -162,32 +164,39 @@ def plot_season_stats_earnings(season_df, output_dir="", skip_zeros=False):
 
     # Data consistency
     columns = ['dec_reward',
-    'dec_quest_rewards',
-    'dec_season_rewards',
-    'dec_rental_payment',
-    'dec_rental_payment_fees',
-    'dec_market_rental',
-    'dec_rental_refund',
-    'dec_tournament_prize',
-    'dec_enter_tournament',
-    'sps_claim_staking_rewards',
-    'sps_token_award',
-    'sps_tournament_prize',
-    'sps_token_transfer_multi',
-    'sps_enter_tournament',
-    'sps_modern',
-    'sps_wild',
-    'sps_focus',
-    'sps_season',
-    'sps_brawl',
-    'sps_land',
-    'sps_nightmare',
-    'merits_quest_rewards',
-    'merits_season_rewards',
-    'merits_brawl_prize']
+               'dec_quest_rewards',
+               'dec_season_rewards',
+               'dec_rental_payment',
+               'dec_rental_payment_fees',
+               'dec_market_rental',
+               'dec_rental_refund',
+               'dec_tournament_prize',
+               'dec_enter_tournament',
+               'dec_modern_leaderboard_prizes',
+               'dec_wild_leaderboard_prizes',
+               'sps_claim_staking_rewards',
+               'sps_token_award',
+               'sps_tournament_prize',
+               'sps_token_transfer_multi',
+               'sps_enter_tournament',
+               'sps_modern',
+               'sps_wild',
+               'sps_focus',
+               'sps_season',
+               'sps_brawl',
+               'sps_land',
+               'sps_nightmare',
+               'merits_quest_rewards',
+               'merits_season_rewards',
+               'merits_brawl_prize']
     check_data_consistency(season_df, columns)
 
-    dec_earned = season_df.dec_reward + season_df.dec_quest_rewards + season_df.dec_season_rewards
+    dec_earned = season_df.dec_reward \
+                 + season_df.dec_quest_rewards \
+                 + season_df.dec_season_rewards \
+                 + season_df.dec_modern_leaderboard_prizes \
+                 + season_df.dec_wild_leaderboard_prizes
+
     dec_rental_earned = season_df.dec_rental_payment + season_df.dec_rental_payment_fees
     dec_rental_payed = season_df.dec_market_rental + season_df.dec_rental_refund
     dec_tournament = season_df.dec_tournament_prize + season_df.dec_enter_tournament
@@ -259,7 +268,6 @@ def plot_season_stats_earnings(season_df, output_dir="", skip_zeros=False):
             rows += 1
             fig.add_trace(trace9, row=rows, col=1)
 
-
     fig.update_layout(
         paper_bgcolor=PAPER_BGCOLOR,
         plot_bgcolor=PLOT_BGCOLOR,
@@ -318,7 +326,7 @@ def plot_season_stats_earnings(season_df, output_dir="", skip_zeros=False):
     )
 
     # fig.show()
-    fig.write_image(os.path.join(output_dir, "3_season_stats_earnings.png"), width=IMAGES_WIDTH, height=480*rows)
+    fig.write_image(os.path.join(output_dir, "3_season_stats_earnings.png"), width=IMAGES_WIDTH, height=480 * rows)
 
 
 def plot_season_battle_history(battle_history, output_dir, mode):
@@ -365,4 +373,5 @@ def plot_season_battle_history(battle_history, output_dir, mode):
     )
 
     # fig.show()
-    fig.write_image(os.path.join(output_dir, "4_season_battle_history_" + str(mode.value) + ".png"), width=IMAGES_WIDTH, height=IMAGES_HEIGHT)
+    fig.write_image(os.path.join(output_dir, "4_season_battle_history_" + str(mode.value) + ".png"), width=IMAGES_WIDTH,
+                    height=IMAGES_HEIGHT)
