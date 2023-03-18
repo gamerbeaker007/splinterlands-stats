@@ -174,6 +174,8 @@ def plot_season_stats_earnings(season_df, output_dir="", skip_zeros=False):
                'dec_enter_tournament',
                'dec_modern_leaderboard_prizes',
                'dec_wild_leaderboard_prizes',
+               'dec_market_fees',
+               'dec_market_list_fee',
                'sps_claim_staking_rewards',
                'sps_token_award',
                'sps_tournament_prize',
@@ -199,6 +201,7 @@ def plot_season_stats_earnings(season_df, output_dir="", skip_zeros=False):
 
     dec_rental_earned = season_df.dec_rental_payment + season_df.dec_rental_payment_fees
     dec_rental_payed = season_df.dec_market_rental + season_df.dec_rental_refund
+    dec_market_fees = season_df.dec_market_list_fee
     dec_tournament = season_df.dec_tournament_prize + season_df.dec_enter_tournament
 
     sps_earned = season_df.sps_claim_staking_rewards + season_df.sps_token_award
@@ -207,7 +210,7 @@ def plot_season_stats_earnings(season_df, output_dir="", skip_zeros=False):
     sps_rewards = season_df.sps_land + season_df.sps_nightmare
 
     sps_total = sps_earned + sps_tournament + sps_battle_earning + sps_rewards
-    dec_total = dec_earned + dec_rental_earned + dec_rental_payed + dec_tournament
+    dec_total = dec_earned + dec_rental_earned + dec_rental_payed + dec_tournament + dec_market_fees
     merits_total = season_df.merits_quest_rewards + season_df.merits_season_rewards + season_df.merits_brawl_prize
 
     # credits_earned = season_df.credits_quest_rewards + season_df.credits_season_rewards

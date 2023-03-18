@@ -90,11 +90,21 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
 
 
 def get_last_season_costs_table(last_season, skip_zeros):
-    costs_rows = cost_earning_row("DEC rental fees", dec_icon, last_season.dec_rental_payment_fees, skip_zeros)
-    costs_rows += cost_earning_row("DEC tournament entry fees", dec_icon, last_season.dec_enter_tournament, skip_zeros)
-    costs_rows += cost_earning_row("SPS tournament entry fees", sps_icon, last_season.sps_enter_tournament, skip_zeros)
-    costs_rows += cost_earning_row("DEC rental payment", dec_icon, last_season.dec_market_rental, skip_zeros)
-    costs_rows += cost_earning_row("DEC market buy", dec_icon, last_season.dec_buy_market_purchase, skip_zeros)
+    costs_rows = ""
+    if 'dec_rental_payment_fees' in last_season:
+        costs_rows += cost_earning_row("DEC rental fees", dec_icon, last_season.dec_rental_payment_fees, skip_zeros)
+    if 'dec_enter_tournament' in last_season:
+        costs_rows += cost_earning_row("DEC tournament entry fees", dec_icon, last_season.dec_enter_tournament, skip_zeros)
+    if 'dec_market_rental' in last_season:
+        costs_rows += cost_earning_row("DEC rental payment", dec_icon, last_season.dec_market_rental, skip_zeros)
+    if 'dec_buy_market_purchase' in last_season:
+        costs_rows += cost_earning_row("DEC market buy", dec_icon, last_season.dec_buy_market_purchase, skip_zeros)
+    if 'dec_market_fees' in last_season:
+        costs_rows += cost_earning_row("DEC market fees", dec_icon, last_season.dec_market_fees, skip_zeros)
+    if 'dec_market_list_fee' in last_season:
+        costs_rows += cost_earning_row("DEC market list fee", dec_icon, last_season.dec_market_list_fee, skip_zeros)
+    if 'sps_enter_tournament' in last_season:
+        costs_rows += cost_earning_row("SPS tournament entry fees", sps_icon, last_season.sps_enter_tournament, skip_zeros)
 
     result = "None"
     if costs_rows != "":
@@ -113,30 +123,50 @@ def cost_earning_row(title, icon, value, skip_zeros):
 
 
 def get_last_season_earnings_table(last_season, skip_zeros):
-    earning_rows = cost_earning_row("DEC rental rewards", dec_icon, last_season.dec_rental_payment, skip_zeros)
-    earning_rows += cost_earning_row("DEC market sell", dec_icon, last_season.dec_sell_market_purchase, skip_zeros)
-    earning_rows += cost_earning_row("DEC tournament rewards", dec_icon, last_season.dec_tournament_prize, skip_zeros)
-    earning_rows += cost_earning_row("DEC modern leaderboard rewards", dec_icon,
-                                     last_season.dec_modern_leaderboard_prizes, skip_zeros)
-    earning_rows += cost_earning_row("DEC wild leaderboard rewards", dec_icon,
-                                     last_season.dec_wild_leaderboard_prizes, skip_zeros)
+    earning_rows = ""
+    if 'dec_rental_payment' in last_season:
+        earning_rows += cost_earning_row("DEC rental rewards", dec_icon, last_season.dec_rental_payment, skip_zeros)
+    if 'dec_sell_market_purchase' in last_season:
+        earning_rows += cost_earning_row("DEC market sell", dec_icon, last_season.dec_sell_market_purchase, skip_zeros)
+    if 'dec_tournament_prize' in last_season:
+        earning_rows += cost_earning_row("DEC tournament rewards", dec_icon, last_season.dec_tournament_prize, skip_zeros)
+    if 'dec_modern_leaderboard_prizes' in last_season:
+        earning_rows += cost_earning_row("DEC modern leaderboard rewards", dec_icon,
+                                         last_season.dec_modern_leaderboard_prizes, skip_zeros)
+    if 'dec_wild_leaderboard_prizes' in last_season:
+        earning_rows += cost_earning_row("DEC wild leaderboard rewards", dec_icon,
+                                         last_season.dec_wild_leaderboard_prizes, skip_zeros)
 
-    earning_rows += cost_earning_row("SPS tournament rewards", sps_icon,
-                               last_season.sps_tournament_prize + last_season.sps_token_transfer_multi, skip_zeros)
-    earning_rows += cost_earning_row("SPS staking reward", sps_icon, last_season.sps_claim_staking_rewards, skip_zeros)
-    earning_rows += cost_earning_row("SPS token award (pools)", sps_icon, last_season.sps_token_award, skip_zeros)
-    earning_rows += cost_earning_row("SPS ranked battle (modern)", sps_icon, last_season.sps_modern, skip_zeros)
-    earning_rows += cost_earning_row("SPS ranked battle (wild)", sps_icon, last_season.sps_wild, skip_zeros)
-    earning_rows += cost_earning_row("SPS daily focus", sps_icon, last_season.sps_focus, skip_zeros)
-    earning_rows += cost_earning_row("SPS season", sps_icon, last_season.sps_season, skip_zeros)
-    earning_rows += cost_earning_row("SPS land", sps_icon, last_season.sps_land, skip_zeros)
-    earning_rows += cost_earning_row("SPS nightmare (TD) ", sps_icon, last_season.sps_nightmare, skip_zeros)
-    earning_rows += cost_earning_row("SPS brawl", sps_icon, last_season.sps_brawl, skip_zeros)
-    earning_rows += cost_earning_row("MERITS quest reward", merits_icon, last_season.merits_quest_rewards, skip_zeros)
-    earning_rows += cost_earning_row("MERITS season rewards", merits_icon, last_season.merits_season_rewards, skip_zeros)
-    earning_rows += cost_earning_row("MERITS brawl prizes", merits_icon, last_season.merits_brawl_prize, skip_zeros)
-    earning_rows += cost_earning_row("VOUCHER earned", voucher_icon, last_season.voucher_claim_staking_rewards,
-                               skip_zeros)
+    if 'sps_token_transfer_multi' in last_season:
+        earning_rows += cost_earning_row("SPS tournament rewards", sps_icon,
+                                         last_season.sps_tournament_prize + last_season.sps_token_transfer_multi, skip_zeros)
+    if 'sps_claim_staking_rewards' in last_season:
+        earning_rows += cost_earning_row("SPS staking reward", sps_icon, last_season.sps_claim_staking_rewards, skip_zeros)
+    if 'sps_token_award' in last_season:
+        earning_rows += cost_earning_row("SPS token award (pools)", sps_icon, last_season.sps_token_award, skip_zeros)
+    if 'sps_modern' in last_season:
+        earning_rows += cost_earning_row("SPS ranked battle (modern)", sps_icon, last_season.sps_modern, skip_zeros)
+    if 'sps_wild' in last_season:
+        earning_rows += cost_earning_row("SPS ranked battle (wild)", sps_icon, last_season.sps_wild, skip_zeros)
+    if 'sps_focus' in last_season:
+        earning_rows += cost_earning_row("SPS daily focus", sps_icon, last_season.sps_focus, skip_zeros)
+    if 'sps_season' in last_season:
+        earning_rows += cost_earning_row("SPS season", sps_icon, last_season.sps_season, skip_zeros)
+    if 'sps_land' in last_season:
+        earning_rows += cost_earning_row("SPS land", sps_icon, last_season.sps_land, skip_zeros)
+    if 'sps_nightmare' in last_season:
+        earning_rows += cost_earning_row("SPS nightmare (TD) ", sps_icon, last_season.sps_nightmare, skip_zeros)
+    if 'sps_brawl' in last_season:
+        earning_rows += cost_earning_row("SPS brawl", sps_icon, last_season.sps_brawl, skip_zeros)
+    if 'merits_quest_rewards' in last_season:
+        earning_rows += cost_earning_row("MERITS quest reward", merits_icon, last_season.merits_quest_rewards, skip_zeros)
+    if 'merits_season_rewards' in last_season:
+        earning_rows += cost_earning_row("MERITS season rewards", merits_icon, last_season.merits_season_rewards, skip_zeros)
+    if 'merits_brawl_prize' in last_season:
+        earning_rows += cost_earning_row("MERITS brawl prizes", merits_icon, last_season.merits_brawl_prize, skip_zeros)
+    if 'voucher_claim_staking_rewards' in last_season:
+        earning_rows += cost_earning_row("VOUCHER earned", voucher_icon, last_season.voucher_claim_staking_rewards,
+                                         skip_zeros)
 
     result = "None"
     if earning_rows != "":

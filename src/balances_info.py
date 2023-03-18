@@ -197,10 +197,15 @@ def add_balance_data_to_season_df(time_zone,
             season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                              balance_history_dec_df,
                                                              'modern_leaderboard_prizes', column_prefix='dec_')
-            season_df = cumulate_specific_balance_for_season(start_date, start_date, season_df, season_id,
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                              balance_history_dec_df,
                                                              'wild_leaderboard_prizes', column_prefix='dec_')
-
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_dec_df,
+                                                             'market_fees', column_prefix='dec_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_dec_df,
+                                                             'market_list_fee', column_prefix='dec_')
 
             # NOTE SEASON REWARDS are always in the time frame of the new season
             season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
