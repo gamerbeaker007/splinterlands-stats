@@ -5,7 +5,7 @@ import pandas as pd
 from src import api, season
 
 
-def get_balances(account_name, time_zone, season_balances_data_file, seasons_played_array):
+def get_balances(account_name, season_balances_data_file, seasons_played_array):
     current_season_data = api.get_current_season()
 
     if os.path.isfile(season_balances_data_file):
@@ -15,7 +15,7 @@ def get_balances(account_name, time_zone, season_balances_data_file, seasons_pla
         # Determine if new data needs to be pulled?
         if season_balances_df.season.max() != current_season_data['id'] - 1:
             # continue pull x season data
-            season_end_times = season.get_season_end_times(time_zone)
+            season_end_times = api.get_season_end_times()
             last_season_end_date = [season_end_time['date'] for season_end_time in season_end_times if
                                     season_end_time["id"] == season_balances_df.season.max()][0]
 
@@ -44,8 +44,7 @@ def get_balances(account_name, time_zone, season_balances_data_file, seasons_pla
                                                     account_name]})],
                                                ignore_index=True)
 
-                season_balances_df = add_balance_data_to_season_df(time_zone,
-                                                                   season_balances_df,
+                season_balances_df = add_balance_data_to_season_df(season_balances_df,
                                                                    balance_history_credits_df,
                                                                    balance_history_dec_df,
                                                                    balance_history_sps_df,
@@ -78,8 +77,7 @@ def get_balances(account_name, time_zone, season_balances_data_file, seasons_pla
         season_balances_df = pd.DataFrame()
         season_balances_df['season'] = seasons_played_array.tolist()
         season_balances_df['player'] = account_name
-        season_balances_df = add_balance_data_to_season_df(time_zone,
-                                                           season_balances_df,
+        season_balances_df = add_balance_data_to_season_df(season_balances_df,
                                                            balance_history_credits_df,
                                                            balance_history_dec_df,
                                                            balance_history_sps_df,
@@ -95,8 +93,7 @@ def get_balances(account_name, time_zone, season_balances_data_file, seasons_pla
     return season_balances_df
 
 
-def add_balance_data_to_season_df(time_zone,
-                                  season_df,
+def add_balance_data_to_season_df(season_df,
                                   balance_history_credits_df,
                                   balance_history_dec_df,
                                   balance_history_sps_df,
@@ -104,7 +101,7 @@ def add_balance_data_to_season_df(time_zone,
                                   balance_history_merits_df,
                                   balance_history_sps_unclaimed_df,
                                   single_season_id=None):
-    season_end_times = season.get_season_end_times(time_zone)
+    season_end_times = api.get_season_end_times()
 
     curr_season = api.get_current_season()
     last_season_name_id = int(curr_season['name'].split(' ')[-1]) - 1

@@ -6,16 +6,12 @@ from src.static_values_enum import Format
 
 def main():
     account_names_str = os.environ.get("ACCOUNT_NAMES")
-    time_zone = os.environ.get("TIME_ZONE")
     skip_zeros = os.environ.get("SKIP_ZEROS")
     output_dir_base = 'output'
 
     if not account_names_str:
         print("No environment ACCOUNT_NAMES found, using default from config.properties")
         account_names_str = configuration.ACCOUNT_NAMES
-    if not time_zone:
-        print("No environment TIME_ZONE found, using default from config.properties")
-        time_zone = configuration.TIME_ZONE
     if not skip_zeros:
         print("No environment SKIP_ZEROS found, using default from config.properties")
         skip_zeros = configuration.SKIP_ZEROS
@@ -30,11 +26,10 @@ def main():
     purchases_dict = {}
     sold_dict = {}
     last_season_rewards_dict = {}
-    start_date, end_date, previous_season_id = season.get_previous_season_dates_and_id(time_zone)
+    start_date, end_date, previous_season_id = season.get_previous_season_dates_and_id()
 
     for account_name in account_names:
-        print("\n\nGetting information for account: " + str(account_name) +
-              " with time zone: " + str(time_zone))
+        print("\n\nGetting information for account: " + str(account_name))
         output_dir_account = os.path.join(output_dir_base, account_name)
         season_balances_data_file = os.path.join(output_dir_account, 'season_data.csv')
         season_wild_battle_data_file = os.path.join(output_dir_account, 'season_wild_data.csv')
@@ -54,7 +49,6 @@ def main():
         combined_season = pd.concat([season_wild_dict[account_name], season_modern_dict[account_name]])
         combined_season = combined_season.season.sort_values(ascending=False).unique().astype(int)
         season_balances_dict[account_name] = balances_info.get_balances(account_name,
-                                                                        time_zone,
                                                                         season_balances_data_file,
                                                                         combined_season)
 

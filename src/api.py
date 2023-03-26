@@ -5,6 +5,7 @@ import pytz
 import requests
 from dateutil import parser
 from requests.adapters import HTTPAdapter
+from src import season_variables
 from src.logRetry import LogRetry
 
 base_url_api2 = "https://api2.splinterlands.com/"
@@ -22,8 +23,31 @@ http.mount("https://", adapter)
 
 
 def get_current_season():
-    address = base_url_api2 + "settings"
-    return http.get(address).json()['season']
+    # This only have to be done once.
+    if not season_variables.current_season:
+        address = base_url_api2 + "settings"
+        season_variables.current_season = http.get(address).json()['season']
+
+    return season_variables.current_season
+
+
+def get_season_end_times():
+    # This only have to be done once.
+    if not season_variables.season_end_dates_array:
+        season = get_current_season()
+        till_season_id = season['id']
+        print("Retrieve season end dates for '" + str(till_season_id) + "' seasons")
+        # https://api.splinterlands.com/season?id=1
+        season_variables.season_end_dates_array = []
+
+        for season in range(1, till_season_id + 1):
+            address = base_url_api2 + "season?id=" + str(season)
+            result = http.get(address)
+            if result.status_code == 200:
+                date = parser.parse(str(result.json()['ends']))
+                season_variables.season_end_dates_array.append({'id': season, 'date': date})
+
+    return season_variables.season_end_dates_array
 
 
 def get_leaderboard_with_player_season(username, season, mode):
