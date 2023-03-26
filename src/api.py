@@ -46,6 +46,12 @@ def get_season_end_times():
             if result.status_code == 200:
                 date = parser.parse(str(result.json()['ends']))
                 season_variables.season_end_dates_array.append({'id': season, 'date': date})
+            else:
+                print("Failed call: '" + str(address) + "'")
+                print("Unable to determine season end date return code: " + str(result.status_code))
+                print("This interrupts all other calculations, try re-execution.")
+                print("Stopping program now ... ")
+                exit(1)
 
     return season_variables.season_end_dates_array
 
