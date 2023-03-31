@@ -189,7 +189,9 @@ def get_hive_transactions(account_name, from_date, till_date, last_id, results):
         transactions = json.loads(response.text)['result']
         for transaction in transactions:
             timestamp = transaction[1]['timestamp']
-            timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S').astimezone(pytz.utc)
+            # Assume time of Hive is always UTC
+            # https://developers.hive.io/tutorials-recipes/understanding-dynamic-global-properties.html#time
+            timestamp = datetime.strptime(timestamp + "-+0000", '%Y-%m-%dT%H:%M:%S-%z')
             if from_date < timestamp < till_date:
                 results.append(transaction[1])
 
