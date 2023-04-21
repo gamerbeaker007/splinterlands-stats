@@ -25,7 +25,13 @@ jobs:
     - run: pyinstaller --onefile --windowed main.py
     - uses: actions/upload-artifact@v3
       with:
-        path: dist/${{ matrix.os }}/*
+        name: ${{ matrix.os }}
+        path: |
+          output
+          config.properties
+          dist/*
+        
+
 
 #  create_exec:
 #    runs-on: ubuntu-latest
