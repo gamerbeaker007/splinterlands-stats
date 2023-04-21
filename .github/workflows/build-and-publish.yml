@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
+        os: ['windows-latest'] # later add others like 'ubuntu-latest', 'macos-latest'
 
     runs-on: ${{ matrix.os }}
     steps:
