@@ -3,11 +3,27 @@ name: Build and Publish
 on:
   # run it on push to the default repository branch
   push:
-    branches: [main]
+    branches: [create-exe]
   # run it during pull request
   pull_request:
 
 jobs:
+  create_exec :
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Package Application
+      uses: JackMcKew/pyinstaller-action-windows@main
+      with:
+        path: .
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: splinterlands-stats
+        path: src/dist/windows
+
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
