@@ -23,7 +23,7 @@ jobs:
         cache: 'pip' # caching pip dependencies
     - run: pip install -r requirements.txt pyinstaller
     - run: pyinstaller --onefile main.py
-    - run: mkdir -p "dist/output"
+    - run: cp -r "output/" "dist/"
     - run: cp "config.properties" "dist/"
 
     - uses: actions/upload-artifact@v3
