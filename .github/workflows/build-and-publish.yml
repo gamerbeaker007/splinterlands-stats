@@ -22,14 +22,14 @@ jobs:
         python-version: '3.10'
         cache: 'pip' # caching pip dependencies
     - run: pip install -r requirements.txt pyinstaller
-    - run: pyinstaller --onefile --windowed main.py
+    - run: pyinstaller --onefile main.py
     - uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.os }}
         path: |
           output
           config.properties
-          dist/*
+          dist/main*
         
 
 
