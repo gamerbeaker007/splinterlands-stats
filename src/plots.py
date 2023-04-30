@@ -1,5 +1,4 @@
 import os
-import kaleido #required
 
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -98,11 +97,8 @@ def plot_season_stats_rating(season_df, output_dir, mode):
     )
 
     # fig.show()
-    print(kaleido.__version__)
-    print("before writing image plot_season_stats_rating")
     fig.write_image(os.path.join(output_dir, "1_season_stats_rating_" + str(mode.value) + ".png"), width=IMAGES_WIDTH,
                     height=IMAGES_HEIGHT)
-    print("after writing image plot_season_stats_rating")
 
 
 def plot_season_stats_battles(season_df, output_dir, mode):
@@ -151,10 +147,8 @@ def plot_season_stats_battles(season_df, output_dir, mode):
             title='win (%)'),
     )
     # fig.show()
-    print("before writing image plot_season_stats_battles")
     fig.write_image(os.path.join(output_dir, "2_season_stats_battles_" + str(mode.value) + ".png"), width=IMAGES_WIDTH,
                     height=IMAGES_HEIGHT)
-    print("after writing image plot_season_stats_battles")
 
 
 def check_data_consistency(season_df, columns):
@@ -335,10 +329,7 @@ def plot_season_stats_earnings(season_df, output_dir="", skip_zeros=False):
     )
 
     # fig.show()
-
-    print("before writing image plot_season_stats_earnings")
     fig.write_image(os.path.join(output_dir, "3_season_stats_earnings.png"), width=IMAGES_WIDTH, height=480 * rows)
-    print("after writing image plot_season_stats_earnings")
 
 
 def plot_season_battle_history(battle_history, output_dir, mode):
