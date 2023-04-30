@@ -1,4 +1,5 @@
 import os
+import kaleido #required
 
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
