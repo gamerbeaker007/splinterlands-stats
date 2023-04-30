@@ -98,6 +98,7 @@ def plot_season_stats_rating(season_df, output_dir, mode):
     )
 
     # fig.show()
+    print(kaleido.__version__)
     print("before writing image plot_season_stats_rating")
     fig.write_image(os.path.join(output_dir, "1_season_stats_rating_" + str(mode.value) + ".png"), width=IMAGES_WIDTH,
                     height=IMAGES_HEIGHT)
