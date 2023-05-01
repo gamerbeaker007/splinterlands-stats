@@ -3,7 +3,9 @@ name: Build and Publish
 on:
   # run it on push to the default repository branch
   push:
-    branches: ['main', 'build_*' ]
+    branches:
+      - 'main'
+      - 'build_*'
   # run it during pull request
   pull_request:
 
@@ -21,11 +23,13 @@ jobs:
       with:
         python-version: '3.10'
         cache: 'pip' # caching pip dependencies
-    - run: pip install -r requirements.txt pyinstaller
-    - run: pyinstaller --onefile main.py
-    - run: cp -r "output/" "dist/"
-    - run: cp "config.properties" "dist/"
-
+    - run: |
+        pip install -r requirements.txt pyinstaller
+        pyinstaller --onefile main.py
+        cp -r "output/" "dist/"
+        cp "config.properties" "dist/"
+    - if: matrix.os == 'ubuntu-latest'
+      run: mv main main.sh; chmod a+x main.sh
     - uses: actions/upload-artifact@v3
       with:
         name: splinterlands-stats-${{ matrix.os }}
