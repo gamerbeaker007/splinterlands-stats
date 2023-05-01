@@ -27,7 +27,7 @@ jobs:
         python-version: '3.10'
         cache: 'pip' # caching pip dependencies
     - run: pip install -r requirements.txt pyinstaller
-    - run: pyinstaller --onefile --distpath ./$output_dir main.py
+    - run: pyinstaller --onefile --distpath ./$output_dir/ main.py
     - run: cp -r "output/" "$output_dir/"
     - run: cp "config.properties" "$output_dir/"
     - run: ls
