@@ -30,6 +30,9 @@ jobs:
     - run: pyinstaller --onefile --distpath ./$output_dir main.py
     - run: cp -r "output/" "$output_dir/"
     - run: cp "config.properties" "$output_dir/"
+    - run: ls
+    - run: ls "$output_dir/"
+
 
     - if: matrix.os == 'ubuntu-latest'
       run: |
