@@ -30,7 +30,7 @@ jobs:
     - run: cp "config.properties" "dist/"
 
     - if: matrix.os == 'ubuntu-latest'
-      run: mv main main.sh; chmod a+x main.sh
+      run: mv dist/main dist/main.sh; chmod a+x dist/main.sh
 
     - uses: actions/upload-artifact@v3
       with:
