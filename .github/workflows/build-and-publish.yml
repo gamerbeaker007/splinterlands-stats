@@ -10,7 +10,7 @@ on:
   pull_request:
 
 env:
-  output_dir: 'splinterlands-stats'
+  output_dir: 'spl-stats'
 
 jobs:
   build:
