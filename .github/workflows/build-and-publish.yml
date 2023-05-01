@@ -10,7 +10,7 @@ on:
   pull_request:
 
 env:
-  output_dir: 'spl-stats'
+  output_dir: 'splinterlands-stats'
 
 jobs:
   build:
@@ -27,29 +27,26 @@ jobs:
         python-version: '3.10'
         cache: 'pip' # caching pip dependencies
     - run: pip install -r requirements.txt pyinstaller
-    - run: pyinstaller --onefile --distpath spl-stats main.py
-    - run: cp -r "output/" "spl-stats/"
-    - run: cp "config.properties" "spl-stats/"
-    - run: ls
-    - run: ls "spl-stats/"
-
+    - run: pyinstaller --onefile --distpath splinterlands-stats main.py
+    - run: cp -r "output/" "splinterlands-stats/"
+    - run: cp "config.properties" "splinterlands-stats/"
 
     - if: matrix.os == 'ubuntu-latest'
       run: |
-        mv "$output_dir/main" "spl-stats/main.sh"
-        tar -cvf spl-stats.tar spl-stats
+        mv "$output_dir/main" "splinterlands-stats/main.sh"
+        tar -cvf splinterlands-stats.tar splinterlands-stats
 
     - if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v3
       with:
         name: splinterlands-stats-${{ matrix.os }}
-        path: spl-stats.tar
+        path: splinterlands-stats.tar
 
     - if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v3
       with:
         name: splinterlands-stats-${{ matrix.os }}
-        path: ./spl-stats/*
+        path: ./splinterlands-stats/*
 
 
   push_to_registry:
