@@ -27,17 +27,17 @@ jobs:
         python-version: '3.10'
         cache: 'pip' # caching pip dependencies
     - run: pip install -r requirements.txt pyinstaller
-    - run: pyinstaller --onefile --distpath ./$output_dir/ main.py
-    - run: cp -r "output/" "$output_dir/"
-    - run: cp "config.properties" "$output_dir/"
+    - run: pyinstaller --onefile --distpath spl-stats main.py
+    - run: cp -r "output/" "spl-stats/"
+    - run: cp "config.properties" "spl-stats/"
     - run: ls
-    - run: ls "$output_dir/"
+    - run: ls "spl-stats/"
 
 
     - if: matrix.os == 'ubuntu-latest'
       run: |
-        mv "$output_dir/main" "$output_dir/main.sh"
-        tar -cvf spl-stats.tar $output_dir
+        mv "$output_dir/main" "spl-stats/main.sh"
+        tar -cvf spl-stats.tar spl-stats
 
     - if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v3
@@ -49,7 +49,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: splinterlands-stats-${{ matrix.os }}
-        path: ./$output_dir/*
+        path: ./spl-stats/*
 
 
   push_to_registry:
