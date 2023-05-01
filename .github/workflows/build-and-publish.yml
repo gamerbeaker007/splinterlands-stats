@@ -9,9 +9,6 @@ on:
   # run it during pull request
   pull_request:
 
-env:
-  output_dir: 'splinterlands-stats'
-
 jobs:
   build:
     strategy:
@@ -33,7 +30,7 @@ jobs:
 
     - if: matrix.os == 'ubuntu-latest'
       run: |
-        mv "$output_dir/main" "splinterlands-stats/main.sh"
+        mv "splinterlands-stats/main" "splinterlands-stats/main.sh"
         tar -cvf splinterlands-stats.tar splinterlands-stats
 
     - if: matrix.os == 'ubuntu-latest'
