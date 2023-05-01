@@ -1,8 +1,13 @@
-numpy==1.22.4
-pandas==1.4.2
-plotly==5.8.2
-pytz==2022.1
-requests==2.28.0
-urllib3==1.26.9
-kaleido==0.2.1
+numpy==1.24.3
+pandas==2.0.1
+plotly==5.14.1
+pytz==2023.3
+requests==2.29.0
+urllib3==1.26.15
 python-dateutil~=2.8.2
+
+# Downgraded to 0.1.0.post1 for windows due to issue https://github.com/plotly/Kaleido/issues/110
+kaleido==0.1.0.post1; platform_system=='Windows'
+kaleido==0.2.1; platform_system=='Linux'
+
+
