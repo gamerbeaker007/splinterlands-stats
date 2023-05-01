@@ -4,9 +4,10 @@ plotly==5.14.1
 pytz==2023.3
 requests==2.29.0
 urllib3==1.26.15
+python-dateutil~=2.8.2
+
 # Downgraded to 0.1.0.post1 for windows due to issue https://github.com/plotly/Kaleido/issues/110
 kaleido==0.1.0.post1; platform_system=='Windows'
 kaleido==0.2.1; platform_system=='Linux'
 
 
-python-dateutil~=2.8.2
