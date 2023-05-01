@@ -46,7 +46,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: splinterlands-stats-${{ matrix.os }}
-        path: $output_dir
+        path: $output_dir/*
 
 
   push_to_registry:
