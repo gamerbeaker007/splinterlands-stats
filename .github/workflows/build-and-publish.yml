@@ -29,18 +29,18 @@ jobs:
     - run: cp "config.properties" "dist/"
 
     - if: matrix.os == 'ubuntu-latest'
-      run: |
-        ls -lsa dist/*
-        mv dist/main dist/main.sh
-        ls -lsa dist/*
-        chmod a+x dist/main.sh
-        ls -lsa dist/*
+      run: tar -cvf spl-stats.tar dist/
 
     - uses: actions/upload-artifact@v3
+    - if: matrix.os == 'ubuntu-latest'
+      with:
+        name: splinterlands-stats-${{ matrix.os }}
+        path: spl-starts.tar
+    - if: matrix.os == 'windows-latest'
       with:
         name: splinterlands-stats-${{ matrix.os }}
         path: dist/*
-        
+
 
   push_to_registry:
     name: Push Docker image to Docker Hub
