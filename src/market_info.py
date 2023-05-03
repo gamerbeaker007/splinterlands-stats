@@ -43,14 +43,17 @@ def get_last_season_player_history_rewards(account_name, start_date, end_date, s
             lambda row: row.card['edition'] if row['type'] == 'reward_card' else row['edition'], axis=1)
 
         card_details_list = api.get_card_details()
+        settings = api.get_settings()
         reward_data['edition_name'] = reward_data.apply(
             lambda row: (Edition(row.edition)).name if row['type'] == 'reward_card' else "", axis=1)
         reward_data['card_name'] = reward_data.apply(
             lambda row: find_card_name(card_details_list, row.card_detail_id) if row['type'] == 'reward_card' else "",
             axis=1)
 
-        # combine_rates, combine_rates_gold, core_editions = api.get_combine_rates()
-        # determine_card_level(combine_rates, core_editions, 3, 14)
+        reward_data['bcx'] = reward_data.apply(
+            lambda row: get_bcx(settings, card_details_list, row.card) if row['type'] == 'reward_card' else "",
+            axis=1)
+
     return reward_data
 
 
@@ -70,19 +73,6 @@ def filter_df_last_season(start_date, end_date, data_frame):
     return data_frame
 
 
-# def determine_card_level(combine_rates, core_editions, edition, xp):
-#     for core_edition in core_editions:
-#         if core_edition == edition:
-#             selected_edition = core_edition
-#             break
-#         if core_edition > edition:
-#             print("edition to far so -1 " + str(core_edition))
-#             break
-#
-#     print(selected_edition)
-#     return
-
-
 def get_sold_cards(account_name, cards_df):
     sold_cards = []
     if not cards_df.empty:
@@ -99,6 +89,7 @@ def get_sold_cards(account_name, cards_df):
 
 def get_purchased_sold_cards(account_name, start_date, end_date):
     card_details_list = api.get_card_details()
+    settings = api.get_settings()
 
     transactions = []
     transactions = get_hive_transactions(account_name, start_date, end_date, -1, transactions)
@@ -133,6 +124,8 @@ def get_purchased_sold_cards(account_name, start_date, end_date):
             lambda row: (Edition(row.edition)).name, axis=1)
         purchases['card_name'] = purchases.apply(
             lambda row: find_card_name(card_details_list, row.card_detail_id), axis=1)
+        purchases['bcx'] = purchases.apply(
+            lambda row: get_bcx(settings, card_details_list, row), axis=1)
 
     sold_cards = pd.DataFrame(get_sold_cards(account_name, potential_sell))
     if not sold_cards.empty:
@@ -140,6 +133,31 @@ def get_purchased_sold_cards(account_name, start_date, end_date):
             lambda row: (Edition(row.edition)).name, axis=1)
         sold_cards['card_name'] = sold_cards.apply(
             lambda row: find_card_name(card_details_list, row.card_detail_id), axis=1)
+        sold_cards['bcx'] = sold_cards.apply(
+            lambda row: get_bcx(settings, card_details_list, row), axis=1)
 
     return purchases, sold_cards
 
+
+def get_bcx(settings, card_details_list, collection_card):
+    # rarity = self.card_details[int(collection_card["card_detail_id"]) - 1]["rarity"]
+    rarity = next(item for item in card_details_list if item["id"] == collection_card["card_detail_id"])["rarity"]
+    edition = int(collection_card["edition"])
+    xp = int(collection_card["xp"])
+
+    if edition == 0:
+        if collection_card["gold"]:
+            bcx = xp / settings["gold_xp"][rarity - 1]
+        else:
+            bcx = xp / settings["alpha_xp"][rarity - 1] + 1
+    elif edition == 2 and int(collection_card["card_detail_id"]) > 223:  # all promo cards alpha/beta
+        bcx = xp
+    elif (edition < 3) or ((edition == 3) and (int(collection_card["card_detail_id"]) <= 223)):
+        if collection_card["gold"]:
+            bcx = xp / settings["beta_gold_xp"][rarity - 1]
+        else:
+            bcx = xp / settings["beta_xp"][rarity - 1] + 1
+    else:
+        bcx = xp
+
+    return bcx

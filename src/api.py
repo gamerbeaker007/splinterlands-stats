@@ -203,3 +203,8 @@ def get_hive_transactions(account_name, from_date, till_date, last_id, results):
 
             get_hive_transactions(account_name, from_date, till_date, last_id-1, results)
     return results
+
+
+def get_settings():
+    address = base_url_api2 + "settings"
+    return requests.get(address).json()
