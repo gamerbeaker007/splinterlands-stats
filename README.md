@@ -33,4 +33,5 @@ python main.py</code>
 
 # Result 
 The output is located per user in the output directory containing graphs and the post.txt.
-With multiple users combined_post.txt is also created in the output directory
+With multiple users also combined_post.txt is created in the output directory.
+
