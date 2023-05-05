@@ -4,18 +4,24 @@
 ## With windows executable
 * Download windows executable
 * Unzip
-* Edit config.properties add one or multiple users separeted by an ,. eg. <code>account_names=beaker007,beakerr</code>
+* Edit config.properties add one or multiple users separated by , <br>Example <code>account_names=beaker007,beakerr</code>
 * Run main.exe
-Tip: to see the console log of the program run this via an command prompt
+Tip: to see the console log of the program run this via and command prompt
+
+## With linux executable
+* Download linux executable
+* Unzip
+* Edit config.properties add one or multiple users separated by , <br>Example <code>account_names=beaker007,beakerr</code>
+* ./main.sh
 
 ## With Docker 
 <code>docker login ghcr.io --username your_github_username
 docker pull ghcr.io/gamerbeaker007/splinterlands-stats:latest</code>
 
-### Windows:
+### Windows (docker):
 <code>docker run -it -v C:\Temp\:/app/output -e "ACCOUNT_NAMES=spl_account_name,spl_name2" -e "SKIP_ZEROS=True" ghcr.io/gamerbeaker007/splinterlands-stats:latest</code>
 
-### Linux:
+### Linux (docker):
 <code>docker run -it -v \tmp\:/app/output -e "ACCOUNT_NAMES=spl_account_name,spl_name2" -e "SKIP_ZEROS=True" ghcr.io/gamerbeaker007/splinterlands-stats:latest</code>
 
 ## With python development or local execution
