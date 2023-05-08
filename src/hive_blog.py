@@ -208,7 +208,7 @@ def get_tournament_info(tournaments_info):
     return result
 
 
-def get_card_table(cards_df):
+def get_card_table(cards_df, print_count=False):
     base_card_url = "https://images.hive.blog/150x0/https://d36mxiodymuqjm.cloudfront.net/cards_by_level/"
 
     if cards_df is not None and len(cards_df) > 0:
@@ -220,6 +220,8 @@ def get_card_table(cards_df):
                 'quantity_regular': len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == False)]),
                 'quantity_gold':  len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == True)]),
                 'edition_name': str(cards_df[(cards_df['card_name'] == card_name)].edition_name.values[0]),
+                'bcx': str(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == False)].bcx.sum()),
+                'bcx_gold': str(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == True)].bcx.sum())
             }, index=[0])], ignore_index=True)
 
         if len(temp.index) > 5:
@@ -237,12 +239,21 @@ def get_card_table(cards_df):
             if index > 0 and index % 5 == 0:
                 result += "\n"
 
+            prefix = str(base_card_url) + str(card.edition_name) + "/" + str(card.card_name).replace(" ", "%20")
+            count_str = ""
+            gold_suffix = ""
             if card.quantity_regular > 0:
-                card_image_url = str(base_card_url) + str(card.edition_name) + "/" + str(card.card_name).replace(" ","%20") + "_lv1.png"
-                result += "" + str(card_image_url) + "<br> " + str(card.quantity_regular) + "x"
+                bcx = str(card.bcx)
+                if print_count:
+                    count_str = " <br> " + str(card.quantity_regular) + "x"
             if card.quantity_gold > 0:
-                card_image_url = str(base_card_url) + str(card.edition_name) + "/" + str(card.card_name).replace(" ","%20") + "_lv1_gold.png"
-                result += "" + str(card_image_url) + "<br> " + str(card.quantity_gold) + "x"
+                gold_suffix = "_gold"
+                bcx = str(card.bcx_gold)
+                if print_count:
+                    count_str = " <br> " + str(card.quantity_gold) + "x"
+
+            card_image_url = prefix + "_lv1" + gold_suffix + ".png"
+            result += "" + str(card_image_url) + count_str + " <br> bcx: " + str(bcx)
             result += " |"
     else:
         result = "None"
@@ -407,12 +418,12 @@ def get_last_season_market_transactions(purchases_cards, sold_cards, account_nam
 ## <div class="phishy"><center>Cards Purchased""" + str(account_suffix) + """</center></div>
 Note: Completed splex.gg and peakmonsters bids are not in this overview, those are purchased by other accounts.
 
-""" + str(get_card_table(purchases_cards)) + """ 
+""" + str(get_card_table(purchases_cards, True)) + """ 
 
 
 ## <div class="phishy"><center>Cards Sold""" + str(account_suffix) + """</center></div>
 Note: Only cards that are listed and sold in this season are displayed here.
-""" + str(get_card_table(sold_cards)) + """ 
+""" + str(get_card_table(sold_cards, True)) + """ 
 
 """
 
