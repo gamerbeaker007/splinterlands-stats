@@ -25,8 +25,8 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
         wild_win = last_season_wild_battles.wins
         wild_win_pct = round(last_season_wild_battles.win_pct, 2)
         wild_longest_streak = last_season_wild_battles.longest_streak
-        wild_ratio = round(wild_win/(wild_battles-wild_win), 2)
-        wild_loss = wild_battles-wild_win
+        wild_ratio = round(wild_win / (wild_battles - wild_win), 2)
+        wild_loss = wild_battles - wild_win
     else:
         wild_league = 0
         wild_league_name = "NA"
@@ -51,8 +51,8 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
         modern_win = last_season_modern_battles.wins
         modern_win_pct = round(last_season_modern_battles.win_pct, 2)
         modern_longest_streak = last_season_modern_battles.longest_streak
-        modern_ratio = round(modern_win/(modern_battles-modern_win), 2)
-        modern_loss = modern_battles-modern_win
+        modern_ratio = round(modern_win / (modern_battles - modern_win), 2)
+        modern_loss = modern_battles - modern_win
     else:
         modern_league = 0
         modern_league_name = "NA"
@@ -66,8 +66,10 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
         modern_ratio = "NA"
         modern_loss = "NA"
 
-    wild_league_logo = "https://images.hive.blog/75x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/leagues/wild_150/league_" + str(wild_league) + ".png"
-    modern_league_logo = "https://images.hive.blog/75x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/leagues/modern_150/league_" + str(modern_league) + ".png"
+    wild_league_logo = "https://images.hive.blog/75x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/leagues/wild_150/league_" + str(
+        wild_league) + ".png"
+    modern_league_logo = "https://images.hive.blog/75x0/https://d36mxiodymuqjm.cloudfront.net/website/icons/leagues/modern_150/league_" + str(
+        modern_league) + ".png"
     extra_space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
     result = "| Statistic |  " + wild_league_logo + "<br>" + extra_space + "Wild| " + modern_league_logo + "<br>" + extra_space + "Modern | \n"
     result += "| - | - | - |\n"
@@ -81,7 +83,8 @@ def get_last_season_statistics_table(last_season_wild_battles, last_season_moder
     result += str(modern_max_rating) + " | \n"
     result += "| Ratio (Win/Loss) | " + str(wild_ratio) + " (" + str(wild_win) + "/" + str(wild_loss) + ") |"
     result += str(modern_ratio) + " (" + str(modern_win) + "/" + str(modern_loss) + ") |\n"
-    result += "| Win PCT (Wins/battles * 100) | " + str(wild_win_pct) + " (" + str(wild_win) + "/" + str(wild_battles) + ") |"
+    result += "| Win PCT (Wins/battles * 100) | " + str(wild_win_pct) + " (" + str(wild_win) + "/" + str(
+        wild_battles) + ") |"
     result += str(modern_win_pct) + " (" + str(modern_win) + "/" + str(modern_battles) + ") |\n"
     result += "| Longest Streak | " + str(wild_longest_streak) + " |"
     result += str(modern_longest_streak) + " |\n"
@@ -94,9 +97,13 @@ def get_last_season_costs_table(last_season, skip_zeros):
     if 'dec_rental_payment_fees' in last_season:
         costs_rows += cost_earning_row("DEC rental fees", dec_icon, last_season.dec_rental_payment_fees, skip_zeros)
     if 'dec_enter_tournament' in last_season:
-        costs_rows += cost_earning_row("DEC tournament entry fees", dec_icon, last_season.dec_enter_tournament, skip_zeros)
+        costs_rows += cost_earning_row("DEC tournament entry fees", dec_icon, last_season.dec_enter_tournament,
+                                       skip_zeros)
     if 'dec_market_rental' in last_season:
         costs_rows += cost_earning_row("DEC rental payment", dec_icon, last_season.dec_market_rental, skip_zeros)
+    if 'dec_purchased_energy' in last_season:
+        costs_rows += cost_earning_row("DEC purchased energy", dec_icon,
+                                       last_season.dec_purchased_energy, skip_zeros)
     if 'dec_buy_market_purchase' in last_season:
         costs_rows += cost_earning_row("DEC market buy", dec_icon, last_season.dec_buy_market_purchase, skip_zeros)
     if 'dec_market_fees' in last_season:
@@ -104,7 +111,8 @@ def get_last_season_costs_table(last_season, skip_zeros):
     if 'dec_market_list_fee' in last_season:
         costs_rows += cost_earning_row("DEC market list fee", dec_icon, last_season.dec_market_list_fee, skip_zeros)
     if 'sps_enter_tournament' in last_season:
-        costs_rows += cost_earning_row("SPS tournament entry fees", sps_icon, last_season.sps_enter_tournament, skip_zeros)
+        costs_rows += cost_earning_row("SPS tournament entry fees", sps_icon, last_season.sps_enter_tournament,
+                                       skip_zeros)
 
     result = "None"
     if costs_rows != "":
@@ -129,19 +137,25 @@ def get_last_season_earnings_table(last_season, skip_zeros):
     if 'dec_sell_market_purchase' in last_season:
         earning_rows += cost_earning_row("DEC market sell", dec_icon, last_season.dec_sell_market_purchase, skip_zeros)
     if 'dec_tournament_prize' in last_season:
-        earning_rows += cost_earning_row("DEC tournament rewards", dec_icon, last_season.dec_tournament_prize, skip_zeros)
-    if 'dec_modern_leaderboard_prizes' in last_season:
-        earning_rows += cost_earning_row("DEC modern leaderboard rewards", dec_icon,
-                                         last_season.dec_modern_leaderboard_prizes, skip_zeros)
-    if 'dec_wild_leaderboard_prizes' in last_season:
-        earning_rows += cost_earning_row("DEC wild leaderboard rewards", dec_icon,
-                                         last_season.dec_wild_leaderboard_prizes, skip_zeros)
+        earning_rows += cost_earning_row("DEC tournament rewards", dec_icon, last_season.dec_tournament_prize,
+                                         skip_zeros)
+    # if 'dec_modern_leaderboard_prizes' in last_season:
+    #     earning_rows += cost_earning_row("DEC modern leaderboard rewards", dec_icon,
+    #                                      last_season.dec_modern_leaderboard_prizes, skip_zeros)
+    # if 'dec_wild_leaderboard_prizes' in last_season:
+    #     earning_rows += cost_earning_row("DEC wild leaderboard rewards", dec_icon,
+    #                                      last_season.dec_wild_leaderboard_prizes, skip_zeros)
+    if 'dec_leaderboard_prizes' in last_season:
+        earning_rows += cost_earning_row("DEC wild/modern leaderboard rewards", dec_icon,
+                                         last_season.dec_leaderboard_prizes, skip_zeros)
 
     if 'sps_token_transfer_multi' in last_season:
         earning_rows += cost_earning_row("SPS tournament rewards", sps_icon,
-                                         last_season.sps_tournament_prize + last_season.sps_token_transfer_multi, skip_zeros)
+                                         last_season.sps_tournament_prize + last_season.sps_token_transfer_multi,
+                                         skip_zeros)
     if 'sps_claim_staking_rewards' in last_season:
-        earning_rows += cost_earning_row("SPS staking reward", sps_icon, last_season.sps_claim_staking_rewards, skip_zeros)
+        earning_rows += cost_earning_row("SPS staking reward", sps_icon, last_season.sps_claim_staking_rewards,
+                                         skip_zeros)
     if 'sps_token_award' in last_season:
         earning_rows += cost_earning_row("SPS token award (pools)", sps_icon, last_season.sps_token_award, skip_zeros)
     if 'sps_modern' in last_season:
@@ -159,14 +173,17 @@ def get_last_season_earnings_table(last_season, skip_zeros):
     if 'sps_brawl' in last_season:
         earning_rows += cost_earning_row("SPS brawl", sps_icon, last_season.sps_brawl, skip_zeros)
     if 'merits_quest_rewards' in last_season:
-        earning_rows += cost_earning_row("MERITS quest reward", merits_icon, last_season.merits_quest_rewards, skip_zeros)
+        earning_rows += cost_earning_row("MERITS quest reward", merits_icon, last_season.merits_quest_rewards,
+                                         skip_zeros)
     if 'merits_season_rewards' in last_season:
-        earning_rows += cost_earning_row("MERITS season rewards", merits_icon, last_season.merits_season_rewards, skip_zeros)
+        earning_rows += cost_earning_row("MERITS season rewards", merits_icon, last_season.merits_season_rewards,
+                                         skip_zeros)
     if 'merits_brawl_prize' in last_season:
         earning_rows += cost_earning_row("MERITS brawl prizes", merits_icon, last_season.merits_brawl_prize, skip_zeros)
     if 'voucher_claim_staking_rewards' in last_season:
         earning_rows += cost_earning_row("VOUCHER earned", voucher_icon, last_season.voucher_claim_staking_rewards,
                                          skip_zeros)
+
 
     result = "None"
     if earning_rows != "":
@@ -187,7 +204,8 @@ def get_tournament_info(tournaments_info):
                 result += "| " + tournament['name']
                 result += "| " + tournament.league
                 result += "| " + str(int(tournament.finish)) + " / " + str(int(tournament.num_players))
-                result += "| " + str(int(tournament.wins)) + " / " + str(int(tournament.losses)) + " / " + str(int(tournament.draws))
+                result += "| " + str(int(tournament.wins)) + " / " + str(int(tournament.losses)) + " / " + str(
+                    int(tournament.draws))
                 result += "| " + tournament.entry_fee
                 result += "| " + tournament.prize_qty + " " + tournament.prize_type
                 result += "| \n"
@@ -218,7 +236,7 @@ def get_card_table(cards_df, print_count=False):
             temp = pd.concat([temp, pd.DataFrame({
                 'card_name': card_name,
                 'quantity_regular': len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == False)]),
-                'quantity_gold':  len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == True)]),
+                'quantity_gold': len(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == True)]),
                 'edition_name': str(cards_df[(cards_df['card_name'] == card_name)].edition_name.values[0]),
                 'bcx': str(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == False)].bcx.sum()),
                 'bcx_gold': str(cards_df[(cards_df['card_name'] == card_name) & (cards_df['gold'] == True)].bcx.sum())
@@ -472,7 +490,6 @@ def write_blog_post(account_names, season_balances_dict, season_wild_dict, seaso
                                                     account_name=print_account_name)
         post += get_last_season_rewards(last_season_rewards_dict[account_name],
                                         account_name=print_account_name)
-
 
         if single_account:
             post += get_closure_chapter()
