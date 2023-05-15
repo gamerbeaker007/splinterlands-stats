@@ -193,7 +193,10 @@ def add_balance_data_to_season_df(season_df,
                                                              'quest_rewards', column_prefix='dec_')
             season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                              balance_history_dec_df,
-                                                             'leaderboard_prizes', column_prefix='dec_')
+                                                             'modern_leaderboard_prizes', column_prefix='dec_')
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_dec_df,
+                                                             'leaderboard_prizes', column_prefix='dec_wild_')
             season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                              balance_history_dec_df,
                                                              'market_fees', column_prefix='dec_')
@@ -265,15 +268,15 @@ def cumulate_specific_balance_for_season(start_date, end_date, season_df, season
 
         # greater than the start date and smaller than the end date and type is search_type
         if positive_only:
-            mask = (input_df['created_date'] >= start_date) & (input_df['created_date'] < end_date) & (
+            mask = (input_df['created_date'] > start_date) & (input_df['created_date'] <= end_date) & (
                     input_df['type'] == search_type) & (input_df['amount'] > 0.0)
         else:
-            mask = (input_df['created_date'] >= start_date) & (input_df['created_date'] < end_date) & (
+            mask = (input_df['created_date'] > start_date) & (input_df['created_date'] <= end_date) & (
                     input_df['type'] == search_type)
 
         if search_type == "token_transfer_multi":
-            mask = (input_df['created_date'] >= start_date) \
-                   & (input_df['created_date'] < end_date) \
+            mask = (input_df['created_date'] > start_date) \
+                   & (input_df['created_date'] <= end_date) \
                    & (input_df['type'] == search_type) \
                    & (input_df['token'] == 'SPS')
 

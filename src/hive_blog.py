@@ -139,15 +139,12 @@ def get_last_season_earnings_table(last_season, skip_zeros):
     if 'dec_tournament_prize' in last_season:
         earning_rows += cost_earning_row("DEC tournament rewards", dec_icon, last_season.dec_tournament_prize,
                                          skip_zeros)
-    # if 'dec_modern_leaderboard_prizes' in last_season:
-    #     earning_rows += cost_earning_row("DEC modern leaderboard rewards", dec_icon,
-    #                                      last_season.dec_modern_leaderboard_prizes, skip_zeros)
-    # if 'dec_wild_leaderboard_prizes' in last_season:
-    #     earning_rows += cost_earning_row("DEC wild leaderboard rewards", dec_icon,
-    #                                      last_season.dec_wild_leaderboard_prizes, skip_zeros)
-    if 'dec_leaderboard_prizes' in last_season:
-        earning_rows += cost_earning_row("DEC wild/modern leaderboard rewards", dec_icon,
-                                         last_season.dec_leaderboard_prizes, skip_zeros)
+    if 'dec_modern_leaderboard_prizes' in last_season:
+        earning_rows += cost_earning_row("DEC modern leaderboard rewards", dec_icon,
+                                         last_season.dec_modern_leaderboard_prizes, skip_zeros)
+    if 'dec_wild_leaderboard_prizes' in last_season:
+        earning_rows += cost_earning_row("DEC wild leaderboard rewards", dec_icon,
+                                         last_season.dec_wild_leaderboard_prizes, skip_zeros)
 
     if 'sps_token_transfer_multi' in last_season:
         earning_rows += cost_earning_row("SPS tournament rewards", sps_icon,
