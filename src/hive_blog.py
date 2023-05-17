@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 
+from src.static_values_enum import Edition
+
 credit_icon = "![credit.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/" \
               "AK3iY7Tb28oEV8oALeHvUbBpKjWxvADTHcaqtPSL4C2YzcJ4oZLp36MAiX3qGNw.png)"
 dec_icon = "![dec.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/" \
@@ -11,6 +13,9 @@ voucher_icon = "![voucher.png](https://images.hive.blog/20x0/https://files.peakd
                "Eo8RPwT4kQnGyvkNp9Vx1kLpFYYVhKSy88Fsy7YrAStKwrHCRX6GNvhywGxPbQpW2bu.png)"
 merits_icon = "![merits.png](https://images.hive.blog/20x0/" \
               "https://d36mxiodymuqjm.cloudfront.net/website/icons/img_merit_256.png)"
+gold_potion_icon = "![alchemy.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/AK6ZKi4NWxuWbnhNc1V3k9DeqiqhTvmcenpsX5xhHUFdBGEYTMfMpsnC9aHL7R2.png)"
+legendary_potion_icon = "![legendary.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/AK3gbhdHjfaQxKVM39VfeHCw25haYejvUT17E8WBgveTKY5rucpRY7AbjgsAhdu.png)"
+packs_icon = "![chaosPack.png](https://images.hive.blog/20x0/https://files.peakd.com/file/peakd-hive/beaker007/Eo8M4f1Zieju9ibwbs6Tnp3KvN9Kb93HkqwMi3FqanTmV2XoNw7pmV4MbjDSxbgiSdo.png)"
 
 
 def get_last_season_statistics_table(last_season_wild_battles, last_season_modern_battles):
@@ -130,7 +135,7 @@ def cost_earning_row(title, icon, value, skip_zeros):
         return "| " + str(title) + " | " + icon + " " + str(round(value, 3)) + " |\n"
 
 
-def get_last_season_earnings_table(last_season, skip_zeros):
+def get_last_season_earnings_table(last_season, last_season_rewards, skip_zeros):
     earning_rows = ""
     if 'dec_rental_payment' in last_season:
         earning_rows += cost_earning_row("DEC rental rewards", dec_icon, last_season.dec_rental_payment, skip_zeros)
@@ -181,6 +186,18 @@ def get_last_season_earnings_table(last_season, skip_zeros):
         earning_rows += cost_earning_row("VOUCHER earned", voucher_icon, last_season.voucher_claim_staking_rewards,
                                          skip_zeros)
 
+    if not last_season_rewards.empty:
+        potions = last_season_rewards[(last_season_rewards['type'] == 'potion')].groupby(['potion_type']).sum()
+        packs = last_season_rewards[(last_season_rewards['type'] == 'pack')].groupby(['edition']).sum()
+        if 'legendary' in potions.index:
+            earning_rows += cost_earning_row("Legendary potions", legendary_potion_icon,
+                                             int(potions.loc['legendary'].quantity), skip_zeros)
+        if 'gold' in potions.index:
+            earning_rows += cost_earning_row("Gold potions", gold_potion_icon, int(potions.loc['gold'].quantity),
+                                             skip_zeros)
+        if not packs.empty:
+            earning_rows += cost_earning_row("CL Packs", packs_icon, packs.loc[Edition.chaos.value].quantity,
+                                             skip_zeros)
 
     result = "None"
     if earning_rows != "":
@@ -309,7 +326,7 @@ https://images.hive.blog/0x0/https://files.peakd.com/file/peakd-hive/beaker007/2
 <br><br><br>
 ![Season summary divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23tSKXK2kCpyZXosK34FeU6MPbw4RGCrrs7TY1tgy4k5Lgndj2JNPEbpjr8JAgQ7kW8v1.png)
 
-# <div class="phishy"><center>Season Summery""" + str(account_suffix) + """</center></div> 
+# <div class="phishy"><center>Season Summary""" + str(account_suffix) + """</center></div> 
    
 """
 
@@ -385,7 +402,7 @@ def get_tournament_results(tournaments_info, account_name=None):
     return ""
 
 
-def get_last_season_earning_costs(season_balances, skip_zeros, account_name=None):
+def get_last_season_earning_costs(season_balances, last_season_rewards, skip_zeros, account_name=None):
     account_suffix = ""
     if account_name:
         account_suffix = " (" + str(account_name) + ")"
@@ -395,7 +412,7 @@ def get_last_season_earning_costs(season_balances, skip_zeros, account_name=None
 <br><br>
 ![Earnings divider.png](https://files.peakd.com/file/peakd-hive/beaker007/23u5tAfbYKhy3zti8o5cVxxgE2LfnjkAV4xZtm1CLAqpJL9zzEF67C7Ec8Tx6b7odFvvK.png)
 ## <div class="phishy"><center>Earnings and costs""" + str(account_suffix) + """</center></div>
-""" + str(get_last_season_earnings_table(last_season, skip_zeros)) + """
+""" + str(get_last_season_earnings_table(last_season, last_season_rewards, skip_zeros)) + """
 
 ## <div class="phishy"><center>Costs</center></div>
 """ + str(get_last_season_costs_table(last_season, skip_zeros)) + """     
@@ -480,6 +497,7 @@ def write_blog_post(account_names, season_balances_dict, season_wild_dict, seaso
         post += get_tournament_results(tournaments_info_dict[account_name],
                                        account_name=account_name)
         post += get_last_season_earning_costs(season_balances_dict[account_name],
+                                              last_season_rewards_dict[account_name],
                                               skip_zeros,
                                               account_name=print_account_name)
         post += get_last_season_market_transactions(purchases_cards_dict[account_name],

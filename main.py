@@ -49,8 +49,7 @@ def main():
         combined_season = pd.concat([season_wild_dict[account_name], season_modern_dict[account_name]])
         combined_season = combined_season.season.sort_values(ascending=False).unique().astype(int)
         season_balances_dict[account_name] = balances_info.get_balances(account_name,
-                                                                        season_balances_data_file,
-                                                                        combined_season)
+                                                                        season_balances_data_file)
 
         plots.plot_season_stats_rating(season_wild_dict[account_name], output_dir_account, Format.WILD)
         plots.plot_season_stats_rating(season_modern_dict[account_name], output_dir_account, Format.MODERN)

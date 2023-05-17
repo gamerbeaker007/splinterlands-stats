@@ -1,11 +1,13 @@
 import os
 
+import numpy as np
 import pandas as pd
+from dateutil import parser
 
-from src import api, season
+from src import api
 
 
-def get_balances(account_name, season_balances_data_file, seasons_played_array):
+def get_balances(account_name, season_balances_data_file):
     current_season_data = api.get_current_season()
 
     if os.path.isfile(season_balances_data_file):
@@ -51,7 +53,7 @@ def get_balances(account_name, season_balances_data_file, seasons_played_array):
                                                                    balance_history_voucher_df,
                                                                    balance_history_merits_df,
                                                                    balance_history_sps_unclaimed_df,
-                                                                   single_season_id=season_id)
+                                                                   season_array=[season_id])
         else:
             print("All balances data is already pulled and processed continue with the current data set")
 
@@ -73,17 +75,21 @@ def get_balances(account_name, season_balances_data_file, seasons_played_array):
         balance_history_sps_unclaimed_df = pd.DataFrame(
             api.get_balance_history_for_token(account_name, token="SPS", unclaimed_sps=True))
 
-        # Copy season id's from wild (because this will contain the most data, wild exists first)
+        current_season_data = api.get_current_season()
+        first_season = determine_first_season_id_played(balance_history_dec_df, balance_history_sps_df)
+        season_array = np.arange(first_season, current_season_data['id'])
         season_balances_df = pd.DataFrame()
-        season_balances_df['season'] = seasons_played_array.tolist()
+        season_balances_df['season'] = season_array
         season_balances_df['player'] = account_name
+
         season_balances_df = add_balance_data_to_season_df(season_balances_df,
                                                            balance_history_credits_df,
                                                            balance_history_dec_df,
                                                            balance_history_sps_df,
                                                            balance_history_voucher_df,
                                                            balance_history_merits_df,
-                                                           balance_history_sps_unclaimed_df)
+                                                           balance_history_sps_unclaimed_df,
+                                                           season_array)
     # drop rows if all values in columns are NA remove
     number_of_columns = len(season_balances_df.columns.tolist())
     season_balances_df = season_balances_df.dropna(thresh=number_of_columns - 4)
@@ -100,7 +106,7 @@ def add_balance_data_to_season_df(season_df,
                                   balance_history_voucher_df,
                                   balance_history_merits_df,
                                   balance_history_sps_unclaimed_df,
-                                  single_season_id=None):
+                                  season_array):
     season_end_times = api.get_season_end_times()
 
     curr_season = api.get_current_season()
@@ -111,12 +117,7 @@ def add_balance_data_to_season_df(season_df,
         lambda row: 'Splinterlands Season ' + str(last_season_name_id - (last_season_id - row['season'])), axis=1)
     season_df['season_id'] = season_df.apply(lambda row: last_season_name_id - (last_season_id - row['season']), axis=1)
 
-    if single_season_id:
-        season_arr = [single_season_id]
-    else:
-        season_arr = season_df.season.values
-
-    for season_id in season_arr:
+    for season_id in season_array:
         if season_id > season_end_times[0]['id']:
             end_date = [season_end_time['date'] for season_end_time in season_end_times if
                         season_end_time["id"] == season_id][0]
@@ -280,9 +281,19 @@ def cumulate_specific_balance_for_season(start_date, end_date, season_df, season
                    & (input_df['type'] == search_type) \
                    & (input_df['token'] == 'SPS')
 
-
         # print("Amount " + str(search_type) + ": " + str(input_df.loc[mask].amount.sum()))
         season_df.loc[season_df.season == season_id, str(column_prefix + search_type)] = input_df.loc[mask].amount.sum()
     else:
         season_df.loc[season_df.season == season_id, str(column_prefix + search_type)] = 0
     return season_df
+
+
+def determine_first_season_id_played(balance_history_dec_df, balance_history_sps_df):
+    first_earned_date_str = pd.concat([balance_history_dec_df, balance_history_sps_df]).created_date.sort_values().values[0]
+    first_earned_date = parser.parse(first_earned_date_str)
+
+    season_end_times = api.get_season_end_times()
+    # determine which was the first season earning start
+    for season_end_time in season_end_times:
+        if first_earned_date <= season_end_time['date']:
+            return season_end_time['id']
