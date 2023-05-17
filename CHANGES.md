@@ -1,6 +1,11 @@
 # Release notes
 All notable changes to this project will be documented in this file.
 
+## 0.2.1
+- Fix wild leaderboard prizes in earning tables
+- Add potion and packs to earning table
+- Improve first time use determine season played (for renting accounts)
+
 ## 0.2.0
 - Add bcx for bought and sold cards
 
