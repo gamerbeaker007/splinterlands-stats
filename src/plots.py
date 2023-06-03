@@ -188,13 +188,6 @@ def plot_season_stats_earnings(season_df, output_dir="", skip_zeros=False):
                'sps_brawl',
                'sps_land',
                'sps_nightmare',
-               'sps_delegation_modern',
-               'sps_delegation_wild',
-               'sps_delegation_focus',
-               'sps_delegation_season',
-               'sps_delegation_brawl',
-               'sps_delegation_land',
-               'sps_delegation_nightmare',
                'merits_quest_rewards',
                'merits_season_rewards',
                'merits_brawl_prize']
@@ -213,8 +206,7 @@ def plot_season_stats_earnings(season_df, output_dir="", skip_zeros=False):
 
     sps_earned = season_df.sps_claim_staking_rewards + season_df.sps_token_award
     sps_tournament = season_df.sps_tournament_prize + season_df.sps_token_transfer_multi + season_df.sps_enter_tournament
-    sps_battle_earning = season_df.sps_modern + season_df.sps_wild + season_df.sps_focus + season_df.sps_season + season_df.sps_brawl \
-                         + season_df.sps_delegation_modern + season_df.sps_delegation_wild + season_df.sps_delegation_focus + season_df.sps_delegation_season + season_df.sps_delegation_brawl
+    sps_battle_earning = season_df.sps_modern + season_df.sps_wild + season_df.sps_focus + season_df.sps_season + season_df.sps_brawl
     sps_rewards = season_df.sps_land + season_df.sps_nightmare + season_df.sps_delegation_land + season_df.sps_delegation_nightmare
 
     sps_total = sps_earned + sps_tournament + sps_battle_earning + sps_rewards
