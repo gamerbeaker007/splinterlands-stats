@@ -198,7 +198,7 @@ def add_balance_data_to_season_df(season_df,
             # NOTE SEASON REWARDS are always in the time frame of the new season
             season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
                                                              balance_history_sps_unclaimed_df,
-                                                             'season', column_prefix='sps_delegation_', unclaimed_reward=True, delegation=True)
+                                                             'season', column_prefix='sps_delegation_', unclaimed_reward=False, delegation=True)
 
 
             # Credits add
