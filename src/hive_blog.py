@@ -119,17 +119,17 @@ def get_last_season_costs_table(last_season, skip_zeros):
         costs_rows += cost_earning_row("SPS tournament entry fees", sps_icon, last_season.sps_enter_tournament,
                                        skip_zeros)
     if 'sps_delegation_modern' in last_season:
-        costs_rows += cost_earning_row("SPS ranked battle (modern) delegation", sps_icon, last_season.sps_delegation_modern, skip_zeros)
+        costs_rows += cost_earning_row("SPS ranked battle (modern) (fees)", sps_icon, last_season.sps_delegation_modern, skip_zeros)
     if 'sps_delegation_wild' in last_season:
-        costs_rows += cost_earning_row("SPS ranked battle (wild) delegation", sps_icon, last_season.sps_delegation_wild, skip_zeros)
+        costs_rows += cost_earning_row("SPS ranked battle (wild) (fees)", sps_icon, last_season.sps_delegation_wild, skip_zeros)
     if 'sps_delegation_focus' in last_season:
-        costs_rows += cost_earning_row("SPS daily focus delegation", sps_icon, last_season.sps_delegation_focus, skip_zeros)
+        costs_rows += cost_earning_row("SPS daily focus (fees)", sps_icon, last_season.sps_delegation_focus, skip_zeros)
     if 'sps_delegation_season' in last_season:
-        costs_rows += cost_earning_row("SPS season delegation", sps_icon, last_season.sps_delegation_season, skip_zeros)
+        costs_rows += cost_earning_row("SPS season (fees)", sps_icon, last_season.sps_delegation_season, skip_zeros)
     if 'sps_delegation_land' in last_season:
-        costs_rows += cost_earning_row("SPS land delegation", sps_icon, last_season.sps_delegation_land, skip_zeros)
+        costs_rows += cost_earning_row("SPS land (fees)", sps_icon, last_season.sps_delegation_land, skip_zeros)
     if 'sps_delegation_nightmare' in last_season:
-        costs_rows += cost_earning_row("SPS nightmare (TD) delegation", sps_icon, last_season.sps_delegation_nightmare, skip_zeros)
+        costs_rows += cost_earning_row("SPS nightmare (TD) (fees)", sps_icon, last_season.sps_delegation_nightmare, skip_zeros)
     if 'sps_delegation_brawl' in last_season:
         costs_rows += cost_earning_row("SPS brawl delegation", sps_icon, last_season.sps_delegation_brawl, skip_zeros)
 
