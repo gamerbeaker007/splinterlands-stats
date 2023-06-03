@@ -105,7 +105,7 @@ def get_last_season_costs_table(last_season, skip_zeros):
         costs_rows += cost_earning_row("DEC tournament entry fees", dec_icon, last_season.dec_enter_tournament,
                                        skip_zeros)
     if 'dec_market_rental' in last_season:
-        costs_rows += cost_earning_row("DEC rental payment", dec_icon, last_season.dec_market_rental, skip_zeros)
+        costs_rows += cost_earning_row("DEC market rental", dec_icon, last_season.dec_market_rental, skip_zeros)
     if 'dec_purchased_energy' in last_season:
         costs_rows += cost_earning_row("DEC purchased energy", dec_icon,
                                        last_season.dec_purchased_energy, skip_zeros)
@@ -118,6 +118,21 @@ def get_last_season_costs_table(last_season, skip_zeros):
     if 'sps_enter_tournament' in last_season:
         costs_rows += cost_earning_row("SPS tournament entry fees", sps_icon, last_season.sps_enter_tournament,
                                        skip_zeros)
+    if 'sps_delegation_modern' in last_season:
+        costs_rows += cost_earning_row("SPS ranked battle (modern) delegation", sps_icon, last_season.sps_delegation_modern, skip_zeros)
+    if 'sps_delegation_wild' in last_season:
+        costs_rows += cost_earning_row("SPS ranked battle (wild) delegation", sps_icon, last_season.sps_delegation_wild, skip_zeros)
+    if 'sps_delegation_focus' in last_season:
+        costs_rows += cost_earning_row("SPS daily focus delegation", sps_icon, last_season.sps_delegation_focus, skip_zeros)
+    if 'sps_delegation_season' in last_season:
+        costs_rows += cost_earning_row("SPS season delegation", sps_icon, last_season.sps_delegation_season, skip_zeros)
+    if 'sps_delegation_land' in last_season:
+        costs_rows += cost_earning_row("SPS land delegation", sps_icon, last_season.sps_delegation_land, skip_zeros)
+    if 'sps_delegation_nightmare' in last_season:
+        costs_rows += cost_earning_row("SPS nightmare (TD) delegation", sps_icon, last_season.sps_delegation_nightmare, skip_zeros)
+    if 'sps_delegation_brawl' in last_season:
+        costs_rows += cost_earning_row("SPS brawl delegation", sps_icon, last_season.sps_delegation_brawl, skip_zeros)
+
 
     result = "None"
     if costs_rows != "":
@@ -138,7 +153,7 @@ def cost_earning_row(title, icon, value, skip_zeros):
 def get_last_season_earnings_table(last_season, last_season_rewards, skip_zeros):
     earning_rows = ""
     if 'dec_rental_payment' in last_season:
-        earning_rows += cost_earning_row("DEC rental rewards", dec_icon, last_season.dec_rental_payment, skip_zeros)
+        earning_rows += cost_earning_row("DEC rental payments", dec_icon, last_season.dec_rental_payment, skip_zeros)
     if 'dec_sell_market_purchase' in last_season:
         earning_rows += cost_earning_row("DEC market sell", dec_icon, last_season.dec_sell_market_purchase, skip_zeros)
     if 'dec_tournament_prize' in last_season:

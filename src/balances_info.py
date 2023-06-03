@@ -154,27 +154,52 @@ def add_balance_data_to_season_df(season_df,
             # SPS unclaimed add (earnings for quest/season/ranked battles)
             season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                              balance_history_sps_unclaimed_df,
-                                                             'modern', column_prefix='sps_', positive_only=True)
+                                                             'modern', column_prefix='sps_', unclaimed_reward=True)
             season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                              balance_history_sps_unclaimed_df,
-                                                             'wild', column_prefix='sps_', positive_only=True)
+                                                             'wild', column_prefix='sps_', unclaimed_reward=True)
             season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                              balance_history_sps_unclaimed_df,
-                                                             'focus', column_prefix='sps_', positive_only=True)
+                                                             'focus', column_prefix='sps_', unclaimed_reward=True)
             season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                              balance_history_sps_unclaimed_df,
-                                                             'nightmare', column_prefix='sps_', positive_only=True)
+                                                             'nightmare', column_prefix='sps_', unclaimed_reward=True)
             season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                              balance_history_sps_unclaimed_df,
-                                                             'land', column_prefix='sps_', positive_only=True)
+                                                             'land', column_prefix='sps_', unclaimed_reward=True)
             season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
                                                              balance_history_sps_unclaimed_df,
-                                                             'brawl', column_prefix='sps_', positive_only=True)
+                                                             'brawl', column_prefix='sps_', unclaimed_reward=True)
 
             # NOTE SEASON REWARDS are always in the time frame of the new season
             season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
                                                              balance_history_sps_unclaimed_df,
-                                                             'season', column_prefix='sps_', positive_only=True)
+                                                             'season', column_prefix='sps_', unclaimed_reward=True, delegation=True)
+
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'modern', column_prefix='sps_delegation_', unclaimed_reward=False, delegation=True)
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'wild', column_prefix='sps_delegation_', unclaimed_reward=False, delegation=True)
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'focus', column_prefix='sps_delegation_', unclaimed_reward=False, delegation=True)
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'nightmare', column_prefix='sps_delegation_', unclaimed_reward=False, delegation=True)
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'land', column_prefix='sps_delegation_', unclaimed_reward=False, delegation=True)
+            season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'brawl', column_prefix='sps_delegation_', unclaimed_reward=False, delegation=True)
+
+            # NOTE SEASON REWARDS are always in the time frame of the new season
+            season_df = cumulate_specific_balance_for_season(new_start_date, new_end_date, season_df, season_id,
+                                                             balance_history_sps_unclaimed_df,
+                                                             'season', column_prefix='sps_delegation_', unclaimed_reward=True, delegation=True)
+
 
             # Credits add
             season_df = cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id,
@@ -261,16 +286,25 @@ def add_balance_data_to_season_df(season_df,
 
 
 def cumulate_specific_balance_for_season(start_date, end_date, season_df, season_id, input_df, search_type,
-                                         column_prefix="", positive_only=False):
+                                         column_prefix="", unclaimed_reward=False, delegation=False):
     # make sure it is a datetime field
     if not input_df.empty:
         input_df.created_date = pd.to_datetime(input_df.created_date)
         input_df.amount = pd.to_numeric(input_df.amount)
 
         # greater than the start date and smaller than the end date and type is search_type
-        if positive_only:
-            mask = (input_df['created_date'] > start_date) & (input_df['created_date'] <= end_date) & (
-                    input_df['type'] == search_type) & (input_df['amount'] > 0.0)
+        if unclaimed_reward:
+            mask = (input_df['created_date'] > start_date) \
+                   & (input_df['created_date'] <= end_date) \
+                   & (input_df['type'] == search_type)\
+                   & (input_df['amount'] < 0.0)\
+                   & (input_df['to_player'] == season_df.player.iloc[0])
+        elif delegation:
+            mask = (input_df['created_date'] > start_date) \
+                   & (input_df['created_date'] <= end_date) \
+                   & (input_df['type'] == search_type) \
+                   & (input_df['amount'] < 0.0) \
+                   & (input_df['to_player'] != season_df.player.iloc[0])
         else:
             mask = (input_df['created_date'] > start_date) & (input_df['created_date'] <= end_date) & (
                     input_df['type'] == search_type)
@@ -282,7 +316,10 @@ def cumulate_specific_balance_for_season(start_date, end_date, season_df, season
                    & (input_df['token'] == 'SPS')
 
         # print("Amount " + str(search_type) + ": " + str(input_df.loc[mask].amount.sum()))
-        season_df.loc[season_df.season == season_id, str(column_prefix + search_type)] = input_df.loc[mask].amount.sum()
+        value = input_df.loc[mask].amount.sum()
+        if unclaimed_reward and value < 0:
+            value = value * -1
+        season_df.loc[season_df.season == season_id, str(column_prefix + search_type)] = value
     else:
         season_df.loc[season_df.season == season_id, str(column_prefix + search_type)] = 0
     return season_df
